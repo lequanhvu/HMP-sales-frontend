@@ -1,0 +1,89 @@
+/* ==========================================================================
+   Button Component — Quy chuẩn nút bấm BEM
+   ========================================================================== */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-2);
+  padding: 0.625rem 1.25rem;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  transition: all var(--transition-fast);
+  text-align: center;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn:disabled,
+.btn--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Biến thể nút chính */
+.btn--primary {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+/* Biến thể nút cam (Hành động đặt hàng / kêu gọi) */
+.btn--secondary {
+  background-color: var(--color-secondary);
+  color: #ffffff;
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-secondary-hover);
+}
+
+/* Biến thể nút viền (Outline) */
+.btn--outline {
+  background-color: transparent;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+.btn--outline:hover {
+  background-color: var(--color-bg);
+  border-color: var(--color-text-muted);
+}
+
+/* Biến thể nút nguy hiểm (Hủy đơn) */
+.btn--danger {
+  background-color: var(--color-danger);
+  color: #ffffff;
+}
+
+.btn--danger:hover {
+  background-color: #bb2d3b;
+}
+
+/* Kích thước nút */
+.btn--sm {
+  padding: 0.375rem 0.75rem;
+  font-size: var(--font-size-xs);
+}
+
+.btn--lg {
+  padding: 0.75rem 1.5rem;
+  font-size: var(--font-size-base);
+}
+
+.btn--block {
+  display: flex;
+  width: 100%;
+}
+

@@ -1,0 +1,94 @@
+/* ==========================================================================
+   Global CSS — Bố cục khung và các lớp tiện ích
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--spacing-4);
+  padding-right: var(--spacing-4);
+}
+
+/* Tiện ích Flexbox */
+.d-flex { display: flex; }
+.flex-column { flex-direction: column; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.align-center { align-items: center; }
+.gap-2 { gap: var(--spacing-2); }
+.gap-4 { gap: var(--spacing-4); }
+
+/* Tiện ích Lưới (Grid) */
+.grid { display: grid; }
+.grid-cols-1 { grid-template-columns: repeat(1, 1fr); }
+
+@media (min-width: 768px) {
+  .grid-cols-2-md { grid-template-columns: repeat(2, 1fr); }
+  .grid-cols-3-md { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 992px) {
+  .grid-cols-4-lg { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Định dạng Huy hiệu (Badges) */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.625rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+}
+
+.badge--contact {
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.badge--pending {
+  background-color: #fff3cd;
+  color: #664d03;
+}
+
+.badge--confirmed {
+  background-color: #cff4fc;
+  color: #055160;
+}
+
+.badge--processing {
+  background-color: #e2d9f3;
+  color: #432874;
+}
+
+.badge--shipping {
+  background-color: #cfe2ff;
+  color: #084298;
+}
+
+.badge--completed {
+  background-color: #d1e7dd;
+  color: #0f5132;
+}
+
+.badge--cancelled {
+  background-color: #f8d7da;
+  color: #842029;
+}
+
+/* Lớp tiện ích văn bản */
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-muted { color: var(--color-text-muted); }
+.text-price {
+  color: var(--color-price);
+  font-weight: 700;
+  font-size: var(--font-size-lg);
+}
+
+/* Trạng thái Ẩn / Hiện */
+.hidden {
+  display: none !important;
+}
+

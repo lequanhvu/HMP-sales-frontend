@@ -1,0 +1,79 @@
+/* ==========================================================================
+   CSS Variables — Bảng màu & Quy chuẩn thương hiệu Tôn Thép HMP
+   Tông màu chủ đạo: Xanh dương & Trắng
+   ========================================================================== */
+
+:root {
+  /* Bảng màu chính (Brand Blue & White) */
+  --color-primary: #1351b4;          /* Xanh dương chủ đạo chuẩn mẫu */
+  --color-primary-hover: #0c3e8e;
+  --color-primary-light: #eaf1fc;
+  --color-primary-dark: #0a2d6c;
+
+  --color-secondary: #ff7a00;        /* Cam điểm nhấn cho nút kêu gọi / badge */
+  --color-secondary-hover: #e06800;
+
+  --color-price: #dc2626;            /* Đỏ nổi bật cho giá niêm yết */
+  --color-success: #16a34a;          /* Xanh lá hoàn tất/check */
+  --color-warning: #f59e0b;          /* Vàng cảnh báo */
+  --color-danger: #dc2626;           /* Đỏ hủy đơn/lỗi */
+
+  /* Màu nền & Bề mặt (White & Light Gray-Blue) */
+  --color-bg: #f4f7fb;               /* Nền trang xám lam rất nhạt */
+  --color-surface: #ffffff;          /* Nền thẻ, modal, header trắng */
+  --color-surface-hover: #f8fafc;
+  
+  /* Màu chữ (Typography) */
+  --color-text: #1e293b;             /* Chữ chính xanh đen đậm */
+  --color-text-muted: #64748b;       /* Chữ phụ / mô tả */
+  --color-text-light: #94a3b8;
+  --color-text-white: #ffffff;
+
+  /* Đường viền (Borders) */
+  --color-border: #e2e8f0;           /* Đường viền phân cách */
+  --color-border-light: #f1f5f9;
+  --color-border-focus: #93c5fd;
+
+  /* Typography */
+  --font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --font-size-xs: 0.75rem;           /* 12px */
+  --font-size-sm: 0.875rem;          /* 14px */
+  --font-size-base: 1rem;            /* 16px */
+  --font-size-lg: 1.125rem;          /* 18px */
+  --font-size-xl: 1.25rem;           /* 20px */
+  --font-size-2xl: 1.5rem;           /* 24px */
+  --font-size-3xl: 2rem;             /* 32px */
+  --font-size-4xl: 2.5rem;           /* 40px */
+
+  /* Khoảng cách (Spacing) */
+  --spacing-1: 0.25rem;              /* 4px */
+  --spacing-2: 0.5rem;               /* 8px */
+  --spacing-3: 0.75rem;              /* 12px */
+  --spacing-4: 1rem;                 /* 16px */
+  --spacing-5: 1.25rem;              /* 20px */
+  --spacing-6: 1.5rem;               /* 24px */
+  --spacing-8: 2rem;                 /* 32px */
+  --spacing-10: 2.5rem;              /* 40px */
+  --spacing-12: 3rem;                /* 48px */
+
+  /* Bo góc (Border Radius) */
+  --radius-sm: 0.375rem;             /* 6px */
+  --radius-md: 0.5rem;               /* 8px */
+  --radius-lg: 0.75rem;              /* 12px */
+  --radius-xl: 1rem;                 /* 16px */
+  --radius-2xl: 1.5rem;              /* 24px */
+  --radius-full: 9999px;             /* Nút bo tròn kiểu pill */
+
+  /* Đổ bóng (Box Shadow) */
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+
+  /* Bố cục Container */
+  --container-max-width: 1240px;
+
+  /* Hiệu ứng chuyển động */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.25s ease;
+}
