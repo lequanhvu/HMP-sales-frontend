@@ -52,7 +52,7 @@
             <a href="#about-section" class="nav__link">Giới thiệu</a>
           </li>
           <li class="nav__item">
-            <a href="#product-section" class="nav__link">
+            <a href="./pages/product/catalog.html" class="nav__link">
               <span>Sản phẩm</span>
               <!-- Mũi tên xổ xuống -->
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -61,9 +61,9 @@
             </a>
             <!-- Dropdown Menu Danh mục Tôn -->
             <div id="nav-category-dropdown" class="nav__dropdown">
-              <a href="#product-section" class="nav__dropdown-link">Tôn sóng lợp mái</a>
-              <a href="#product-section" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
-              <a href="#product-section" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
+              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn sóng lợp mái</a>
+              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
+              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
             </div>
           </li>
           <li class="nav__item">
@@ -357,14 +357,15 @@
   </footer>
 
   <!-- =========================================================================
-       6. MẪU THẺ THẺ SẢN PHẨM (<template>) THEO QUY TẮC TÁCH BIỆT HTML/JS
+       6. CÁC THẺ <template> TÁCH BIỆT DỮ LIỆU VÀ GIAO DIỆN
        ========================================================================= -->
+  <!-- Template 1: Thẻ sản phẩm tôn sóng -->
   <template id="product-card-template">
     <article class="product-card">
       <!-- Khung ảnh mẫu tôn -->
       <div class="product-card__image-box">
         <img class="product-card__image" src="" alt="" loading="lazy">
-        <div class="product-card__no-image" style="display: none;">
+        <div class="product-card__no-image hidden">
           <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
             <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -393,6 +394,31 @@
         </div>
       </div>
     </article>
+  </template>
+
+  <!-- Template 2: Trạng thái đang tải (Loading) -->
+  <template id="home-loading-template">
+    <div class="state-box">
+      <div class="state-box__spinner"></div>
+      <h4 class="state-box__title">Đang tải sản phẩm tôn lợp mái...</h4>
+      <p class="state-box__desc">Hệ thống đang kết nối dữ liệu máy chủ HMP</p>
+    </div>
+  </template>
+
+  <!-- Template 3: Trạng thái danh sách rỗng (Empty) -->
+  <template id="home-empty-template">
+    <div class="state-box">
+      <h4 class="state-box__title">Chưa có sản phẩm nào trong danh mục này</h4>
+      <p class="state-box__desc">Vui lòng chọn danh mục khác hoặc quay lại sau</p>
+    </div>
+  </template>
+
+  <!-- Template 4: Trạng thái lỗi kết nối (Error) -->
+  <template id="home-error-template">
+    <div class="state-box">
+      <h4 class="state-box__title state-box__title--danger">Không thể kết nối đến máy chủ</h4>
+      <p class="state-box__desc home-error-msg">Lỗi mạng khi tải dữ liệu</p>
+    </div>
   </template>
 
   <!-- Script điều khiển trang -->

@@ -555,6 +555,10 @@
   color: var(--color-primary);
 }
 
+.product-calc-total__amount--contact {
+  color: #b45309;
+}
+
 .product-calc-total__hint {
   font-size: 0.8rem;
   color: #b45309;
@@ -683,6 +687,19 @@
 
 .product-tab-pane--active {
   display: block;
+}
+
+.product-tab-paragraph {
+  margin-bottom: 0.75rem;
+  line-height: 1.7;
+}
+
+.shipping-commit-list {
+  padding-left: 1.25rem;
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 /* Bảng Thông Số Kỹ Thuật */

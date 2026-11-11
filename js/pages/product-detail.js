@@ -2,11 +2,12 @@
  * product-detail.js — Script điều khiển Trang Chi Tiết Sản Phẩm Tôn Sóng
  * 
  * Nghiệp vụ:
- * - Tách biệt giao diện qua thẻ <template>
- * - Tự động tính nhẩm giá theo công thức: UnitPrice × Size × Quantity
+ * - Clean Code: Tách biệt hoàn toàn HTML, CSS và JavaScript
+ * - Tuyệt đối không dùng inline style="..." hoặc gán .innerHTML chuỗi thô
+ * - Sử dụng thẻ <template> và DOM API (replaceChildren, classList, createElement)
+ * - Tự động tính nhẩm giá: TotalPrice = UnitPrice × Size × Quantity
  * - Kiểm soát quyền xem giá (PRODUCT_PRICE_VIEW)
- * - Tương tác thư viện ảnh đa góc nhìn
- * - Chọn biến thể độ dày và màu sắc tôn
+ * - Tự động fallback ảnh hỏng/thiếu về empty-picture.png
  */
 
 import { initHeader } from '../components/header.js';
@@ -17,6 +18,8 @@ import { formatVnd } from '../utils/format.js';
 let productData = null;
 let selectedVariant = null;
 let selectedColor = null;
+
+const DEFAULT_EMPTY_IMAGE = '../../assets/images/empty-picture.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Khởi tạo thanh điều hướng Header
@@ -52,7 +55,6 @@ async function loadProductDetail(productId) {
 
   try {
     const response = await getProductDetail(productId);
-    // client.js trả về data sau khi unwrap envelope
     productData = response;
 
     if (!productData) {
@@ -60,12 +62,12 @@ async function loadProductDetail(productId) {
       return;
     }
 
-    // Ẩn loading, hiển thị khung chi tiết
-    if (loadingEl) loadingEl.style.display = 'none';
-    if (errorEl) errorEl.style.display = 'none';
-    if (detailCardEl) detailCardEl.style.display = 'block';
+    // Ẩn loading, hiển thị khung chi tiết qua class CSS
+    if (loadingEl) loadingEl.classList.add('hidden');
+    if (errorEl) errorEl.classList.add('hidden');
+    if (detailCardEl) detailCardEl.classList.remove('hidden');
 
-    // Render toàn bộ giao diện sản phẩm
+    // Render toàn bộ giao diện sản phẩm bằng DOM API
     renderProductHeader(productData);
     renderGallery(productData.images || []);
     renderVariants(productData.variants || []);
@@ -86,9 +88,9 @@ function showError(message) {
   const detailCardEl = document.getElementById('product-detail-card');
   const msgEl = document.getElementById('product-error-message');
 
-  if (loadingEl) loadingEl.style.display = 'none';
-  if (detailCardEl) detailCardEl.style.display = 'none';
-  if (errorEl) errorEl.style.display = 'flex';
+  if (loadingEl) loadingEl.classList.add('hidden');
+  if (detailCardEl) detailCardEl.classList.add('hidden');
+  if (errorEl) errorEl.classList.remove('hidden');
   if (msgEl) msgEl.textContent = message;
 }
 
@@ -118,25 +120,22 @@ function renderProductHeader(product) {
 }
 
 /**
- * Render thư viện ảnh sản phẩm (ảnh chính + thumbnail strip)
+ * Render thư viện ảnh sản phẩm qua <template>
  */
 function renderGallery(images) {
   const mainImgEl = document.getElementById('gallery-main-img');
-  const noImageEl = document.getElementById('gallery-no-image');
   const thumbsListEl = document.getElementById('gallery-thumbs-list');
   const thumbTemplate = document.getElementById('gallery-thumb-template');
-  const defaultEmptyImage = '../../assets/images/empty-picture.png';
 
   if (!thumbsListEl || !thumbTemplate) return;
-  thumbsListEl.innerHTML = '';
+  thumbsListEl.replaceChildren();
 
   if (!images || images.length === 0) {
     if (mainImgEl) {
-      mainImgEl.src = defaultEmptyImage;
+      mainImgEl.src = DEFAULT_EMPTY_IMAGE;
       mainImgEl.alt = (productData && productData.productName) || 'Ảnh mẫu sản phẩm';
-      mainImgEl.style.display = 'block';
+      mainImgEl.classList.remove('hidden');
     }
-    if (noImageEl) noImageEl.style.display = 'none';
     return;
   }
 
@@ -150,14 +149,13 @@ function renderGallery(images) {
   // Hiển thị ảnh chính ban đầu
   const primaryImg = sortedImages[0];
   if (mainImgEl) {
-    mainImgEl.src = primaryImg.imageUrl || defaultEmptyImage;
+    mainImgEl.src = primaryImg.imageUrl || DEFAULT_EMPTY_IMAGE;
     mainImgEl.alt = productData.productName;
-    mainImgEl.style.display = 'block';
+    mainImgEl.classList.remove('hidden');
     mainImgEl.onerror = () => {
-      mainImgEl.src = defaultEmptyImage;
+      mainImgEl.src = DEFAULT_EMPTY_IMAGE;
     };
   }
-  if (noImageEl) noImageEl.style.display = 'none';
 
   // Render các thumbnail phụ qua <template>
   sortedImages.forEach((imgObj, index) => {
@@ -165,10 +163,10 @@ function renderGallery(images) {
     const thumbBtn = clone.querySelector('.product-gallery__thumb-btn');
     const thumbImg = clone.querySelector('.product-gallery__thumb-img');
 
-    thumbImg.src = imgObj.imageUrl || defaultEmptyImage;
+    thumbImg.src = imgObj.imageUrl || DEFAULT_EMPTY_IMAGE;
     thumbImg.alt = `${productData.productName} ảnh ${index + 1}`;
     thumbImg.onerror = () => {
-      thumbImg.src = defaultEmptyImage;
+      thumbImg.src = DEFAULT_EMPTY_IMAGE;
     };
 
     if (index === 0) {
@@ -176,10 +174,8 @@ function renderGallery(images) {
     }
 
     thumbBtn.addEventListener('click', () => {
-      // Đổi ảnh chính
-      if (mainImgEl) mainImgEl.src = imgObj.imageUrl || defaultEmptyImage;
+      if (mainImgEl) mainImgEl.src = imgObj.imageUrl || DEFAULT_EMPTY_IMAGE;
 
-      // Cập nhật trạng thái active
       thumbsListEl.querySelectorAll('.product-gallery__thumb-btn').forEach(btn => {
         btn.classList.remove('product-gallery__thumb-btn--active');
       });
@@ -198,10 +194,13 @@ function renderVariants(variants) {
   const variantTemplate = document.getElementById('variant-pill-template');
 
   if (!variantsListEl || !variantTemplate) return;
-  variantsListEl.innerHTML = '';
+  variantsListEl.replaceChildren();
 
   if (!variants || variants.length === 0) {
-    variantsListEl.innerHTML = '<span class="product-option-group__note">Quy cách chuẩn mặc định</span>';
+    const note = document.createElement('span');
+    note.className = 'product-option-group__note';
+    note.textContent = 'Quy cách chuẩn mặc định';
+    variantsListEl.appendChild(note);
     selectedVariant = null;
     renderColors([]);
     updatePriceAndTotal();
@@ -214,12 +213,9 @@ function renderVariants(variants) {
     const titleEl = clone.querySelector('.variant-btn__title');
     const subTitleEl = clone.querySelector('.variant-btn__subtitle');
 
-    // Độ dày
     titleEl.textContent = variant.thickness ? `${variant.thickness} mm` : (variant.variantName || 'Quy cách');
-    // Loại sóng / ghi chú
     subTitleEl.textContent = variant.typeValue || variant.variantCode || 'Tiêu chuẩn';
 
-    // Mặc định chọn biến thể đầu tiên
     if (index === 0) {
       btn.classList.add('variant-btn--active');
       selectedVariant = variant;
@@ -236,7 +232,6 @@ function renderVariants(variants) {
     variantsListEl.appendChild(clone);
   });
 
-  // Kích hoạt biến thể đầu tiên
   if (selectedVariant) {
     onVariantChanged(selectedVariant);
   }
@@ -246,7 +241,6 @@ function renderVariants(variants) {
  * Khi người dùng thay đổi biến thể được chọn
  */
 function onVariantChanged(variant) {
-  // Cập nhật thông số kỹ thuật trong Tab
   const specThickness = document.getElementById('spec-thickness');
   const specTypeValue = document.getElementById('spec-type-value');
   const specVariantCode = document.getElementById('spec-variant-code');
@@ -255,10 +249,7 @@ function onVariantChanged(variant) {
   if (specTypeValue) specTypeValue.textContent = variant.typeValue || 'Tiêu chuẩn';
   if (specVariantCode) specVariantCode.textContent = variant.variantCode || 'HMP-STD';
 
-  // Render lại bộ chọn màu sắc tương ứng với biến thể
   renderColors(variant.colors || []);
-
-  // Tính toán lại giá
   updatePriceAndTotal();
 }
 
@@ -271,10 +262,13 @@ function renderColors(colors) {
   const selectedColorNameEl = document.getElementById('selected-color-name');
 
   if (!colorsListEl || !colorTemplate) return;
-  colorsListEl.innerHTML = '';
+  colorsListEl.replaceChildren();
 
   if (!colors || colors.length === 0) {
-    colorsListEl.innerHTML = '<span class="product-option-group__note">Màu tôn tự nhiên / Theo đơn hàng</span>';
+    const note = document.createElement('span');
+    note.className = 'product-option-group__note';
+    note.textContent = 'Màu tôn tự nhiên / Theo đơn hàng';
+    colorsListEl.appendChild(note);
     selectedColor = 'Mặc định';
     if (selectedColorNameEl) selectedColorNameEl.textContent = '';
     return;
@@ -292,17 +286,16 @@ function renderColors(colors) {
 
     nameEl.textContent = colorName;
 
-    // Nếu có ảnh mẫu màu từ R2
+    // Hiển thị ảnh mẫu màu hoặc chấm tròn màu
     if (imageUrl) {
       thumbEl.src = imageUrl;
-      thumbEl.style.display = 'inline-block';
-      dotEl.style.display = 'none';
+      thumbEl.classList.remove('hidden');
+      dotEl.classList.add('hidden');
     } else {
-      dotEl.style.display = 'inline-block';
-      thumbEl.style.display = 'none';
+      dotEl.classList.remove('hidden');
+      thumbEl.classList.add('hidden');
     }
 
-    // Chọn màu đầu tiên
     if (index === 0) {
       btn.classList.add('color-swatch-btn--active');
       selectedColor = colorName;
@@ -323,7 +316,7 @@ function renderColors(colors) {
 
 /**
  * Cập nhật bảng giá niêm yết và tự động tính tổng tiền tạm tính
- * Công thức nghiệp vụ: TotalPrice = UnitPrice × Size × Quantity
+ * Công thức: TotalPrice = UnitPrice × Size × Quantity
  */
 function updatePriceAndTotal() {
   const priceAmountEl = document.getElementById('product-price-amount');
@@ -332,15 +325,12 @@ function updatePriceAndTotal() {
   const totalAmountEl = document.getElementById('product-calc-total-amount');
   const formulaHintEl = document.getElementById('product-calc-formula-hint');
 
-  // Lấy đơn giá theo mét (m)
   let unitPrice = null;
 
   if (productData && productData.priceVisible && selectedVariant && selectedVariant.prices) {
-    // Ưu tiên đơn giá theo mét 'm'
     unitPrice = selectedVariant.prices['m'] || selectedVariant.prices['mét'] || Object.values(selectedVariant.prices)[0];
   }
 
-  // Đọc thông số nhập
   const lengthInput = document.getElementById('input-length');
   const quantityInput = document.getElementById('input-quantity');
 
@@ -348,37 +338,34 @@ function updatePriceAndTotal() {
   const quantity = parseInt(quantityInput ? quantityInput.value : 0, 10) || 0;
 
   if (unitPrice !== null && unitPrice !== undefined) {
-    // 1. Trường hợp caller CÓ quyền xem giá (PRODUCT_PRICE_VIEW)
     if (priceAmountEl) priceAmountEl.textContent = formatVnd(unitPrice);
     if (priceUnitEl) {
       priceUnitEl.textContent = '/ mét';
-      priceUnitEl.style.display = 'inline';
+      priceUnitEl.classList.remove('hidden');
     }
     if (priceBadgeEl) {
       priceBadgeEl.className = 'product-price-box__badge product-price-box__badge--verified';
       priceBadgeEl.textContent = 'Giá niêm yết nhà máy';
     }
 
-    // Tính tổng tiền theo công thức: Đơn giá × Chiều dài × Số lượng
     const total = Math.round(unitPrice * length * quantity);
     if (totalAmountEl) {
       totalAmountEl.textContent = formatVnd(total);
-      totalAmountEl.style.color = 'var(--color-primary)';
+      totalAmountEl.classList.remove('product-calc-total__amount--contact');
     }
     if (formulaHintEl) {
       formulaHintEl.textContent = `Công thức: ${formatVnd(unitPrice)} × ${length}m × ${quantity} tấm`;
     }
   } else {
-    // 2. Trường hợp KHÔNG có quyền xem giá (ẩn giá)
     if (priceAmountEl) priceAmountEl.textContent = 'Liên hệ báo giá';
-    if (priceUnitEl) priceUnitEl.style.display = 'none';
+    if (priceUnitEl) priceUnitEl.classList.add('hidden');
     if (priceBadgeEl) {
       priceBadgeEl.className = 'product-price-box__badge product-price-box__badge--contact';
       priceBadgeEl.textContent = 'Báo giá khi đặt hàng';
     }
     if (totalAmountEl) {
       totalAmountEl.textContent = 'Báo giá sau khi đặt';
-      totalAmountEl.style.color = '#b45309';
+      totalAmountEl.classList.add('product-calc-total__amount--contact');
     }
     if (formulaHintEl) {
       formulaHintEl.textContent = 'Nhân viên kinh doanh sẽ liên hệ báo giá ưu đãi sau khi nhận kích thước';
@@ -397,12 +384,10 @@ function initCalcInputs() {
   const quickChips = document.querySelectorAll('.quick-chip');
   const btnOrderNow = document.getElementById('btn-order-now');
 
-  // Lắng nghe thay đổi chiều dài
   if (lengthInput) {
     lengthInput.addEventListener('input', () => updatePriceAndTotal());
   }
 
-  // Lắng nghe thay đổi số lượng
   if (quantityInput) {
     quantityInput.addEventListener('input', () => {
       let val = parseInt(quantityInput.value, 10);
@@ -411,7 +396,6 @@ function initCalcInputs() {
     });
   }
 
-  // Nút giảm số lượng
   if (btnMinus && quantityInput) {
     btnMinus.addEventListener('click', () => {
       let val = parseInt(quantityInput.value, 10) || 1;
@@ -422,7 +406,6 @@ function initCalcInputs() {
     });
   }
 
-  // Nút tăng số lượng
   if (btnPlus && quantityInput) {
     btnPlus.addEventListener('click', () => {
       let val = parseInt(quantityInput.value, 10) || 1;
@@ -431,7 +414,6 @@ function initCalcInputs() {
     });
   }
 
-  // Các nút chọn nhanh chiều dài (3m, 4m, 5m, 6m)
   quickChips.forEach(chip => {
     chip.addEventListener('click', () => {
       const len = chip.dataset.length;
@@ -442,7 +424,6 @@ function initCalcInputs() {
     });
   });
 
-  // Nút "Tiến hành đặt tôn"
   if (btnOrderNow) {
     btnOrderNow.addEventListener('click', () => {
       if (!productData) return;
@@ -472,21 +453,25 @@ function initCalcInputs() {
         color: selectedColor || ''
       });
 
-      // Chuyển sang trang đặt hàng khách hàng
       window.location.href = `../customer/order.html?${params.toString()}`;
     });
   }
 }
 
 /**
- * Hiển thị mô tả sản phẩm và bảng thông số
+ * Hiển thị mô tả sản phẩm bằng các phần tử DOM <p> (Không dùng innerHTML)
  */
 function renderDescription(product) {
   const descEl = document.getElementById('product-description-content');
   if (descEl && product.description) {
-    // Tự động phân đoạn văn bản mô tả
+    descEl.replaceChildren();
     const paragraphs = product.description.split('\n').filter(p => p.trim().length > 0);
-    descEl.innerHTML = paragraphs.map(p => `<p style="margin-bottom: 0.75rem;">${escapeHtml(p)}</p>`).join('');
+    paragraphs.forEach(p => {
+      const pEl = document.createElement('p');
+      pEl.className = 'product-tab-paragraph';
+      pEl.textContent = p;
+      descEl.appendChild(pEl);
+    });
   }
 
   const specBrand = document.getElementById('spec-brand');
@@ -496,7 +481,7 @@ function renderDescription(product) {
 }
 
 /**
- * Xử lý chuyển đổi Tab (Mô tả, Thông số kỹ thuật, Chính sách)
+ * Xử lý chuyển đổi Tab
  */
 function initTabs() {
   const tabBtns = document.querySelectorAll('.product-tab-btn');
@@ -506,11 +491,9 @@ function initTabs() {
     btn.addEventListener('click', () => {
       const targetTabId = btn.dataset.tab;
 
-      // Xóa active hiện tại
       tabBtns.forEach(b => b.classList.remove('product-tab-btn--active'));
       tabPanes.forEach(p => p.classList.remove('product-tab-pane--active'));
 
-      // Kích hoạt tab mới
       btn.classList.add('product-tab-btn--active');
       const targetPane = document.getElementById(targetTabId);
       if (targetPane) {
@@ -519,17 +502,3 @@ function initTabs() {
     });
   });
 }
-
-/**
- * Tiện ích escape ký tự HTML để chống XSS
- */
-function escapeHtml(str) {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-

@@ -8,6 +8,18 @@
 ---
 
 ## Completed
+- ✅ **Rà Soát & Hoàn Thiện Clean Code Toàn Dự Án (Không Trộn Lẫn HTML, CSS, JS)**:
+  - Loại bỏ hoàn toàn 100% thuộc tính `style="..."` nội dòng trong toàn bộ file HTML (`index.html`, `pages/product/catalog.html`, `pages/product/detail.html`).
+  - Loại bỏ hoàn toàn việc gán `.style.*` trong mã JavaScript (`header.js`, `home.js`, `product-catalog.js`, `product-detail.js`); chuyển đổi toàn bộ trạng thái ẩn/hiện và bố cục sang các class CSS chuyên trách (`.hidden`, `.header__user-profile--visible`, `.state-box--full-width`).
+  - Loại bỏ 100% việc chèn chuỗi HTML thô (`.innerHTML = '...'`) khi hiển thị các khối trạng thái (Loading, Empty, Error) và nút phân trang; thay thế toàn diện bằng thẻ `<template>` kết hợp `.replaceChildren()`, `cloneNode(true)`, và `createDocumentFragment()`.
+  - Tách bạch cấu trúc giao diện (HTML), định kiểu thẩm mỹ (CSS theo BEM), và logic tương tác/dữ liệu động (JavaScript).
+
+- ✅ **Trang Danh Mục Sản Phẩm Chuẩn Mẫu Thực Tế (`pages/product/catalog.html`)**:
+  - Tách biệt tab "Sản phẩm" trên Header: Không còn cuộn trang tại chỗ mà điều hướng trực tiếp sang trang danh mục sản phẩm.
+  - Banner tiêu đề xanh gradient tích hợp ảnh thực tế `assets/images/product/banner-product.png` và breadcrumb động.
+  - Sidebar Danh mục accordion nạp động 100% từ API `GET /api/v1/categories/tree`, hỗ trợ mở/đóng danh mục con và lọc tức thời.
+  - Lưới sản phẩm 3 cột (`GET /api/v1/categories/{id}/products` hoặc `GET /api/v1/products`), nút bấm "Liên hệ" (hoặc đơn giá khi có quyền xem giá) và tự động fallback `empty-picture.png`.
+  - Thanh công cụ sắp xếp và phân trang số trang động `< 1 2 3 >`.
 - ✅ **Trang Chi Tiết Sản Phẩm Tôn Sóng (`pages/product/detail.html`)**:
   - Giao diện thư viện ảnh đa góc nhìn (ảnh chính R2 + danh sách thumbnail phụ đổi ảnh mượt mà).
   - Bộ chọn biến thể tôn (độ dày mm, loại sóng) và danh sách màu sắc thực tế.
@@ -80,6 +92,12 @@ _Nothing._
 ### Phase 2 — Danh sách & Chi tiết Sản phẩm Tôn sóng
 - [x] Xây dựng Component thẻ sản phẩm (`product-card.css`) hiển thị ảnh, tên, thương hiệu, giá hoặc "Liên hệ báo giá"
 - [x] Xây dựng Trang chủ (`index.html`) hiển thị sản phẩm phân trang (`GET /api/v1/products`) theo chuẩn `<template>`
+- [x] Xây dựng Trang danh mục sản phẩm (`pages/product/catalog.html` & `js/pages/product-catalog.js`):
+  - [x] Banner chuẩn ảnh `banner-product.png` kèm breadcrumb điều hướng
+  - [x] Sidebar cây danh mục đa cấp động (`GET /api/v1/categories/tree`), mở/đóng accordion, lọc sản phẩm
+  - [x] Lưới sản phẩm 3 cột chuẩn mẫu thiết kế thực tế, tự động fallback `empty-picture.png`
+  - [x] Thanh công cụ sắp xếp (Mặc định, Tên A-Z, Tên Z-A, Mới nhất) & Chế độ xem
+  - [x] Phân trang động (0-indexed backend sang 1-indexed UI)
 - [x] Xây dựng Trang chi tiết sản phẩm (`pages/product/detail.html` & `js/pages/product-detail.js`):
   - [x] Hiển thị thư viện ảnh (ảnh đại diện, ảnh phụ)
   - [x] Bộ chọn biến thể (độ dày, mã biến thể)

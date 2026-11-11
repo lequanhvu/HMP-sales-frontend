@@ -219,6 +219,10 @@
   transition: all var(--transition-fast);
 }
 
+.header__user-profile--visible {
+  display: inline-flex !important;
+}
+
 .header__user-profile:hover {
   background-color: var(--color-primary-light);
   border-color: var(--color-border-focus);

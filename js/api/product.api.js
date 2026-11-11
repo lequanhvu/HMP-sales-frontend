@@ -15,13 +15,24 @@ export async function getProductDetail(productId) {
 }
 
 /**
- * Lấy danh sách sản phẩm phân trang và hỗ trợ lọc theo danh mục, trạng thái.
+ * Lấy danh sách sản phẩm phân trang và hỗ trợ lọc theo tên sản phẩm, tên danh mục, trạng thái, sắp xếp.
  * 
- * @param {Object} [params] - Tham số lọc { page, size, categoryId, status }
+ * @param {Object} [params] - Tham số lọc { page, size, productName, categoryName, status, sortBy, sortDirection }
  * @returns {Promise<Object>} Danh sách sản phẩm { result, meta }
  */
 export async function getProducts(params = {}) {
   return await client.get('/products', params);
+}
+
+/**
+ * Lấy danh sách sản phẩm thuộc một danh mục cụ thể có phân trang.
+ * 
+ * @param {number|string} categoryId - ID danh mục
+ * @param {Object} [params] - Tham số phân trang { page, size }
+ * @returns {Promise<Object>} Object { categoryId, categoryName, products: { result, meta } }
+ */
+export async function getProductsByCategory(categoryId, params = {}) {
+  return await client.get(`/categories/${categoryId}/products`, params);
 }
 
 /**
@@ -32,4 +43,3 @@ export async function getProducts(params = {}) {
 export async function getCategoriesTree() {
   return await client.get('/categories/tree');
 }
-

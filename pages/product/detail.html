@@ -47,7 +47,7 @@
             <a href="../../index.html#about-section" class="nav__link">Giới thiệu</a>
           </li>
           <li class="nav__item">
-            <a href="../../index.html#product-section" class="nav__link nav__link--active">
+            <a href="./catalog.html" class="nav__link nav__link--active">
               <span>Sản phẩm</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="6 9 12 15 18 9"></polyline>
@@ -55,9 +55,9 @@
             </a>
             <!-- Dropdown Menu Danh mục Tôn -->
             <div id="nav-category-dropdown" class="nav__dropdown">
-              <a href="../../index.html#product-section" class="nav__dropdown-link">Tôn sóng lợp mái</a>
-              <a href="../../index.html#product-section" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
-              <a href="../../index.html#product-section" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
+              <a href="./catalog.html" class="nav__dropdown-link">Tôn sóng lợp mái</a>
+              <a href="./catalog.html" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
+              <a href="./catalog.html" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
             </div>
           </li>
           <li class="nav__item">
@@ -69,7 +69,7 @@
       <!-- Khu vực Tiện ích Bên Phải -->
       <div class="header__actions">
         <!-- Nút Tìm kiếm -->
-        <a href="../../index.html#product-section" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm">
+        <a href="./catalog.html" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="11" cy="11" r="8"></circle>
             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
@@ -105,26 +105,26 @@
       <nav class="breadcrumb" aria-label="Breadcrumb">
         <a href="../../index.html" class="breadcrumb__link">Trang chủ</a>
         <span class="breadcrumb__separator">/</span>
-        <a href="../../index.html#product-section" class="breadcrumb__link" id="breadcrumb-category">Sản phẩm tôn</a>
+        <a href="./catalog.html" class="breadcrumb__link" id="breadcrumb-category">Sản phẩm tôn</a>
         <span class="breadcrumb__separator">/</span>
         <span class="breadcrumb__current" id="breadcrumb-product-name">Đang tải sản phẩm...</span>
       </nav>
 
       <!-- Khung Loading / Error -->
-      <div id="product-loading-state" class="state-box" style="display: flex;">
+      <div id="product-loading-state" class="state-box">
         <div class="state-box__spinner"></div>
         <h4 class="state-box__title">Đang tải thông tin sản phẩm tôn sóng...</h4>
         <p class="state-box__desc">Hệ thống đang kết nối dữ liệu từ máy chủ HMP</p>
       </div>
 
-      <div id="product-error-state" class="state-box" style="display: none;">
-        <h4 class="state-box__title" style="color: var(--color-danger);">Không tìm thấy sản phẩm</h4>
+      <div id="product-error-state" class="state-box hidden">
+        <h4 class="state-box__title state-box__title--danger">Không tìm thấy sản phẩm</h4>
         <p id="product-error-message" class="state-box__desc">Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị khóa.</p>
-        <a href="../../index.html#product-section" class="btn btn--primary" style="margin-top: 1rem;">Quay lại danh mục sản phẩm</a>
+        <a href="./catalog.html" class="btn btn--primary state-box__btn">Quay lại danh mục sản phẩm</a>
       </div>
 
       <!-- 2. Khung Chi Tiết Sản Phẩm -->
-      <section id="product-detail-card" class="product-detail" style="display: none;">
+      <section id="product-detail-card" class="product-detail hidden">
         <div class="product-detail__grid">
 
           <!-- A. KHỐI THƯ VIỆN ẢNH (BÊN TRÁI) -->
@@ -308,7 +308,7 @@
           <!-- Tab 3: Chính sách -->
           <div id="tab-shipping" class="product-tab-pane" role="tabpanel">
             <p><strong>Cam kết chất lượng từ Nhà máy HMP:</strong></p>
-            <ul style="padding-left: 1.25rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
+            <ul class="shipping-commit-list">
               <li>Cắt chính xác theo kích thước chiều dài công trình yêu cầu (dung sai ± 5mm).</li>
               <li>Tôn cuộn nguyên đai, tem mác chính hãng từ nhà máy Hoa Sen, Đông Á, Nam Kim, Hòa Phát.</li>
               <li>Hỗ trợ cẩu hàng và vận chuyển tận chân công trình trong khu vực tỉnh.</li>
@@ -394,7 +394,7 @@
             </svg>
           </a>
           <a href="#" class="footer__social-btn" aria-label="Zalo">
-            <span style="font-weight: 700; font-size: 13px;">Zalo</span>
+            <span class="footer__social-zalo-text">Zalo</span>
           </a>
           <a href="#" class="footer__social-btn" aria-label="YouTube">
             <svg viewBox="0 0 24 24" fill="currentColor">
@@ -433,10 +433,20 @@
   <!-- Template 3: Swatch lựa chọn Màu sắc tôn -->
   <template id="color-swatch-template">
     <button type="button" class="color-swatch-btn">
-      <img src="" alt="Mẫu màu" class="color-swatch-btn__thumb" style="display: none;">
-      <span class="color-swatch-btn__dot" style="display: none;"></span>
-      <span class="color-swatch-btn__name">Xanh rêu</span>
+      <img src="" alt="Mẫu màu" class="color-swatch-btn__thumb hidden">
+      <span class="color-swatch-btn__dot hidden"></span>
+      <span class="color-swatch-btn__name"></span>
     </button>
+  </template>
+
+  <!-- Template 4: Mục liên kết danh mục thả xuống (Header Dropdown) -->
+  <template id="nav-dropdown-item-template">
+    <a class="nav__dropdown-link">
+      <span class="nav__dropdown-name"></span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </a>
   </template>
 
   <!-- Script Điều Khiển Trang Chi Tiết -->

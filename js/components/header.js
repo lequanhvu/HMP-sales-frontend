@@ -13,19 +13,20 @@ export function initHeader() {
 
   // 1. Kiểm tra trạng thái đăng nhập
   const user = storage.getUser();
-  if (user && storage.isAuthenticated()) {
-    if (loginBtn) loginBtn.style.display = 'none';
-    if (userProfile) {
-      userProfile.style.display = 'inline-flex';
+  const isAuthenticated = Boolean(user && storage.isAuthenticated());
+
+  if (loginBtn) {
+    loginBtn.classList.toggle('hidden', isAuthenticated);
+  }
+  if (userProfile) {
+    userProfile.classList.toggle('header__user-profile--visible', isAuthenticated);
+    if (isAuthenticated) {
       if (userNameEl) userNameEl.textContent = user.fullName || user.email || 'Tài khoản';
       if (userAvatarEl) {
         const initial = (user.fullName || user.email || 'U').charAt(0).toUpperCase();
         userAvatarEl.textContent = initial;
       }
     }
-  } else {
-    if (loginBtn) loginBtn.style.display = 'inline-block';
-    if (userProfile) userProfile.style.display = 'none';
   }
 
   // 2. Xử lý mở Menu trên Mobile
@@ -48,6 +49,21 @@ export function initHeader() {
   loadCategoryDropdown();
 }
 
+/**
+ * Tính toán đường dẫn tương đối tới trang danh mục sản phẩm (catalog.html)
+ * tùy theo cấp thư mục hiện tại của trang đang mở.
+ */
+function getCatalogPageUrl(categoryId) {
+  const path = window.location.pathname;
+  let base = './pages/product/catalog.html';
+  if (path.includes('/pages/product/')) {
+    base = './catalog.html';
+  } else if (path.includes('/pages/')) {
+    base = '../product/catalog.html';
+  }
+  return categoryId ? `${base}?categoryId=${categoryId}` : base;
+}
+
 async function loadCategoryDropdown() {
   const dropdownEl = document.getElementById('nav-category-dropdown');
   if (!dropdownEl) return;
@@ -55,14 +71,39 @@ async function loadCategoryDropdown() {
   try {
     const categories = await client.get('/categories/tree');
     if (Array.isArray(categories) && categories.length > 0) {
-      dropdownEl.innerHTML = categories.map(cat => `
-        <a href="#product-section" class="nav__dropdown-link" data-category-id="${cat.categoryId}">
-          <span>${cat.categoryName}</span>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
-        </a>
-      `).join('');
+      const fragment = document.createDocumentFragment();
+
+      categories.forEach(cat => {
+        const catId = cat.id || cat.categoryId;
+        const targetUrl = getCatalogPageUrl(catId);
+
+        const link = document.createElement('a');
+        link.href = targetUrl;
+        link.className = 'nav__dropdown-link';
+        link.dataset.categoryId = String(catId);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = cat.categoryName;
+        link.appendChild(nameSpan);
+
+        // SVG mũi tên điều hướng
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('width', '14');
+        svg.setAttribute('height', '14');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '2');
+
+        const polyline = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+        polyline.setAttribute('points', '9 18 15 12 9 6');
+        svg.appendChild(polyline);
+
+        link.appendChild(svg);
+        fragment.appendChild(link);
+      });
+
+      dropdownEl.replaceChildren(fragment);
     }
   } catch (err) {
     // Nếu chưa có kết nối, giữ menu mặc định

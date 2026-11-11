@@ -177,6 +177,12 @@
   height: 18px;
 }
 
+.footer__social-zalo-text {
+  font-weight: 700;
+  font-size: 13px;
+  color: inherit;
+}
+
 /* 5. Bản quyền phía dưới */
 .footer__copyright {
   border-top: 1px solid rgba(255, 255, 255, 0.06);
