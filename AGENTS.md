@@ -54,6 +54,7 @@ Do not invent business behavior or API contracts when requirements are silent. M
 
 ## 4. Frontend architecture expectations
 
+- **Feature-based HTML Routing**: Keep `index.html` at root as the landing page, and organize all other functional HTML pages inside `pages/{module}/` (`pages/auth/`, `pages/product/`, `pages/customer/`, `pages/admin/`). Use relative asset paths accordingly (`../../assets/...`).
 - **HTML/JS Separation (<template> Pattern)**: Never inject raw HTML strings or inline styles inside JS controllers. Define reusable UI templates in `<template id="...">` tags in HTML, apply BEM CSS classes, and have JS clone and bind text/attributes using `.textContent` and `.src`.
 - **API Layer (`js/api/`)**: All `fetch()` calls must be centralized here. Page scripts must never call raw `fetch()` directly; they import methods from `js/api/*.api.js`.
 - **Utils (`js/utils/`)**: Pure utility functions for currency formatting (`formatVnd(amount)`), date formatting, debouncing, and local storage.

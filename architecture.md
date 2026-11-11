@@ -4,17 +4,21 @@ Tài liệu này mô tả kiến trúc kỹ thuật của hệ thống Frontend 
 
 ---
 
-## 1. Mô hình Ứng dụng: Modular Multi-Page Application (MPA)
+## 1. Mô hình Ứng dụng: Modular Multi-Page Application (MPA) theo Thư mục Chức năng
 
-Dự án áp dụng mô hình **Multi-Page Application (MPA)** kết hợp với **ES6 JavaScript Modules**:
-- Mỗi trang chức năng là một file HTML độc lập (`index.html`, `product-detail.html`, `order.html`, `my-orders.html`).
+Dự án áp dụng mô hình **Multi-Page Application (MPA)** kết hợp với **ES6 JavaScript Modules**, tổ chức cấu trúc trang theo **Thư mục chức năng / Phân hệ (Feature-based Directories)**:
+- Trang chủ chính `index.html` nằm tại thư mục gốc đóng vai trò Landing Page.
+- Tất cả các trang chức năng khác được gom nhóm rõ ràng trong thư mục `pages/` theo phân hệ nghiệp vụ (`auth/`, `product/`, `customer/`, `admin/`).
+- Tách biệt hoàn toàn ranh giới giữa Khách hàng (Customer) và Nhân viên Quản lý (Admin/Manager), tránh trùng tên file và dễ thiết lập cơ chế kiểm soát truy cập (Route Guard).
 - Không dùng framework nặng (như React/Angular/Vue) nhằm giữ độ nhẹ tối đa, tốc độ tải trang nhanh, không phụ thuộc vào công cụ đóng gói (bundler) phức tạp.
 - Sử dụng native `<script type="module">` để chia nhỏ logic thành các module có thể tái sử dụng (`import` / `export`).
 
 ```mermaid
 graph TD
-    User([Người dùng / Trình duyệt]) --> HTML[Trang HTML: index, detail, order...]
-    HTML --> PageScript[Page Controller: js/pages/*.js]
+    User([Người dùng / Trình duyệt]) --> Root[Trang chủ: index.html]
+    User --> FeaturePages[Trang chức năng: pages/{module}/*.html]
+    Root --> PageScript[Page Controller: js/pages/*.js]
+    FeaturePages --> PageScript
     PageScript --> Components[Components: Header, Footer, Toast, Modal]
     PageScript --> ApiModules[API Modules: product.api.js, order.api.js...]
     ApiModules --> Client[HTTP Wrapper: client.js]
@@ -27,16 +31,42 @@ graph TD
 
 ```text
 sales-frontend/
-├── assets/             # Tài nguyên giao diện tĩnh
-│   ├── css/            # Phân tầng CSS 3 lớp (Base -> Components -> Pages)
-│   └── images/         # Ảnh tĩnh, logo, icon
-├── js/                 # Tầng logic xử lý
-│   ├── api/            # Tầng giao tiếp mạng (Data Access Layer)
-│   ├── components/     # Tầng thành phần UI dùng chung
-│   ├── pages/          # Tầng điều khiển trang (Page Controllers)
-│   └── utils/          # Tầng tiện ích dùng chung
-└── *.html              # Tầng hiển thị giao diện
+├── index.html                  # Trang chủ (Root Landing Page)
+│
+├── pages/                      # Tầng hiển thị giao diện theo Phân hệ Chức năng
+│   ├── auth/                   # 1. Phân hệ Xác thực & Tài khoản
+│   │   ├── login.html          # Đăng nhập Google & Nhân viên
+│   │   └── callback.html       # Xử lý chuyển hướng OAuth2
+│   ├── product/                # 2. Phân hệ Danh mục & Sản phẩm Tôn sóng
+│   │   ├── catalog.html        # Phân loại tôn, bộ lọc thương hiệu/độ dày
+│   │   └── detail.html         # Chi tiết sản phẩm, bảng giá, chọn màu
+│   ├── customer/               # 3. Phân hệ Khách hàng Đặt hàng
+│   │   ├── order.html          # Form đặt hàng & xác thực OTP số điện thoại
+│   │   ├── my-orders.html      # Theo dõi đơn hàng & hoàn tác hủy (undo-cancel)
+│   │   └── profile.html        # Thông tin cá nhân & sổ địa chỉ
+│   └── admin/                  # 4. Cổng Quản lý & Quản trị viên (Manager/Admin)
+│       ├── dashboard.html      # Tổng quan thống kê & chỉ số
+│       ├── orders.html         # Xử lý đơn hàng, nhập đơn giá / chiết khấu & confirm
+│       ├── products.html       # Quản lý danh mục, tôn, biến thể & tải ảnh
+│       └── master-data.html    # Quản trị thương hiệu, đơn vị tính, màu sắc R2
+│
+├── assets/                     # Tài nguyên giao diện tĩnh
+│   ├── css/                    # Phân tầng CSS 3 lớp (Base -> Components -> Pages)
+│   └── images/                 # Ảnh tĩnh, logo, icon, banner
+│
+└── js/                         # Tầng logic xử lý
+    ├── api/                    # Tầng giao tiếp mạng (Data Access Layer)
+    ├── components/             # Tầng thành phần UI dùng chung
+    ├── pages/                  # Tầng điều khiển trang (Page Controllers)
+    └── utils/                  # Tầng tiện ích dùng chung
 ```
+
+### Quy tắc đường dẫn tương đối (Relative Path Rules):
+- **Trang gốc (`index.html`)**: Nhúng CSS/JS qua `./assets/css/...` và `./js/...`
+- **Trang trong phân hệ (`pages/{module}/*.html`)**: Phải lùi 2 cấp thư mục:
+  - CSS: `../../assets/css/...`
+  - JavaScript: `../../js/...`
+  - Ảnh: `../../assets/images/...`
 
 ### Chi tiết các tầng:
 1. **Tầng Giao tiếp Mạng (`js/api/`)**:

@@ -115,7 +115,7 @@ async function loadProducts() {
       const titleLink = clone.querySelector('.product-card__link');
       if (titleLink) {
         titleLink.textContent = product.productName;
-        titleLink.href = `./product-detail.html?id=${product.productId}`;
+        titleLink.href = `./pages/product/detail.html?id=${product.productId}`;
       }
 
       // 3. Gán ảnh sản phẩm (hoặc placeholder nếu chưa có ảnh)
@@ -146,7 +146,7 @@ async function loadProducts() {
       // 5. Gán đường dẫn nút hành động "Đặt tôn"
       const actionBtn = clone.querySelector('.product-card__action-btn');
       if (actionBtn) {
-        actionBtn.href = `./product-detail.html?id=${product.productId}`;
+        actionBtn.href = `./pages/product/detail.html?id=${product.productId}`;
       }
 
       // Đưa card hoàn chỉnh vào danh sách

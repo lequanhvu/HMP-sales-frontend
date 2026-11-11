@@ -8,6 +8,14 @@
 ---
 
 ## Completed
+- ✅ **Trang Chi Tiết Sản Phẩm Tôn Sóng (`pages/product/detail.html`)**:
+  - Giao diện thư viện ảnh đa góc nhìn (ảnh chính R2 + danh sách thumbnail phụ đổi ảnh mượt mà).
+  - Bộ chọn biến thể tôn (độ dày mm, loại sóng) và danh sách màu sắc thực tế.
+  - Form nhập kích thước gia công tôn: Chiều dài (mét, hỗ trợ số thập phân), Số lượng (tấm, nút stepper +/-), nút chọn nhanh kích thước (3m, 4m, 5m, 6m).
+  - Bảng tính tự động cập nhật tổng tiền theo thời gian thực theo công thức nghiệp vụ: `UnitPrice × Size × Quantity`.
+  - Kiểm soát linh hoạt quyền xem giá `PRODUCT_PRICE_VIEW`: tự động chuyển sang badge *"Liên hệ báo giá"* khi caller chưa có quyền, không bao giờ lộ `0 VNĐ` hay `NaN`.
+  - Tách biệt 100% dữ liệu và giao diện qua các thẻ `<template>` (`gallery-thumb-template`, `variant-pill-template`, `color-swatch-template`).
+  - Hệ thống tab chi tiết: Mô tả sản phẩm, Thông số kỹ thuật (bảng specs chuẩn), Chính sách chất lượng & vận chuyển nhà máy.
 - ✅ **Thiết kế Giao diện Trang chủ Chuẩn Mẫu Thực tế (Xanh dương & Trắng)**:
   - Cập nhật ảnh nền Banner thực tế từ `assets/images/home/banner-home.png` với lớp phủ chuyển màu xanh công nghiệp, làm nổi bật tiêu đề *"Giải pháp tôn lợp mái cho mọi công trình"* và nút bấm bo tròn *"Xem danh mục sản phẩm $\rightarrow$"*.
   - Loại bỏ hoàn toàn nút chuyển slide `< >` và 3 chấm phân trang trên Banner theo yêu cầu.
@@ -71,21 +79,21 @@ _Nothing._
 ### Phase 2 — Danh sách & Chi tiết Sản phẩm Tôn sóng
 - [x] Xây dựng Component thẻ sản phẩm (`product-card.css`) hiển thị ảnh, tên, thương hiệu, giá hoặc "Liên hệ báo giá"
 - [x] Xây dựng Trang chủ (`index.html`) hiển thị sản phẩm phân trang (`GET /api/v1/products`) theo chuẩn `<template>`
-- [ ] Xây dựng Trang chi tiết sản phẩm (`product-detail.html`):
-  - [ ] Hiển thị thư viện ảnh (ảnh đại diện, ảnh phụ)
-  - [ ] Bộ chọn biến thể (độ dày, mã biến thể)
-  - [ ] Bộ chọn màu sắc (hiển thị ảnh mẫu màu lấy từ Cloudflare R2)
-  - [ ] Bảng giá theo đơn vị tính (m, tấm, cuộn)
-  - [ ] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền
+- [x] Xây dựng Trang chi tiết sản phẩm (`pages/product/detail.html` & `js/pages/product-detail.js`):
+  - [x] Hiển thị thư viện ảnh (ảnh đại diện, ảnh phụ)
+  - [x] Bộ chọn biến thể (độ dày, mã biến thể)
+  - [x] Bộ chọn màu sắc (hiển thị ảnh mẫu màu lấy từ Cloudflare R2 / danh sách màu)
+  - [x] Bảng giá theo đơn vị tính (m, tấm) — kiểm soát quyền `PRODUCT_PRICE_VIEW`
+  - [x] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền `UnitPrice × Size × Quantity`
 
 ### Phase 3 — Xác thực Khách hàng & Sổ địa chỉ
-- [ ] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google`
+- [ ] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google` (`pages/auth/login.html`)
 - [ ] Lưu trạng thái đăng nhập, cập nhật Header hiển thị tên & avatar người dùng
-- [ ] Trang thông tin tài khoản (`profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
+- [ ] Trang thông tin tài khoản (`pages/customer/profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
 - [ ] Quản lý sổ địa chỉ giao hàng (`GET/POST/PATCH/DELETE /api/v1/me/addresses`)
 
 ### Phase 4 — Quy trình Đặt hàng Tôn sóng & Xác thực OTP
-- [ ] Trang đặt hàng (`order.html`):
+- [ ] Trang đặt hàng (`pages/customer/order.html`):
   - [ ] Tóm tắt sản phẩm tôn đã chọn (chiều dài, số lượng, màu sắc, đơn giá snapshot)
   - [ ] Chọn địa chỉ giao hàng từ sổ địa chỉ hoặc nhập thông tin người nhận mới
   - [ ] Modal xác thực OTP số điện thoại: đếm ngược 60s, nhập 6 số gửi `POST /api/v1/orders/otp/verify`
@@ -93,7 +101,7 @@ _Nothing._
   - [ ] Trang thông báo đặt hàng thành công
 
 ### Phase 5 — Theo dõi Đơn hàng & Quản lý Trạng thái Khách hàng
-- [ ] Trang danh sách đơn hàng của tôi (`my-orders.html`):
+- [ ] Trang danh sách đơn hàng của tôi (`pages/customer/my-orders.html`):
   - [ ] Lọc theo trạng thái (`PENDING`, `CONFIRMED`, `PROCESSING`, `SHIPPING`, `COMPLETED`, `CANCELLED`)
   - [ ] Xem chi tiết đơn hàng: trạng thái, tổng tiền khi Quản lý đã tính giá
   - [ ] Hủy đơn hàng trong cửa sổ cho phép (`POST /api/v1/orders/{orderId}/cancel`)
@@ -102,9 +110,9 @@ _Nothing._
 
 ### Phase 6 — Cổng Quản lý / Quản trị viên (Manager & Admin Portal)
 - [ ] Giao diện Đăng nhập Quản lý / Admin
-- [ ] Quản lý đơn hàng: Xem danh sách đơn `PENDING`, form nhập đơn giá / chiết khấu và tính giá (`/calculate`), nút xác nhận đơn (`/confirm`), cập nhật trạng thái đơn (`/status`)
-- [ ] Quản lý danh mục & sản phẩm: Thêm danh mục con, tạo sản phẩm, upload ảnh
-- [ ] Quản lý Master data: Quản trị thương hiệu, đơn vị tính, màu sắc (upload ảnh mẫu màu 1 bước)
+- [ ] Quản lý đơn hàng (`pages/admin/orders.html`): Xem danh sách đơn `PENDING`, form nhập đơn giá / chiết khấu và tính giá (`/calculate`), nút xác nhận đơn (`/confirm`), cập nhật trạng thái đơn (`/status`)
+- [ ] Quản lý danh mục & sản phẩm (`pages/admin/products.html`): Thêm danh mục con, tạo sản phẩm, upload ảnh
+- [ ] Quản lý Master data (`pages/admin/master-data.html`): Quản trị thương hiệu, đơn vị tính, màu sắc (upload ảnh mẫu màu 1 bước)
 
 ---
 

@@ -7,12 +7,13 @@ Create a new page or UI feature. Follow these steps in exact order.
 - Read `project-status.md` → check current phase progress
 
 ## Step 2: Create Files Following Project Structure
-1. **HTML file** at root: `{page-name}.html`
+1. **HTML file** inside the appropriate feature directory: `pages/{module}/{page-name}.html` (or `index.html` at root if landing page)
+   - Modules: `pages/auth/`, `pages/product/`, `pages/customer/`, `pages/admin/`
    - Include semantic tags (`<header>`, `<nav>`, `<main>`, `<footer>`).
-   - Link base CSS (`variables.css`, `reset.css`, `global.css`).
+   - Link base CSS using `../../assets/css/base/...` (`variables.css`, `reset.css`, `global.css`).
    - Link component CSS (`header.css`, `footer.css`, `button.css`, etc.).
-   - Link page CSS (`assets/css/pages/{page-name}.css`).
-   - Include `<script type="module" src="./js/pages/{page-name}.js"></script>`.
+   - Link page CSS (`../../assets/css/pages/{page-name}.css`).
+   - Include `<script type="module" src="../../js/pages/{page-name}.js"></script>`.
 2. **Page CSS** at `assets/css/pages/{page-name}.css`
    - Mobile-first styles.
    - Use CSS variables for colors, spacing, borders.

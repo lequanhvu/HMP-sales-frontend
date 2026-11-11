@@ -24,6 +24,25 @@ Follow this structure strictly:
 
 ```text
 sales-frontend/
+├── index.html                  # Trang chủ chính (Root Landing Page)
+│
+├── pages/                      # Tầng hiển thị giao diện theo Phân hệ Chức năng
+│   ├── auth/                   # 1. Phân hệ Xác thực
+│   │   ├── login.html          # Đăng nhập Google & Nhân viên
+│   │   └── callback.html       # Xử lý chuyển hướng OAuth2
+│   ├── product/                # 2. Phân hệ Sản phẩm & Báo giá
+│   │   ├── catalog.html        # Phân loại tôn lợp mái, bộ lọc
+│   │   └── detail.html         # Chi tiết sản phẩm tôn, màu sắc R2, chọn độ dày
+│   ├── customer/               # 3. Phân hệ Khách hàng Đặt hàng
+│   │   ├── order.html          # Form đặt hàng & xác thực OTP số điện thoại
+│   │   ├── my-orders.html      # Lịch sử đơn hàng & nút hoàn tác hủy (undo-cancel)
+│   │   └── profile.html        # Thông tin cá nhân & sổ địa chỉ
+│   └── admin/                  # 4. Cổng Quản lý & Quản trị viên (Manager/Admin)
+│       ├── dashboard.html      # Bảng điều khiển tổng quan
+│       ├── orders.html         # Quản lý đơn, nhập đơn giá / chiết khấu & confirm
+│       ├── products.html       # Quản lý sản phẩm, biến thể & upload ảnh
+│       └── master-data.html    # Quản trị thương hiệu, đơn vị tính, màu sắc
+│
 ├── assets/
 │   ├── css/
 │   │   ├── base/               # Global reset, typography, CSS variables
@@ -44,33 +63,34 @@ sales-frontend/
 │   │       ├── my-orders.css
 │   │       └── admin.css
 │   └── images/                 # Static local images, banners, icons
-├── js/
-│   ├── api/                    # Centralized API service layer
-│   │   ├── client.js           # Base HTTP wrapper (fetch, token injection, silent refresh)
-│   │   ├── auth.api.js         # Google login, logout, refresh, OTP
-│   │   ├── product.api.js      # Categories, search suggestions, products, detail
-│   │   ├── order.api.js        # Create order, view orders, cancel, undo-cancel
-│   │   └── user.api.js         # User profile, address book
-│   ├── components/             # Reusable UI component JavaScript
-│   │   ├── header.js           # Render navbar, active link, auth state
-│   │   ├── footer.js           # Render footer
-│   │   ├── toast.js            # Toast notifications (success, error, info)
-│   │   └── modal-otp.js        # Phone OTP verification dialog
-│   ├── utils/                  # Helper utilities
-│   │   ├── format.js           # formatVnd(), formatDate(), sanitizeHtml()
-│   │   ├── debounce.js         # Debounce for search suggestions
-│   │   └── storage.js          # Token & session storage helpers
-│   └── pages/                  # Page-specific controller scripts
-│       ├── home.js
-│       ├── product-detail.js
-│       ├── order.js
-│       ├── my-orders.js
-│       └── admin-orders.js
-├── index.html                  # Homepage (Catalog, search, highlight products)
-├── product-detail.html         # Product specs, variants, dimensions, pricing
-├── order.html                  # Checkout & order submission with OTP
-└── my-orders.html              # Customer order history & tracking
+│
+└── js/
+    ├── api/                    # Centralized API service layer
+    │   ├── client.js           # Base HTTP wrapper (fetch, token injection, silent refresh)
+    │   ├── auth.api.js         # Google login, logout, refresh, OTP
+    │   ├── product.api.js      # Categories, search suggestions, products, detail
+    │   ├── order.api.js        # Create order, view orders, cancel, undo-cancel
+    │   └── user.api.js         # User profile, address book
+    ├── components/             # Reusable UI component JavaScript
+    │   ├── header.js           # Render navbar, active link, auth state
+    │   ├── footer.js           # Render footer
+    │   ├── toast.js            # Toast notifications (success, error, info)
+    │   └── modal-otp.js        # Phone OTP verification dialog
+    ├── utils/                  # Helper utilities
+    │   ├── format.js           # formatVnd(), formatDate(), sanitizeHtml()
+    │   ├── debounce.js         # Debounce for search suggestions
+    │   └── storage.js          # Token & session storage helpers
+    └── pages/                  # Page-specific controller scripts
+        ├── home.js
+        ├── product-detail.js
+        ├── order.js
+        ├── my-orders.js
+        └── admin-orders.js
 ```
+
+### Quy tắc đường dẫn tương đối (Relative Path Rules):
+- Tại thư mục gốc (`index.html`): nhúng asset bằng `./assets/...` hoặc `./js/...`
+- Tại thư mục con (`pages/{module}/*.html`): **Bắt buộc lùi 2 cấp thư mục**: `../../assets/...` và `../../js/...`
 
 ---
 

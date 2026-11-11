@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chi tiết sản phẩm tôn sóng lợp mái HMP — Cắt theo kích thước yêu cầu, bảng giá niêm yết nhà máy, bảo hành chính hãng">
+  <title>Chi Tiết Sản Phẩm Tôn Sóng — HMP</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+
+  <!-- CSS Riêng cho Trang Chi tiết Sản phẩm (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/product-detail.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH ==================== -->
+  <header class="header">
+    <div class="container header__inner">
+      <!-- Logo HMP -->
+      <a href="../../index.html" class="header__logo" aria-label="Trang chủ HMP">
+        <svg class="header__logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 4L4 16H9V34H31V16H36L20 4Z" fill="var(--color-primary)" />
+          <path d="M15 34V20H25V34H15Z" fill="#ffffff" />
+          <path d="M20 9L29 16H11L20 9Z" fill="var(--color-accent)" opacity="0.85" />
+        </svg>
+        <div class="header__logo-text">
+          <span class="header__logo-brand">HMP</span>
+          <span class="header__logo-slogan">TÔN THÉP XÂY DỰNG</span>
+        </div>
+      </a>
+
+      <!-- Menu Điều Hướng Desktop -->
+      <nav class="nav">
+        <ul class="nav__list">
+          <li class="nav__item">
+            <a href="../../index.html" class="nav__link">Trang chủ</a>
+          </li>
+          <li class="nav__item">
+            <a href="../../index.html#about-section" class="nav__link">Giới thiệu</a>
+          </li>
+          <li class="nav__item">
+            <a href="../../index.html#product-section" class="nav__link nav__link--active">
+              <span>Sản phẩm</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </a>
+            <!-- Dropdown Menu Danh mục Tôn -->
+            <div id="nav-category-dropdown" class="nav__dropdown">
+              <a href="../../index.html#product-section" class="nav__dropdown-link">Tôn sóng lợp mái</a>
+              <a href="../../index.html#product-section" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
+              <a href="../../index.html#product-section" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
+            </div>
+          </li>
+          <li class="nav__item">
+            <a href="../../index.html#contact-section" class="nav__link">Liên hệ</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Khu vực Tiện ích Bên Phải -->
+      <div class="header__actions">
+        <!-- Nút Tìm kiếm -->
+        <a href="../../index.html#product-section" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </a>
+
+        <!-- Nút Đăng nhập -->
+        <a id="header-login-btn" href="../auth/login.html" class="header__login-btn">Đăng nhập</a>
+
+        <!-- Hồ sơ tài khoản (khi đã đăng nhập) -->
+        <a id="header-user-profile" href="../customer/my-orders.html" class="header__user-profile">
+          <div id="header-user-avatar" class="header__user-avatar">U</div>
+          <span id="header-user-name" class="header__user-name">Khách hàng</span>
+        </a>
+
+        <!-- Nút Menu Mobile -->
+        <button id="mobile-menu-toggle" class="header__mobile-toggle" aria-label="Menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="main-content">
+    <div class="container">
+      
+      <!-- 1. Breadcrumb điều hướng -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html" class="breadcrumb__link">Trang chủ</a>
+        <span class="breadcrumb__separator">/</span>
+        <a href="../../index.html#product-section" class="breadcrumb__link" id="breadcrumb-category">Sản phẩm tôn</a>
+        <span class="breadcrumb__separator">/</span>
+        <span class="breadcrumb__current" id="breadcrumb-product-name">Đang tải sản phẩm...</span>
+      </nav>
+
+      <!-- Khung Loading / Error -->
+      <div id="product-loading-state" class="state-box" style="display: flex;">
+        <div class="state-box__spinner"></div>
+        <h4 class="state-box__title">Đang tải thông tin sản phẩm tôn sóng...</h4>
+        <p class="state-box__desc">Hệ thống đang kết nối dữ liệu từ máy chủ HMP</p>
+      </div>
+
+      <div id="product-error-state" class="state-box" style="display: none;">
+        <h4 class="state-box__title" style="color: var(--color-danger);">Không tìm thấy sản phẩm</h4>
+        <p id="product-error-message" class="state-box__desc">Sản phẩm bạn đang tìm kiếm không tồn tại hoặc đã bị khóa.</p>
+        <a href="../../index.html#product-section" class="btn btn--primary" style="margin-top: 1rem;">Quay lại danh mục sản phẩm</a>
+      </div>
+
+      <!-- 2. Khung Chi Tiết Sản Phẩm -->
+      <section id="product-detail-card" class="product-detail" style="display: none;">
+        <div class="product-detail__grid">
+
+          <!-- A. KHỐI THƯ VIỆN ẢNH (BÊN TRÁI) -->
+          <div class="product-gallery">
+            <div class="product-gallery__main-wrap">
+              <img id="gallery-main-img" src="" alt="Ảnh sản phẩm tôn sóng" class="product-gallery__main-img" style="display: none;">
+              <div id="gallery-no-image" class="product-gallery__no-image">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <span>Chưa có hình ảnh minh họa</span>
+              </div>
+            </div>
+
+            <!-- Dải ảnh Thumbnail phụ -->
+            <div id="gallery-thumbs-list" class="product-gallery__thumbs">
+              <!-- Sẽ render qua thẻ <template id="gallery-thumb-template"> -->
+            </div>
+          </div>
+
+          <!-- B. KHỐI THÔNG TIN VÀ ĐẶT HÀNG (BÊN PHẢI) -->
+          <div class="product-info">
+            <div class="product-info__header">
+              <div class="product-info__meta">
+                <span id="product-brand-tag" class="product-info__brand-tag">Chính Hãng</span>
+                <span class="product-info__status-tag">
+                  <span class="product-info__status-dot"></span>
+                  <span id="product-status-text">Sẵn hàng sản xuất</span>
+                </span>
+              </div>
+              <h1 id="product-title" class="product-info__title">Đang tải...</h1>
+              <span id="product-category-text" class="product-info__category-name">Danh mục tôn lợp mái</span>
+            </div>
+
+            <!-- Bảng Giá Niêm Yết -->
+            <div class="product-price-box">
+              <div class="product-price-box__current">
+                <span class="product-price-box__label">Đơn giá niêm yết</span>
+                <div>
+                  <span id="product-price-amount" class="product-price-box__amount">Liên hệ báo giá</span>
+                  <span id="product-price-unit" class="product-price-box__unit">/ mét</span>
+                </div>
+              </div>
+              <div id="product-price-badge-wrap">
+                <span id="product-price-badge" class="product-price-box__badge product-price-box__badge--contact">Báo giá khi đặt hàng</span>
+              </div>
+            </div>
+
+            <!-- Bộ Chọn Biến Thể Tôn (Độ dày, loại sóng) -->
+            <div class="product-option-group">
+              <label class="product-option-group__label">
+                <span>Chọn độ dày & loại sóng</span>
+                <span class="product-option-group__note">(Cắt theo yêu cầu)</span>
+              </label>
+              <div id="product-variants-list" class="product-variants-list">
+                <!-- Sẽ render qua thẻ <template id="variant-pill-template"> -->
+              </div>
+            </div>
+
+            <!-- Bộ Chọn Màu Sắc Tôn -->
+            <div class="product-option-group">
+              <label class="product-option-group__label">
+                <span>Màu sắc tôn</span>
+                <span id="selected-color-name" class="product-option-group__note">(Chọn màu yêu thích)</span>
+              </label>
+              <div id="product-colors-list" class="product-colors-list">
+                <!-- Sẽ render qua thẻ <template id="color-swatch-template"> -->
+              </div>
+            </div>
+
+            <!-- Form Tính Giá & Nhập Kích Thước Tôn Sản Xuất -->
+            <div class="product-calc-card">
+              <div class="product-calc-card__title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                </svg>
+                <span>Kích thước gia công sản xuất</span>
+              </div>
+
+              <div class="product-calc-grid">
+                <!-- Nhập Chiều Dài (mét) -->
+                <div class="product-field">
+                  <label for="input-length" class="product-field__label">Chiều dài mỗi tấm (mét):</label>
+                  <div class="product-field__input-wrap">
+                    <input type="number" id="input-length" class="product-field__input" min="0.5" max="30" step="0.1" value="6.0" placeholder="Ví dụ: 6.0">
+                    <span class="product-field__suffix">mét (m)</span>
+                  </div>
+                  <!-- Nút chọn nhanh -->
+                  <div class="length-quick-chips">
+                    <button type="button" class="quick-chip" data-length="3.0">3.0m</button>
+                    <button type="button" class="quick-chip" data-length="4.0">4.0m</button>
+                    <button type="button" class="quick-chip" data-length="5.0">5.0m</button>
+                    <button type="button" class="quick-chip" data-length="6.0">6.0m</button>
+                  </div>
+                </div>
+
+                <!-- Nhập Số Lượng (tấm) -->
+                <div class="product-field">
+                  <label for="input-quantity" class="product-field__label">Số lượng tấm tôn:</label>
+                  <div class="quantity-stepper">
+                    <button type="button" id="btn-qty-minus" class="quantity-stepper__btn" aria-label="Giảm">−</button>
+                    <input type="number" id="input-quantity" class="quantity-stepper__input" min="1" max="1000" step="1" value="10">
+                    <button type="button" id="btn-qty-plus" class="quantity-stepper__btn" aria-label="Tăng">+</button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tổng Tiền Tạm Tính -->
+              <div class="product-calc-total">
+                <span class="product-calc-total__label">Tổng tiền tạm tính:</span>
+                <div>
+                  <span id="product-calc-total-amount" class="product-calc-total__amount">Liên hệ báo giá</span>
+                  <div id="product-calc-formula-hint" class="product-calc-total__hint">Công thức: Đơn giá × Chiều dài × Số lượng</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút Hành Động Đặt Hàng -->
+            <div class="product-actions">
+              <button type="button" id="btn-order-now" class="btn btn--order-now">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                  <line x1="3" y1="6" x2="21" y2="6"></line>
+                  <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Tiến hành đặt tôn</span>
+              </button>
+              <a href="tel:0987654321" class="btn btn--call-advisor">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>Hotline tư vấn: 0987 654 321</span>
+              </a>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 3. Khối Tabs Chi Tiết & Thông Số Kỹ Thuật -->
+        <section class="product-tabs-section">
+          <div class="product-tab-nav" role="tablist">
+            <button type="button" class="product-tab-btn product-tab-btn--active" data-tab="tab-description" role="tab">Mô tả sản phẩm</button>
+            <button type="button" class="product-tab-btn" data-tab="tab-specs" role="tab">Thông số kỹ thuật</button>
+            <button type="button" class="product-tab-btn" data-tab="tab-shipping" role="tab">Chính sách & Vận chuyển</button>
+          </div>
+
+          <!-- Tab 1: Mô tả -->
+          <div id="tab-description" class="product-tab-pane product-tab-pane--active" role="tabpanel">
+            <div id="product-description-content">
+              <p>Sản phẩm tôn lợp mái chính hãng sản xuất theo tiêu chuẩn Nhật Bản JIS G3321. Phù hợp cho nhà xưởng, biệt thự, công trình dân dụng với khả năng chống ăn mòn vượt trội và cách nhiệt tối ưu.</p>
+            </div>
+          </div>
+
+          <!-- Tab 2: Thông số kỹ thuật -->
+          <div id="tab-specs" class="product-tab-pane" role="tabpanel">
+            <table class="specs-table">
+              <tbody>
+                <tr>
+                  <td>Thương hiệu:</td>
+                  <td id="spec-brand">Chính hãng</td>
+                </tr>
+                <tr>
+                  <td>Danh mục:</td>
+                  <td id="spec-category">Tôn sóng lợp mái</td>
+                </tr>
+                <tr>
+                  <td>Độ dày hiện tại:</td>
+                  <td id="spec-thickness">0.45 mm</td>
+                </tr>
+                <tr>
+                  <td>Loại sóng gia công:</td>
+                  <td id="spec-type-value">5 sóng công nghiệp</td>
+                </tr>
+                <tr>
+                  <td>Mã biến thể:</td>
+                  <td id="spec-variant-code">TON-045</td>
+                </tr>
+                <tr>
+                  <td>Tiêu chuẩn sản xuất:</td>
+                  <td>JIS G3321 / ASTM A792 / AS 1397</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Tab 3: Chính sách -->
+          <div id="tab-shipping" class="product-tab-pane" role="tabpanel">
+            <p><strong>Cam kết chất lượng từ Nhà máy HMP:</strong></p>
+            <ul style="padding-left: 1.25rem; margin-top: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem;">
+              <li>Cắt chính xác theo kích thước chiều dài công trình yêu cầu (dung sai ± 5mm).</li>
+              <li>Tôn cuộn nguyên đai, tem mác chính hãng từ nhà máy Hoa Sen, Đông Á, Nam Kim, Hòa Phát.</li>
+              <li>Hỗ trợ cẩu hàng và vận chuyển tận chân công trình trong khu vực tỉnh.</li>
+              <li>Bảo hành chống ăn mòn thủng lên đến 10 - 20 năm theo tiêu chuẩn nhà sản xuất.</li>
+            </ul>
+          </div>
+        </section>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER CHUẨN MẪU ==================== -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <!-- Cột 1: Logo & Slogan -->
+      <div class="footer__col footer__col--brand">
+        <div class="footer__brand-wrap">
+          <svg class="footer__logo-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 4L4 16H9V34H31V16H36L20 4Z" fill="#ffffff" />
+            <path d="M15 34V20H25V34H15Z" fill="var(--color-primary-dark)" />
+            <path d="M20 9L29 16H11L20 9Z" fill="var(--color-accent)" opacity="0.85" />
+          </svg>
+          <span class="footer__brand-name">HMP</span>
+        </div>
+        <p class="footer__slogan">Kiến tạo mái nhà Việt</p>
+      </div>
+
+      <!-- Cột 2: Sản phẩm -->
+      <div class="footer__col">
+        <h4 class="footer__col-title">Sản phẩm</h4>
+        <ul class="footer__link-list">
+          <li><a href="../../index.html#product-section" class="footer__link">Tôn lợp mái</a></li>
+          <li><a href="../../index.html#product-section" class="footer__link">Phụ kiện</a></li>
+          <li><a href="../../index.html#product-section" class="footer__link">Vật tư khác</a></li>
+        </ul>
+      </div>
+
+      <!-- Cột 3: Hỗ trợ -->
+      <div class="footer__col">
+        <h4 class="footer__col-title">Hỗ trợ</h4>
+        <ul class="footer__link-list">
+          <li><a href="../../index.html#about-section" class="footer__link">Chính sách bán hàng</a></li>
+          <li><a href="../../index.html#about-section" class="footer__link">Vận chuyển</a></li>
+          <li><a href="../../index.html#about-section" class="footer__link">Bảo hành</a></li>
+        </ul>
+      </div>
+
+      <!-- Cột 4: Liên hệ -->
+      <div class="footer__col">
+        <h4 class="footer__col-title">Liên hệ</h4>
+        <ul class="footer__contact-list">
+          <li class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+            <span>0987 654 321</span>
+          </li>
+          <li class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+            <span>info@hmp.vn</span>
+          </li>
+          <li class="footer__contact-item">
+            <svg class="footer__contact-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+              <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+            <span>Hà Nội, Việt Nam</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Cột 5: Mạng xã hội -->
+      <div class="footer__col footer__col--social">
+        <div class="footer__social-list">
+          <a href="#" class="footer__social-btn" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="footer__social-btn" aria-label="Zalo">
+            <span style="font-weight: 700; font-size: 13px;">Zalo</span>
+          </a>
+          <a href="#" class="footer__social-btn" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+              <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" fill="#1351b4"></polygon>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Thanh Bản Quyền Dưới Cùng -->
+    <div class="footer__bottom">
+      <div class="container footer__bottom-inner">
+        <p>&copy; 2026 HMP Tôn Thép Xây Dựng. Bản quyền được bảo lưu.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== CÁC THẺ <template> TÁCH BIỆT DỮ LIỆU VÀ GIAO DIỆN ==================== -->
+  <!-- Template 1: Thumbnail ảnh phụ trong gallery -->
+  <template id="gallery-thumb-template">
+    <button type="button" class="product-gallery__thumb-btn">
+      <img src="" alt="Ảnh phụ tôn sóng" class="product-gallery__thumb-img">
+    </button>
+  </template>
+
+  <!-- Template 2: Nút lựa chọn Biến thể tôn -->
+  <template id="variant-pill-template">
+    <button type="button" class="variant-btn">
+      <span class="variant-btn__title">0.45 mm</span>
+      <span class="variant-btn__subtitle">5 sóng</span>
+    </button>
+  </template>
+
+  <!-- Template 3: Swatch lựa chọn Màu sắc tôn -->
+  <template id="color-swatch-template">
+    <button type="button" class="color-swatch-btn">
+      <img src="" alt="Mẫu màu" class="color-swatch-btn__thumb" style="display: none;">
+      <span class="color-swatch-btn__dot" style="display: none;"></span>
+      <span class="color-swatch-btn__name">Xanh rêu</span>
+    </button>
+  </template>
+
+  <!-- Script Điều Khiển Trang Chi Tiết -->
+  <script type="module" src="../../js/pages/product-detail.js"></script>
+</body>
+</html>
+
