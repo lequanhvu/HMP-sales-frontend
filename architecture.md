@@ -139,6 +139,11 @@ Khi Access Token hết hạn (thường sau 15–60 phút):
   4. Người dùng nhập 6 chữ số: UI gọi `POST /api/v1/orders/otp/verify`.
   5. Khi thành công, Redis lưu bảo chứng `otp:verified:{phone}`, giao diện kích hoạt nút "Xác nhận đặt hàng" để gọi `POST /api/v1/orders`.
 
+### d. Ảnh Mẫu Sản phẩm Mặc định (Fallback Placeholder)
+- Khi sản phẩm chưa được tải ảnh lên từ Backend (`primaryImageUrl` hoặc mảng `images` rỗng/null, hoặc link ảnh bị lỗi mạng/404):
+  - Giao diện (Trang chủ, Chi tiết sản phẩm, Danh mục...) bắt buộc hiển thị ảnh mặc định `assets/images/empty-picture.png` (dùng đường dẫn tương đối phù hợp cấp thư mục).
+  - Tự động gán sự kiện `img.onerror` trên các thẻ `<img>` để lập tức fallback về `empty-picture.png` nếu link ảnh bị hỏng, tránh hiện icon vỡ ảnh trên trình duyệt.
+
 ---
 
 ## 5. Quy tắc Tách biệt Template HTML và Tiêu chuẩn BEM trong CSS

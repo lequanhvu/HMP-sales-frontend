@@ -118,17 +118,20 @@ async function loadProducts() {
         titleLink.href = `./pages/product/detail.html?id=${product.productId}`;
       }
 
-      // 3. Gán ảnh sản phẩm (hoặc placeholder nếu chưa có ảnh)
+      // 3. Gán ảnh sản phẩm (hoặc empty-picture.png nếu chưa có ảnh)
       const imageEl = clone.querySelector('.product-card__image');
       const noImageEl = clone.querySelector('.product-card__no-image');
-      if (product.primaryImageUrl && imageEl) {
-        imageEl.src = product.primaryImageUrl;
+      const defaultEmptyImage = './assets/images/empty-picture.png';
+
+      if (imageEl) {
+        imageEl.src = product.primaryImageUrl || defaultEmptyImage;
         imageEl.alt = product.productName;
-        if (noImageEl) noImageEl.style.display = 'none';
-      } else {
-        if (imageEl) imageEl.style.display = 'none';
-        if (noImageEl) noImageEl.style.display = 'flex';
+        imageEl.style.display = 'block';
+        imageEl.onerror = () => {
+          imageEl.src = defaultEmptyImage;
+        };
       }
+      if (noImageEl) noImageEl.style.display = 'none';
 
       // 4. Gán giá niêm yết (Kiểm tra quyền PRODUCT_PRICE_VIEW)
       const priceEl = clone.querySelector('.product-card__price');

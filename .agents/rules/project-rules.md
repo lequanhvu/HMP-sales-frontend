@@ -184,6 +184,9 @@ sales-frontend/
    - When placing orders or updating phone numbers, trigger the OTP dialog modal.
    - Display a 60-second countdown timer before allowing "Gửi lại mã OTP".
    - Disable input and show loading spinners during async calls.
+5. **Product Image Fallback Rule**:
+   - Khi sản phẩm lấy từ backend chưa có ảnh (`primaryImageUrl` hoặc `images` rỗng/null, hoặc link ảnh bị lỗi mạng/404), toàn bộ giao diện (Trang chủ, Chi tiết sản phẩm, danh mục...) bắt buộc hiển thị ảnh mặc định `assets/images/empty-picture.png`.
+   - Luôn sử dụng đường dẫn tương đối đúng cấp thư mục: `./assets/images/empty-picture.png` từ thư mục gốc hoặc `../../assets/images/empty-picture.png` từ các thư mục con trong `pages/`. Gán thêm sự kiện `img.onerror` để tự động fallback khi link ảnh bị hỏng.
 
 ---
 

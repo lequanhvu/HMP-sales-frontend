@@ -125,13 +125,18 @@ function renderGallery(images) {
   const noImageEl = document.getElementById('gallery-no-image');
   const thumbsListEl = document.getElementById('gallery-thumbs-list');
   const thumbTemplate = document.getElementById('gallery-thumb-template');
+  const defaultEmptyImage = '../../assets/images/empty-picture.png';
 
   if (!thumbsListEl || !thumbTemplate) return;
   thumbsListEl.innerHTML = '';
 
   if (!images || images.length === 0) {
-    if (mainImgEl) mainImgEl.style.display = 'none';
-    if (noImageEl) noImageEl.style.display = 'flex';
+    if (mainImgEl) {
+      mainImgEl.src = defaultEmptyImage;
+      mainImgEl.alt = (productData && productData.productName) || 'Ảnh mẫu sản phẩm';
+      mainImgEl.style.display = 'block';
+    }
+    if (noImageEl) noImageEl.style.display = 'none';
     return;
   }
 
@@ -145,9 +150,12 @@ function renderGallery(images) {
   // Hiển thị ảnh chính ban đầu
   const primaryImg = sortedImages[0];
   if (mainImgEl) {
-    mainImgEl.src = primaryImg.imageUrl;
+    mainImgEl.src = primaryImg.imageUrl || defaultEmptyImage;
     mainImgEl.alt = productData.productName;
     mainImgEl.style.display = 'block';
+    mainImgEl.onerror = () => {
+      mainImgEl.src = defaultEmptyImage;
+    };
   }
   if (noImageEl) noImageEl.style.display = 'none';
 
@@ -157,8 +165,11 @@ function renderGallery(images) {
     const thumbBtn = clone.querySelector('.product-gallery__thumb-btn');
     const thumbImg = clone.querySelector('.product-gallery__thumb-img');
 
-    thumbImg.src = imgObj.imageUrl;
+    thumbImg.src = imgObj.imageUrl || defaultEmptyImage;
     thumbImg.alt = `${productData.productName} ảnh ${index + 1}`;
+    thumbImg.onerror = () => {
+      thumbImg.src = defaultEmptyImage;
+    };
 
     if (index === 0) {
       thumbBtn.classList.add('product-gallery__thumb-btn--active');
@@ -166,7 +177,7 @@ function renderGallery(images) {
 
     thumbBtn.addEventListener('click', () => {
       // Đổi ảnh chính
-      if (mainImgEl) mainImgEl.src = imgObj.imageUrl;
+      if (mainImgEl) mainImgEl.src = imgObj.imageUrl || defaultEmptyImage;
 
       // Cập nhật trạng thái active
       thumbsListEl.querySelectorAll('.product-gallery__thumb-btn').forEach(btn => {

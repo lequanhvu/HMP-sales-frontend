@@ -47,6 +47,7 @@ _Nothing._
 - ⚠️ **Cookie & Refresh Token**: Mọi request `fetch()` phải thiết lập `credentials: 'include'` để gửi và nhận Cookie HttpOnly lưu Refresh Token.
 - ⚠️ **Phân trang 0-indexed**: Backend trả về `meta.page` bắt đầu từ `0`. Frontend phải cộng thêm 1 khi hiển thị trên giao diện người dùng.
 - ⚠️ **Quyền xem giá (`PRODUCT_PRICE_VIEW`)**: Khi giá trả về `null`, phải hiển thị *"Liên hệ báo giá"*, tuyệt đối không hiển thị `0 VNĐ` hay `NaN`.
+- ⚠️ **Ảnh sản phẩm mặc định**: Khi sản phẩm lấy từ backend chưa có ảnh (`primaryImageUrl` hoặc mảng `images` rỗng/null, hoặc link ảnh lỗi 404), toàn bộ giao diện (Trang chủ, Chi tiết sản phẩm...) bắt buộc hiển thị ảnh mặc định `assets/images/empty-picture.png` (dùng đường dẫn tương đối phù hợp cấp thư mục).
 - ⚠️ **Chống XSS**: Không dùng `innerHTML` để hiển thị dữ liệu do người dùng nhập hoặc từ API trả về; dùng `textContent` hoặc `createElement`.
 - ⚠️ **Công thức tôn sóng**: Tôn lợp mái có kích thước chiều dài linh hoạt; form đặt hàng cần cho phép nhập số thập phân (ví dụ: `5.5m`).
 

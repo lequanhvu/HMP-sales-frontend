@@ -28,6 +28,7 @@ Do not invent business behavior or API contracts when requirements are silent. M
 - Guests can browse catalog, search suggestions, view categories, and view product details without login.
 - Customer authentication is via Google Sign-In (Google Identity Services SDK).
 - Price visibility is permission-driven (`PRODUCT_PRICE_VIEW`). If `price` or `prices` is `null`, display "Liên hệ báo giá", NEVER display `0đ` or `NaN`.
+- Product fallback image: When a product fetched from backend has no image (null/empty `primaryImageUrl` or `images`), or if image loading fails (404), the UI must display `assets/images/empty-picture.png` using proper relative path (`./assets/images/...` or `../../assets/images/...`).
 - Manufacturing product dimensions: Customers enter `quantity` (tấm) and `size` (chiều dài theo mét, e.g., 5.5m). Total price = `UnitPrice × Size × Quantity`.
 - Direct phone OTP verification modal when placing orders or updating user phone number.
 - API response envelope: Backend always returns `{ statusCode, data, message, timestamp }`. DTOs and results reside inside `data`.
