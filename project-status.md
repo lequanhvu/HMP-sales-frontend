@@ -8,6 +8,16 @@
 ---
 
 ## Completed
+- ✅ **Kiến Trúc Nhúng Component Dùng Chung (`pages/components/` & `js/components/component-loader.js`)**:
+  - Trích xuất toàn bộ khối Header và Footer từ Trang chủ sang các file component riêng biệt: `pages/components/common/header.html` và `pages/components/common/footer.html`.
+  - Tách bạch 100% cả 3 tầng HTML, CSS và JS độc lập cho từng Component:
+    - **HTML**: `pages/components/common/header.html`, `footer.html`, `customer/sidebar.html`, `admin/sidebar.html` (chỉ chứa markup ngữ nghĩa, 0 thẻ `<style>`, 0 thẻ `<script>`, 0 inline `style`).
+    - **CSS**: `assets/css/components/header.css`, `footer.css`, `sidebar.css`, `button.css`.
+    - **JavaScript**: `js/components/header.js`, `footer.js`, `sidebar.js`, `component-loader.js`.
+  - Tinh chỉnh Footer chuẩn mẫu thực tế 100% (CSS Grid 5 cột dàn ngang cố định: Logo HMP & Slogan, Sản phẩm, Hỗ trợ, Liên hệ với đầy đủ SĐT, Email `info@tanviet.vn` và Địa chỉ `white-space: nowrap`, 3 nút Mạng xã hội tròn FB/Chat/YouTube).
+  - Module `component-loader.js` tự động tải HTML với query cache-buster `?_v=...`, tự động nạp file CSS component vào `<head>` (`ensureStylesheet`), tự động điều chỉnh đường link tương đối theo cấp thư mục (`rootPrefix`), và tự động gắn kết controller JS (`initHeader()`, `initFooter()`, `initCustomerSidebar()`).
+  - Cập nhật toàn bộ các trang (`index.html`, `pages/product/catalog.html`, `pages/product/detail.html`) nhúng đồng bộ qua placeholder `<div id="site-header" data-component="header"></div>` và `<div id="site-footer" data-component="footer"></div>`.
+
 - ✅ **Rà Soát & Hoàn Thiện Clean Code Toàn Dự Án (Không Trộn Lẫn HTML, CSS, JS)**:
   - Loại bỏ hoàn toàn 100% thuộc tính `style="..."` nội dòng trong toàn bộ file HTML (`index.html`, `pages/product/catalog.html`, `pages/product/detail.html`).
   - Loại bỏ hoàn toàn việc gán `.style.*` trong mã JavaScript (`header.js`, `home.js`, `product-catalog.js`, `product-detail.js`); chuyển đổi toàn bộ trạng thái ẩn/hiện và bố cục sang các class CSS chuyên trách (`.hidden`, `.header__user-profile--visible`, `.state-box--full-width`).

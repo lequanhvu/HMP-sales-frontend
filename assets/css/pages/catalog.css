@@ -9,7 +9,8 @@
    ========================================================================== */
 .catalog-banner {
   margin: 1.5rem auto 2rem;
-  background: linear-gradient(135deg, #1351b4 0%, #1a5ec4 60%, #2068d3 100%);
+  background-color: #1351b4;
+  background-image: linear-gradient(135deg, #1351b4 0%, #1758bd 45%, #1e63cb 100%);
   border-radius: var(--radius-lg);
   overflow: hidden;
   position: relative;
@@ -26,10 +27,11 @@
 }
 
 .catalog-banner__content {
-  z-index: 2;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 .catalog-banner__title {
@@ -75,33 +77,71 @@
   font-weight: 600;
 }
 
+/* Khối bao bọc ảnh banner chiếm 60% bên phải */
 .catalog-banner__image-wrap {
   position: absolute;
   right: 0;
   bottom: 0;
   top: 0;
-  width: 45%;
-  max-width: 450px;
+  width: 60%;
+  max-width: 560px;
+  height: 100%;
   display: none;
   align-items: center;
   justify-content: flex-end;
   pointer-events: none;
   overflow: hidden;
+  z-index: 1;
 }
 
 @media (min-width: 768px) {
   .catalog-banner__image-wrap {
-    display: flex;
+    display: block;
   }
 }
 
+/* Ảnh banner phủ kín, mask mờ dần từ trái sang phải */
 .catalog-banner__img {
   height: 100%;
   width: 100%;
-  object-fit: contain;
+  object-fit: cover;
   object-position: right center;
-  mask-image: linear-gradient(to right, transparent 0%, black 35%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 35%);
+  -webkit-mask-image: linear-gradient(
+    to right, 
+    transparent 0%, 
+    rgba(0, 0, 0, 0.05) 15%, 
+    rgba(0, 0, 0, 0.4) 35%, 
+    rgba(0, 0, 0, 0.85) 60%, 
+    #000000 85%
+  );
+  mask-image: linear-gradient(
+    to right, 
+    transparent 0%, 
+    rgba(0, 0, 0, 0.05) 15%, 
+    rgba(0, 0, 0, 0.4) 35%, 
+    rgba(0, 0, 0, 0.85) 60%, 
+    #000000 85%
+  );
+}
+
+/* Lớp phủ chuyển màu xanh bảo đảm độ hòa sắc và chuyển êm 100% không còn vệt cắt */
+.catalog-banner::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    #1351b4 0%,
+    #1554ba 30%,
+    rgba(21, 84, 186, 0.9) 45%,
+    rgba(21, 84, 186, 0.45) 60%,
+    rgba(21, 84, 186, 0) 80%
+  );
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* ==========================================================================
@@ -129,14 +169,25 @@
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
-  padding: 1.25rem 1rem;
+  padding: 1.25rem 0.85rem;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 992px) {
+  .catalog-sidebar {
+    position: sticky;
+    top: 90px;
+    max-height: calc(100vh - 120px);
+  }
 }
 
 .catalog-sidebar__header {
   padding: 0.25rem 0.5rem 0.75rem;
   border-bottom: 1px solid #f1f5f9;
   margin-bottom: 0.75rem;
+  flex-shrink: 0;
 }
 
 .catalog-sidebar__title {
@@ -144,6 +195,44 @@
   font-weight: 700;
   color: var(--color-text-main);
   line-height: 1.3;
+}
+
+/* Thân Sidebar chứa thanh trượt cuộn độc lập khi danh mục dài */
+.catalog-sidebar__body {
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: 480px;
+  padding-right: 0.35rem;
+  /* Thanh trượt chuẩn Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f8fafc;
+}
+
+@media (min-width: 992px) {
+  .catalog-sidebar__body {
+    max-height: calc(100vh - 220px);
+    min-height: 200px;
+  }
+}
+
+/* Tùy biến thanh trượt (Scrollbar) chuẩn Chrome / Edge / Safari */
+.catalog-sidebar__body::-webkit-scrollbar {
+  width: 5px;
+}
+
+.catalog-sidebar__body::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 4px;
+}
+
+.catalog-sidebar__body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+  transition: background-color var(--transition-fast);
+}
+
+.catalog-sidebar__body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .cat-tree {
@@ -160,7 +249,7 @@
   flex-direction: column;
 }
 
-/* Nút danh mục cha */
+/* Nút danh mục cha / Nút "Tất cả sản phẩm" */
 .cat-tree__parent-btn {
   display: flex;
   align-items: center;
@@ -192,62 +281,86 @@
   border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
+.cat-tree__toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.3rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color var(--transition-fast);
+}
+
+.cat-tree__toggle-icon:hover {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+
 .cat-tree__chevron {
   width: 16px;
   height: 16px;
   color: #94a3b8;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease;
   flex-shrink: 0;
 }
 
+/* Mũi tên xuống v xoay 180 độ thành ^ khi mở rộng */
 .cat-tree__parent-btn--expanded .cat-tree__chevron {
   transform: rotate(180deg);
 }
 
-/* Danh sách danh mục con lồng nhau */
+/* Danh sách danh mục con lồng nhau — Nhánh cây thư mục */
 .cat-tree__children {
   display: none;
   flex-direction: column;
   gap: 0.25rem;
-  padding: 0.25rem 0 0.25rem 1.75rem;
+  padding: 0.25rem 0 0.25rem 1rem;
+  margin: 0 0 0 0.85rem;
   list-style: none;
-  margin: 0;
+  border-left: 1.5px dashed #cbd5e1;
 }
 
 .cat-tree__children--open {
   display: flex;
 }
 
-.cat-tree__child-link {
+/* Nút danh mục lá (không có con) */
+.cat-tree__child-btn {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.4rem 0.5rem;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
   font-size: 0.875rem;
+  font-weight: 500;
   color: #64748b;
-  text-decoration: none;
+  background: transparent;
+  border: none;
   border-radius: var(--radius-sm);
+  text-align: left;
   cursor: pointer;
   transition: all var(--transition-fast);
 }
 
 .cat-tree__child-bullet {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #94a3b8;
+  line-height: 1;
 }
 
-.cat-tree__child-link:hover {
+.cat-tree__child-btn:hover {
   color: var(--color-primary);
   background-color: #f8fafc;
 }
 
-.cat-tree__child-link--active {
+.cat-tree__child-btn--active {
   color: var(--color-primary);
-  font-weight: 600;
+  font-weight: 700;
   background-color: #eff6ff;
+  border-left: 3px solid var(--color-primary);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
 }
 
-.cat-tree__child-link--active .cat-tree__child-bullet {
+.cat-tree__child-btn--active .cat-tree__child-bullet {
   color: var(--color-primary);
 }
 

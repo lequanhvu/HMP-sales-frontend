@@ -2,7 +2,7 @@
  * home.js — Script điều khiển Trang Chủ (Tuân thủ nghiêm ngặt chuẩn <template>)
  */
 
-import { initHeader } from '../components/header.js';
+import { initCommonLayout } from '../components/component-loader.js';
 import { client } from '../api/client.js';
 import { formatVnd } from '../utils/format.js';
 
@@ -10,8 +10,8 @@ let currentCategoryId = null;
 let currentPage = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Khởi tạo thanh điều hướng Header & Menu
-  initHeader();
+  // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
+  await initCommonLayout();
 
   // 2. Nạp các tab danh mục tôn và danh sách sản phẩm
   await Promise.all([

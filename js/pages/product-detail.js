@@ -10,7 +10,7 @@
  * - Tự động fallback ảnh hỏng/thiếu về empty-picture.png
  */
 
-import { initHeader } from '../components/header.js';
+import { initCommonLayout } from '../components/component-loader.js';
 import { getProductDetail } from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
 
@@ -22,8 +22,8 @@ let selectedColor = null;
 const DEFAULT_EMPTY_IMAGE = '../../assets/images/empty-picture.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Khởi tạo thanh điều hướng Header
-  initHeader();
+  // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
+  await initCommonLayout();
 
   // 2. Khởi tạo xử lý chuyển Tab
   initTabs();

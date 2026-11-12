@@ -10,7 +10,7 @@
  * - Sắp xếp theo tên / thời gian tạo
  */
 
-import { initHeader } from '../components/header.js';
+import { initCommonLayout } from '../components/component-loader.js';
 import { getCategoriesTree, getProducts, getProductsByCategory } from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
 
@@ -24,8 +24,8 @@ let sortDirection = 'asc';
 const DEFAULT_EMPTY_IMG = '../../assets/images/empty-picture.png';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Khởi tạo thanh Header
-  initHeader();
+  // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
+  await initCommonLayout();
 
   // 2. Đọc categoryId từ URL (nếu có chuyển hướng từ Header dropdown)
   const urlParams = new URLSearchParams(window.location.search);
@@ -61,129 +61,191 @@ function initToolbar() {
 }
 
 /**
- * Nạp cây danh mục đa cấp vào Sidebar và gắn sự kiện click
+ * Nạp cây danh mục đa cấp từ backend vào Sidebar và gắn sự kiện click
+ * Trình tự hiển thị:
+ * 1. "Tất cả sản phẩm"
+ * 2. Cây danh mục phân cấp n-cấp lấy từ BE (GET /api/v1/categories/tree)
  */
 async function loadCategorySidebar() {
   const treeListEl = document.getElementById('cat-tree-list');
-  const parentTemplate = document.getElementById('cat-parent-template');
-  const childTemplate = document.getElementById('cat-child-template');
   const btnAll = document.getElementById('btn-cat-all');
 
-  if (!treeListEl || !parentTemplate || !childTemplate) return;
+  if (!treeListEl || !btnAll) return;
 
-  // Xử lý nút "Tất cả sản phẩm"
-  if (btnAll) {
-    btnAll.addEventListener('click', () => {
-      clearSidebarActive();
-      btnAll.classList.add('cat-tree__parent-btn--active');
-      selectedCategoryId = null;
-      currentPage = 0;
-      updateBreadcrumb('Tất cả sản phẩm');
-      loadProducts();
-    });
-  }
+  // Xử lý sự kiện khi click "Tất cả sản phẩm"
+  btnAll.addEventListener('click', () => {
+    clearSidebarActive();
+    btnAll.classList.add('cat-tree__parent-btn--active');
+    selectedCategoryId = null;
+    currentPage = 0;
+    updateBreadcrumb('Tất cả sản phẩm');
+    loadProducts();
+  });
 
   try {
     const tree = await getCategoriesTree();
     if (!Array.isArray(tree) || tree.length === 0) return;
 
-    tree.forEach(parentCat => {
-      const parentClone = parentTemplate.content.cloneNode(true);
-      const parentBtn = parentClone.querySelector('.cat-tree__parent-btn');
-      const parentName = parentClone.querySelector('.cat-tree__parent-name');
-      const childrenList = parentClone.querySelector('.cat-tree__children');
-      const chevron = parentClone.querySelector('.cat-tree__chevron');
+    // Xóa các node danh mục cũ phía sau nút "Tất cả sản phẩm" (nếu có)
+    const existingItems = treeListEl.querySelectorAll('.cat-tree__item:not(:first-child)');
+    existingItems.forEach(el => el.remove());
 
-      const parentId = parentCat.id || parentCat.categoryId;
-      parentName.textContent = parentCat.categoryName;
-      parentBtn.dataset.catId = parentId;
+    const fragment = document.createDocumentFragment();
 
-      const hasChildren = Array.isArray(parentCat.children) && parentCat.children.length > 0;
-      if (!hasChildren && chevron) {
-        chevron.classList.add('hidden');
+    tree.forEach(rootCat => {
+      const nodeEl = renderCategoryTreeNode(rootCat, 0);
+      if (nodeEl) {
+        fragment.appendChild(nodeEl);
       }
+    });
 
-      // Render các danh mục con (nếu có)
-      if (hasChildren) {
-        parentCat.children.forEach(childCat => {
-          const childClone = childTemplate.content.cloneNode(true);
-          const childLink = childClone.querySelector('.cat-tree__child-link');
-          const childName = childClone.querySelector('.cat-tree__child-name');
+    treeListEl.appendChild(fragment);
 
-          const childId = childCat.id || childCat.categoryId;
-          childName.textContent = childCat.categoryName;
-          childLink.dataset.catId = childId;
+    // Kích hoạt trạng thái active nếu có danh mục được chọn sẵn
+    if (selectedCategoryId) {
+      highlightActiveCategory(selectedCategoryId);
+    } else {
+      btnAll.classList.add('cat-tree__parent-btn--active');
+    }
 
-          // Sự kiện click danh mục con
-          childLink.addEventListener('click', (e) => {
-            e.preventDefault();
-            clearSidebarActive();
-            childLink.classList.add('cat-tree__child-link--active');
-            parentBtn.classList.add('cat-tree__parent-btn--active');
+  } catch (err) {
+    console.warn('Không thể nạp cây danh mục từ BE:', err);
+  }
+}
 
-            selectedCategoryId = childId;
-            currentPage = 0;
-            updateBreadcrumb(childCat.categoryName);
-            loadProducts();
-          });
+/**
+ * Render đệ quy một node trong cây danh mục đa cấp
+ * 
+ * @param {Object} cat - Dữ liệu danh mục { id, categoryName, children }
+ * @param {number} level - Cấp độ sâu trong cây (0: gốc, 1, 2, ...)
+ * @returns {HTMLElement} Node <li> đại diện cho danh mục
+ */
+function renderCategoryTreeNode(cat, level = 0) {
+  const parentTemplate = document.getElementById('cat-parent-template');
+  const childTemplate = document.getElementById('cat-child-template');
+  if (!parentTemplate || !childTemplate) return null;
 
-          childrenList.appendChild(childClone);
-        });
+  const catId = cat.id || cat.categoryId;
+  const catName = cat.categoryName || cat.name || '';
+  const hasChildren = Array.isArray(cat.children) && cat.children.length > 0;
+
+  if (hasChildren) {
+    // 1. Node cha có danh mục con lồng nhau
+    const parentClone = parentTemplate.content.cloneNode(true);
+    const itemLi = parentClone.querySelector('.cat-tree__item');
+    const parentBtn = parentClone.querySelector('.cat-tree__parent-btn');
+    const parentName = parentClone.querySelector('.cat-tree__parent-name');
+    const childrenList = parentClone.querySelector('.cat-tree__children');
+
+    parentBtn.dataset.catId = String(catId);
+    parentName.textContent = catName;
+
+    // Render đệ quy tất cả danh mục con
+    cat.children.forEach(childCat => {
+      const childNode = renderCategoryTreeNode(childCat, level + 1);
+      if (childNode) {
+        childrenList.appendChild(childNode);
       }
+    });
 
-      // Sự kiện click danh mục cha
-      parentBtn.addEventListener('click', () => {
-        const isExpanded = parentBtn.classList.contains('cat-tree__parent-btn--expanded');
+    // Mặc định CHỈ HIỂN THỊ ROOT: không tự động mở sẵn các nhánh con khi mới vào trang.
+    // Người dùng bấm vào mũi tên xuống để xổ nhánh con ra.
 
-        // Mở/đóng danh mục con
-        if (hasChildren) {
-          if (isExpanded) {
-            parentBtn.classList.remove('cat-tree__parent-btn--expanded');
-            childrenList.classList.remove('cat-tree__children--open');
-          } else {
-            parentBtn.classList.add('cat-tree__parent-btn--expanded');
-            childrenList.classList.add('cat-tree__children--open');
-          }
-        }
+    // Xử lý sự kiện click
+    parentBtn.addEventListener('click', (e) => {
+      const isToggleClick = Boolean(e.target.closest('.cat-tree__toggle-icon'));
+      const isExpanded = parentBtn.classList.contains('cat-tree__parent-btn--expanded');
 
-        // Chọn danh mục cha để lọc
-        clearSidebarActive();
-        parentBtn.classList.add('cat-tree__parent-btn--active');
-
-        selectedCategoryId = parentId;
-        currentPage = 0;
-        updateBreadcrumb(parentCat.categoryName);
-        loadProducts();
-      });
-
-      // Nếu đang có categoryId từ query param trùng với danh mục này
-      if (selectedCategoryId === parentId) {
-        clearSidebarActive();
-        parentBtn.classList.add('cat-tree__parent-btn--active');
-        if (hasChildren) {
+      if (isToggleClick) {
+        // Bấm vào biểu tượng mũi tên xuống: đóng / mở nhánh con
+        if (isExpanded) {
+          parentBtn.classList.remove('cat-tree__parent-btn--expanded');
+          childrenList.classList.remove('cat-tree__children--open');
+        } else {
           parentBtn.classList.add('cat-tree__parent-btn--expanded');
           childrenList.classList.add('cat-tree__children--open');
         }
-        updateBreadcrumb(parentCat.categoryName);
-      } else if (hasChildren) {
-        // Kiểm tra xem categoryId có thuộc danh mục con nào không
-        const matchingChild = parentCat.children.find(c => (c.id || c.categoryId) === selectedCategoryId);
-        if (matchingChild) {
-          clearSidebarActive();
-          parentBtn.classList.add('cat-tree__parent-btn--active', 'cat-tree__parent-btn--expanded');
+      } else {
+        // Bấm vào tên danh mục: chọn lọc sản phẩm + tự động mở nhánh con nếu đang đóng
+        if (!isExpanded) {
+          parentBtn.classList.add('cat-tree__parent-btn--expanded');
           childrenList.classList.add('cat-tree__children--open');
-          const childLink = childrenList.querySelector(`[data-cat-id="${selectedCategoryId}"]`);
-          if (childLink) childLink.classList.add('cat-tree__child-link--active');
-          updateBreadcrumb(matchingChild.categoryName);
         }
-      }
 
-      treeListEl.appendChild(parentClone);
+        clearSidebarActive();
+        parentBtn.classList.add('cat-tree__parent-btn--active');
+
+        selectedCategoryId = catId;
+        currentPage = 0;
+        updateBreadcrumb(catName);
+        loadProducts();
+      }
     });
 
-  } catch (err) {
-    console.warn('Không thể nạp cây danh mục:', err);
+    return itemLi;
+  } else {
+    // 2. Node lá (không có danh mục con)
+    const childClone = childTemplate.content.cloneNode(true);
+    const itemLi = childClone.querySelector('.cat-tree__item');
+    const childBtn = childClone.querySelector('.cat-tree__child-btn');
+    const childName = childClone.querySelector('.cat-tree__child-name');
+
+    childBtn.dataset.catId = String(catId);
+    childName.textContent = catName;
+
+    childBtn.addEventListener('click', () => {
+      clearSidebarActive();
+      childBtn.classList.add('cat-tree__child-btn--active');
+
+      // Đảm bảo tất cả các nhánh cha phía trên luôn mở
+      openParentBranches(childBtn);
+
+      selectedCategoryId = catId;
+      currentPage = 0;
+      updateBreadcrumb(catName);
+      loadProducts();
+    });
+
+    return itemLi;
   }
+}
+
+/**
+ * Đảm bảo tất cả các nhánh cha cấp trên của node đang chọn đều được mở
+ */
+function openParentBranches(element) {
+  let parentEl = element.parentElement;
+  while (parentEl && parentEl.id !== 'cat-tree-list') {
+    if (parentEl.classList.contains('cat-tree__children')) {
+      parentEl.classList.add('cat-tree__children--open');
+      const parentBtn = parentEl.previousElementSibling;
+      if (parentBtn && parentBtn.classList.contains('cat-tree__parent-btn')) {
+        parentBtn.classList.add('cat-tree__parent-btn--expanded');
+      }
+    }
+    parentEl = parentEl.parentElement;
+  }
+}
+
+/**
+ * Làm sáng danh mục đang được kích hoạt và mở nhánh cha tương ứng
+ */
+function highlightActiveCategory(targetCatId) {
+  clearSidebarActive();
+  const targetBtn = document.querySelector(`.cat-tree [data-cat-id="${targetCatId}"]`);
+  if (!targetBtn) return;
+
+  if (targetBtn.classList.contains('cat-tree__parent-btn')) {
+    targetBtn.classList.add('cat-tree__parent-btn--active', 'cat-tree__parent-btn--expanded');
+    const childrenUl = targetBtn.nextElementSibling;
+    if (childrenUl && childrenUl.classList.contains('cat-tree__children')) {
+      childrenUl.classList.add('cat-tree__children--open');
+    }
+  } else if (targetBtn.classList.contains('cat-tree__child-btn')) {
+    targetBtn.classList.add('cat-tree__child-btn--active');
+  }
+
+  openParentBranches(targetBtn);
 }
 
 /**
@@ -194,7 +256,7 @@ function clearSidebarActive() {
   if (btnAll) btnAll.classList.remove('cat-tree__parent-btn--active');
 
   document.querySelectorAll('.cat-tree__parent-btn').forEach(b => b.classList.remove('cat-tree__parent-btn--active'));
-  document.querySelectorAll('.cat-tree__child-link').forEach(l => l.classList.remove('cat-tree__child-link--active'));
+  document.querySelectorAll('.cat-tree__child-btn').forEach(b => b.classList.remove('cat-tree__child-btn--active'));
 }
 
 /**

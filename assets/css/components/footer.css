@@ -1,13 +1,15 @@
 /* ==========================================================================
    Footer Component — Chân trang Chuẩn Theo Ảnh Mẫu (Xanh Navy #0b2554)
+   Bố cục 5 khối dàn ngang hoàn hảo: Logo | Sản phẩm | Hỗ trợ | Liên hệ | Mạng XH
    ========================================================================== */
 
 .footer {
   background-color: #0b2554;
   color: #e2e8f0;
-  padding: 42px 0 24px;
+  padding: 32px 0 24px;
   margin-top: var(--spacing-12);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-family: inherit;
 }
 
 .footer__inner {
@@ -16,18 +18,17 @@
   gap: var(--spacing-6);
 }
 
-/* Hàng ngang chứa 5 cột */
+/* Hàng ngang chứa trọn vẹn 5 cột chuẩn theo ảnh mẫu */
 .footer__row {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-8);
+  gap: var(--spacing-6);
 }
 
 @media (min-width: 768px) {
   .footer__row {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: auto 1fr 1fr 1.4fr auto;
     align-items: flex-start;
     gap: var(--spacing-6);
   }
@@ -35,9 +36,10 @@
 
 @media (min-width: 992px) {
   .footer__row {
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: 190px 1.1fr 1.1fr 1.6fr auto;
     align-items: flex-start;
-    gap: var(--spacing-8);
+    gap: 2rem;
   }
 }
 
@@ -46,11 +48,10 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-2);
-  min-width: 170px;
 }
 
 .footer__logo-wrap {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: var(--spacing-2);
   color: #ffffff;
@@ -58,8 +59,8 @@
 }
 
 .footer__logo-icon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   color: #ffffff;
   flex-shrink: 0;
 }
@@ -75,8 +76,9 @@
 .footer__tagline {
   font-size: 0.8125rem;
   color: #8da4c4;
-  margin-top: 2px;
+  margin-top: 4px;
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
 
 /* 2. Các cột nội dung: Sản phẩm, Hỗ trợ, Liên hệ */
@@ -91,19 +93,23 @@
   font-weight: 700;
   color: #ffffff;
   letter-spacing: 0.2px;
+  margin: 0;
 }
 
 .footer__list {
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
 }
 
 .footer__link {
   color: #8da4c4;
   text-decoration: none;
   font-size: 0.8125rem;
+  white-space: nowrap;
   transition: color var(--transition-fast);
 }
 
@@ -116,7 +122,9 @@
   list-style: none;
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.55rem;
+  margin: 0;
+  padding: 0;
 }
 
 .footer__contact-item {
@@ -125,6 +133,7 @@
   gap: 0.625rem;
   font-size: 0.8125rem;
   color: #8da4c4;
+  white-space: nowrap;
 }
 
 .footer__contact-icon {
@@ -135,7 +144,7 @@
 }
 
 .footer__contact-item a {
-  color: inherit;
+  color: #8da4c4;
   text-decoration: none;
   transition: color var(--transition-fast);
 }
@@ -152,17 +161,18 @@
 }
 
 .footer__social-btn {
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.06);
   color: #ffffff;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
   transition: all var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .footer__social-btn:hover {
@@ -173,21 +183,16 @@
 }
 
 .footer__social-btn svg {
-  width: 18px;
-  height: 18px;
-}
-
-.footer__social-zalo-text {
-  font-weight: 700;
-  font-size: 13px;
-  color: inherit;
+  width: 16px;
+  height: 16px;
 }
 
 /* 5. Bản quyền phía dưới */
 .footer__copyright {
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
   padding-top: var(--spacing-4);
   text-align: center;
   font-size: 0.75rem;
-  color: #556b8d;
+  color: #8da4c4;
 }
+

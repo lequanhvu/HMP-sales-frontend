@@ -1,0 +1,93 @@
+<!-- =========================================================================
+     HEADER ĐIỀU HƯỚNG CHUNG (COMMON HEADER COMPONENT)
+     Được tách riêng từ Trang Chủ để nhúng đồng bộ vào mọi trang
+     ========================================================================= -->
+<header class="header">
+  <div class="container header__inner">
+    <!-- Logo thương hiệu HMP -->
+    <a href="./index.html" class="header__brand" data-link="home">
+      <div class="header__logo-icon">
+        <!-- Icon Mái nhà & Sóng tôn SVG -->
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <div class="header__logo-text">
+        <span class="header__company-name">HMP</span>
+        <span class="header__slogan">Vật liệu mái &amp; phụ kiện</span>
+      </div>
+    </a>
+
+    <!-- Menu Điều hướng Desktop -->
+    <nav class="header__nav">
+      <ul class="nav__list">
+        <li class="nav__item">
+          <a href="./index.html" class="nav__link" data-nav="home">Trang chủ</a>
+        </li>
+        <li class="nav__item">
+          <a href="./index.html#about-section" class="nav__link" data-nav="about">Giới thiệu</a>
+        </li>
+        <li class="nav__item">
+          <a href="./pages/product/catalog.html" class="nav__link" data-nav="product">
+            <span>Sản phẩm</span>
+            <!-- Mũi tên xổ xuống -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </a>
+          <!-- Dropdown Menu Danh mục Tôn Động (Nạp từ backend) -->
+          <div id="nav-category-dropdown" class="nav__dropdown">
+            <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn sóng lợp mái</a>
+            <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
+            <a href="./pages/product/catalog.html" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
+          </div>
+        </li>
+        <li class="nav__item">
+          <a href="./index.html#contact-section" class="nav__link" data-nav="contact">Liên hệ</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Khu vực Tiện ích Bên Phải -->
+    <div class="header__actions">
+      <!-- Nút Tìm kiếm điều hướng đến catalog -->
+      <a id="search-toggle-btn" href="./pages/product/catalog.html" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm" data-link="catalog">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </a>
+
+      <!-- Nút Đăng nhập bo tròn chuẩn mẫu -->
+      <a id="header-login-btn" href="./pages/auth/login.html" class="header__login-btn" data-link="login">Đăng nhập</a>
+
+      <!-- Hồ sơ tài khoản (khi đã đăng nhập) -->
+      <a id="header-user-profile" href="./pages/customer/my-orders.html" class="header__user-profile" data-link="my-orders">
+        <div id="header-user-avatar" class="header__user-avatar">U</div>
+        <span id="header-user-name" class="header__user-name">Khách hàng</span>
+      </a>
+
+      <!-- Nút Menu Mobile -->
+      <button id="mobile-menu-toggle" class="header__mobile-toggle" aria-label="Menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Drawer Menu Mobile -->
+  <div id="mobile-nav-drawer" class="mobile-nav">
+    <div class="mobile-nav__panel">
+      <a href="./index.html" class="mobile-nav__link" data-nav="home">Trang chủ</a>
+      <a href="./index.html#about-section" class="mobile-nav__link" data-nav="about">Giới thiệu</a>
+      <a href="./pages/product/catalog.html" class="mobile-nav__link" data-nav="product">Sản phẩm tôn lợp</a>
+      <a href="./index.html#contact-section" class="mobile-nav__link" data-nav="contact">Liên hệ</a>
+    </div>
+  </div>
+</header>
+</body>
+

@@ -23,95 +23,9 @@
 <body>
 
   <!-- =========================================================================
-       1. THANH HEADER ĐIỀU HƯỚNG CHUẨN MẪU
+       1. THANH HEADER ĐIỀU HƯỚNG (Nhúng đồng bộ từ /pages/components/common/header.html)
        ========================================================================= -->
-  <header class="header">
-    <div class="container header__inner">
-      <!-- Logo thương hiệu -->
-      <a href="./index.html" class="header__brand">
-        <div class="header__logo-icon">
-          <!-- Icon Mái nhà & Sóng tôn SVG -->
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9 22 9 12 15 12 15 22"></polyline>
-          </svg>
-        </div>
-        <div class="header__logo-text">
-          <span class="header__company-name">HMP</span>
-          <span class="header__slogan">Vật liệu mái &amp; phụ kiện</span>
-        </div>
-      </a>
-
-      <!-- Menu Điều hướng (Đã loại bỏ Dự án & Tin tức) -->
-      <nav class="header__nav">
-        <ul class="nav__list">
-          <li class="nav__item">
-            <a href="./index.html" class="nav__link nav__link--active">Trang chủ</a>
-          </li>
-          <li class="nav__item">
-            <a href="#about-section" class="nav__link">Giới thiệu</a>
-          </li>
-          <li class="nav__item">
-            <a href="./pages/product/catalog.html" class="nav__link">
-              <span>Sản phẩm</span>
-              <!-- Mũi tên xổ xuống -->
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 12 15 18 9"></polyline>
-              </svg>
-            </a>
-            <!-- Dropdown Menu Danh mục Tôn -->
-            <div id="nav-category-dropdown" class="nav__dropdown">
-              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn sóng lợp mái</a>
-              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Tôn xốp cách nhiệt PU</a>
-              <a href="./pages/product/catalog.html" class="nav__dropdown-link">Phụ kiện sườn, xối, nóc, máng</a>
-            </div>
-          </li>
-          <li class="nav__item">
-            <a href="#contact-section" class="nav__link">Liên hệ</a>
-          </li>
-        </ul>
-      </nav>
-
-      <!-- Khu vực Tiện ích Bên Phải -->
-      <div class="header__actions">
-        <!-- Nút Tìm kiếm -->
-        <button id="search-toggle-btn" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </button>
-
-        <!-- Nút Đăng nhập bo tròn chuẩn mẫu -->
-        <a id="header-login-btn" href="./pages/auth/login.html" class="header__login-btn">Đăng nhập</a>
-
-        <!-- Hồ sơ tài khoản (khi đã đăng nhập) -->
-        <a id="header-user-profile" href="./pages/customer/my-orders.html" class="header__user-profile">
-          <div id="header-user-avatar" class="header__user-avatar">U</div>
-          <span id="header-user-name" class="header__user-name">Khách hàng</span>
-        </a>
-
-        <!-- Nút Menu Mobile -->
-        <button id="mobile-menu-toggle" class="header__mobile-toggle" aria-label="Menu">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <!-- Drawer Menu Mobile -->
-    <div id="mobile-nav-drawer" class="mobile-nav">
-      <div class="mobile-nav__panel">
-        <a href="./index.html" class="mobile-nav__link mobile-nav__link--active">Trang chủ</a>
-        <a href="#about-section" class="mobile-nav__link">Giới thiệu</a>
-        <a href="#product-section" class="mobile-nav__link">Sản phẩm tôn lợp</a>
-        <a href="#contact-section" class="mobile-nav__link">Liên hệ</a>
-      </div>
-    </div>
-  </header>
+  <div id="site-header" data-component="header"></div>
 
   <!-- =========================================================================
        2. KHỐI HERO BANNER CHUẨN MẪU (SLIDER TÔN LỢP MÁI)
@@ -258,17 +172,18 @@
   </main>
 
   <!-- =========================================================================
-       5. CHÂN TRANG FOOTER (CHUẨN THEO ẢNH MẪU)
+       5. CHÂN TRANG FOOTER (CHUẨN 5 CỘT DÀN NGANG)
        ========================================================================= -->
   <footer id="contact-section" class="footer">
     <div class="container footer__inner">
       <div class="footer__row">
         <!-- Cột 1: Logo & Slogan -->
         <div class="footer__brand">
-          <a href="./index.html" class="footer__logo-wrap">
-            <svg class="footer__logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+          <a href="./index.html" class="footer__logo-wrap" data-link="home">
+            <!-- Icon Mái nhà & Sóng tôn cách điệu theo ảnh mẫu -->
+            <svg class="footer__logo-icon" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 21L14 4l11 17H3z"></path>
+              <path d="M9 21l5-8 5 8"></path>
             </svg>
             <span class="footer__brand-name">HMP</span>
           </a>
@@ -279,9 +194,9 @@
         <div class="footer__col">
           <h4 class="footer__title">Sản phẩm</h4>
           <ul class="footer__list">
-            <li><a href="#product-section" class="footer__link">Tôn lợp mái</a></li>
-            <li><a href="#product-section" class="footer__link">Phụ kiện</a></li>
-            <li><a href="#product-section" class="footer__link">Vật tư khác</a></li>
+            <li><a href="./pages/product/catalog.html" class="footer__link" data-link="catalog">Tôn lợp mái</a></li>
+            <li><a href="./pages/product/catalog.html" class="footer__link" data-link="catalog">Phụ kiện</a></li>
+            <li><a href="./pages/product/catalog.html" class="footer__link" data-link="catalog">Vật tư khác</a></li>
           </ul>
         </div>
 
@@ -289,9 +204,9 @@
         <div class="footer__col">
           <h4 class="footer__title">Hỗ trợ</h4>
           <ul class="footer__list">
-            <li><a href="#product-section" class="footer__link">Chính sách bán hàng</a></li>
-            <li><a href="#product-section" class="footer__link">Vận chuyển</a></li>
-            <li><a href="#product-section" class="footer__link">Bảo hành</a></li>
+            <li><a href="./index.html#about-section" class="footer__link" data-link="about">Chính sách bán hàng</a></li>
+            <li><a href="./index.html#about-section" class="footer__link" data-link="about">Vận chuyển</a></li>
+            <li><a href="./index.html#about-section" class="footer__link" data-link="about">Bảo hành</a></li>
           </ul>
         </div>
 
@@ -312,7 +227,7 @@
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                 <polyline points="22,6 12,13 2,6"></polyline>
               </svg>
-              <a href="mailto:info@hmp.vn">info@hmp.vn</a>
+              <a href="mailto:info@tanviet.vn">info@tanviet.vn</a>
             </li>
             <li class="footer__contact-item">
               <!-- Icon Địa chỉ -->
@@ -325,7 +240,7 @@
           </ul>
         </div>
 
-        <!-- Cột 5: Nút Mạng Xã Hội (Facebook, Chat/Zalo, YouTube) -->
+        <!-- Cột 5: 3 Nút Mạng Xã Hội Tròn (Facebook, Chat/Zalo, YouTube) -->
         <div class="footer__socials">
           <!-- Facebook -->
           <a href="#" class="footer__social-btn" title="Facebook" aria-label="Facebook">
@@ -333,9 +248,9 @@
               <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
             </svg>
           </a>
-          <!-- Chat / Tin nhắn -->
-          <a href="#" class="footer__social-btn" title="Liên hệ tư vấn" aria-label="Zalo / Tin nhắn">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <!-- Chat / Zalo -->
+          <a href="#" class="footer__social-btn" title="Liên hệ tư vấn" aria-label="Chat / Tin nhắn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
             </svg>
           </a>
@@ -349,7 +264,7 @@
         </div>
       </div>
 
-      <!-- Bản quyền tinh gọn -->
+      <!-- Bản quyền chân trang -->
       <div class="footer__copyright">
         <p>© 2026 Tôn Thép HMP — Kiến tạo mái nhà Việt. Tất cả các quyền được bảo lưu.</p>
       </div>
