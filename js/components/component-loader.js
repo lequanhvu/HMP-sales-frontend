@@ -42,7 +42,14 @@ function ensureStylesheet(href) {
 export function getRootPrefix() {
   const path = window.location.pathname.replace(/\\/g, '/');
   
-  if (path.includes('/pages/product/') || path.includes('/pages/customer/') || path.includes('/pages/admin/') || path.includes('/pages/auth/')) {
+  if (
+    path.includes('/pages/product/') ||
+    path.includes('/pages/customer/') ||
+    path.includes('/pages/admin/') ||
+    path.includes('/pages/auth/') ||
+    path.includes('/pages/introduction/') ||
+    path.includes('/pages/contact/')
+  ) {
     return '../../';
   } else if (path.includes('/pages/')) {
     return '../';
@@ -88,9 +95,9 @@ function highlightActiveNav(headerEl) {
 
   if (path.includes('catalog.html') || path.includes('detail.html') || path.includes('/product/')) {
     activeNavKey = 'product';
-  } else if (hash === '#about-section') {
+  } else if (path.includes('/introduction/') || path.includes('introduction.html') || hash === '#about-section') {
     activeNavKey = 'about';
-  } else if (hash === '#contact-section') {
+  } else if (path.includes('/contact/') || path.includes('contact.html') || hash === '#contact-section') {
     activeNavKey = 'contact';
   } else if (path.endsWith('index.html') || path.endsWith('/') || path.endsWith('/sales-frontend')) {
     activeNavKey = 'home';

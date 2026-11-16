@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-16 | By: @antigravity | Session: #2
+> Last updated: 2026-11-16 | By: @antigravity | Session: #3
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,31 @@
 ---
 
 ## Completed
+- ✅ **Phát Triển Giao Diện Trang Giới Thiệu & Trang Liên Hệ Chuẩn Mẫu Thực Tế (Session #3)**:
+  - **Trang Giới thiệu (`pages/introduction/introduction.html`, `assets/css/pages/introduction.css`, `js/pages/introduction.js`)**:
+    - **Hero Banner**: Nền ảnh `assets/images/introduction/banner.png` kết hợp gradient xanh thương hiệu, breadcrumb `Trang chủ > Giới thiệu`, tiêu đề lớn.
+    - **Khối Về chúng tôi**: Thiết kế 2 cột với nhãn "Về chúng tôi", tiêu đề "Uy tín tạo nên giá trị bền vững", đoạn giới thiệu chi tiết, nút "Tìm hiểu thêm →" và ảnh chụp toàn cảnh nhà máy `about-us.png`.
+    - **Khối Vì sao chọn Tôn Việt?**: Dải thẻ nền xanh nhạt viền bo tròn, gồm tiêu đề bên trái và lưới 4 ưu điểm nổi bật (Chất lượng vượt trội, Giá cả cạnh tranh, Hỗ trợ chuyên nghiệp, Giao hàng nhanh chóng) kèm icon vector chuẩn.
+    - **Khối Sứ mệnh – Tầm nhìn – Giá trị cốt lõi**: Bố cục 3 cột thẻ trụ cột (Sứ mệnh, Tầm nhìn, Giá trị cốt lõi) kết hợp ảnh minh họa sản phẩm tôn sóng màu `metal-sheet.png`.
+    - **Khối Kêu gọi hành động (CTA Banner)**: Nền ảnh `assets/images/introduction/footer.png` kết hợp thông điệp "Đồng hành cùng bạn kiến tạo những công trình bền vững" và nút "Liên hệ ngay →" điều hướng sang trang liên hệ.
+  - **Trang Liên hệ (`pages/contact/contact.html`, `assets/css/pages/contact.css`, `js/pages/contact.js`)**:
+    - **Hero Banner**: Nền ảnh [banner.png](file:///d:/HMP/sales-frontend/assets/images/contact/banner.png) hiển thị trọn vẹn chi tiết sóng tôn lợp mái (không bị cắt xén/zoom quá mức), kết hợp hiệu ứng gradient chuyển mượt mà về màu xanh tươi sáng (`#1b3f7e`) đồng bộ với banner trang chủ.
+    - **Khối 3 Thẻ Thông tin nhanh**: Lưới 3 cột (Hotline hỗ trợ 1900 1234, Email info@tonviet.vn, Địa chỉ `Thôn phất lộc tây, xã Thái Giang, huyện Thái Thụy, Tây Thái Ninh, Hưng Yên`) với icon bo tròn xanh lam hiện đại.
+    - **Khối Địa chỉ công ty & Bản đồ Google Maps**: Khung bản đồ Google Maps nhúng qua `<iframe>` của Công ty Hoàng Minh Phát (HMP), kích thước chuẩn format (100% chiều ngang, bo góc, chiều cao linh hoạt responsive: 320px mobile / 400px tablet / 460px desktop; 0 inline styles, kiểm soát hoàn toàn bằng CSS class `.contact-map__iframe`). Phía dưới hiển thị tên công ty và địa chỉ cập nhật.
+    - **Khối Kết nối với chúng tôi (Social Connect Banner)**: Nền ảnh nhà máy [footer.png](file:///d:/HMP/sales-frontend/assets/images/contact/footer.png) hiển thị trọn vẹn toàn bộ công trình và tán cây xanh bên phải, làm hiệu ứng chuyển dần (smooth fade) sang màu trắng thuần (`#ffffff`) bên trái, tích hợp nút Facebook liên kết đến trang cá nhân được chỉ định và nút Zalo (đã loại bỏ icon YouTube).
+  - **Đồng bộ Chân trang (Footer Component)**:
+    - Loại bỏ mã HTML footer tĩnh bị hardcode trong `index.html`, chuyển sang nhúng placeholder đồng bộ `<div id="site-footer" data-component="footer"></div>` giống toàn bộ các trang khác trong hệ thống.
+    - Cập nhật địa chỉ công ty thành `Thôn phất lộc tây, xã Thái Giang, huyện Thái Thụy, Tây Thái Ninh, Hưng Yên` với khả năng xuống dòng tự nhiên không bị tràn lề.
+    - Thay thế icon YouTube bằng icon Zalo và gắn liên kết trực tiếp Facebook đến `https://www.facebook.com/vinh.lexuan.984786`.
+  - **Cập nhật Điều hướng Dùng chung (`component-loader.js` & `pages/components/common/header.html`)**:
+    - Mở rộng hàm `getRootPrefix()` nhận diện `/pages/introduction/` và `/pages/contact/` để trả về tiền tố `../../` chính xác 100%.
+    - Cập nhật hàm `highlightActiveNav()` tự động kích hoạt `data-nav="about"` và `data-nav="contact"` khi người dùng truy cập trang tương ứng.
+    - Cập nhật liên kết trên thanh menu desktop và mobile drawer của Header chuyển thẳng đến `introduction.html` và `contact.html`.
+  - **Tuân thủ Tuyệt đối Quy chuẩn Dự án**:
+    - 0% inline style (kể cả thuộc tính `style="border:0;"` của thẻ iframe đã được chuyển hóa 100% sang class CSS).
+    - 0% inline JavaScript.
+    - BEM naming convention đồng nhất (`.intro-*` và `.contact-*`), sử dụng CSS variables từ `variables.css`.
+    - Mobile-first responsive hoàn chỉnh cho cả 3 chế độ: Mobile (375px), Tablet (768px), Desktop (1200px).
 - ✅ **Cải Tiến Trang Danh Mục Sản Phẩm & Trang Chi Tiết Sản Phẩm (Session #2)**:
   - **Trang danh mục (`pages/product/catalog.html` & `js/pages/product-catalog.js`)**:
     - Bấm vào bất kỳ danh mục nào (kể cả danh mục cha của cha) đều hiển thị sản phẩm của danh mục đó VÀ toàn bộ danh mục con cháu — backend `GET /api/v1/categories/{id}/products` đã được nâng cấp gộp cả cây con.

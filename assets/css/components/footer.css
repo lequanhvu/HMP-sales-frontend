@@ -129,11 +129,11 @@
 
 .footer__contact-item {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.625rem;
   font-size: 0.8125rem;
   color: #8da4c4;
-  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .footer__contact-icon {
@@ -141,6 +141,7 @@
   height: 16px;
   color: #8da4c4;
   flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .footer__contact-item a {
@@ -185,6 +186,23 @@
 .footer__social-btn svg {
   width: 16px;
   height: 16px;
+}
+
+.footer__zalo-text {
+  font-size: 0.725rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+.footer__social-btn--zalo:hover {
+  background-color: #0068ff;
+  border-color: #0068ff;
+}
+
+.footer__social-btn--fb:hover {
+  background-color: #1877f2;
+  border-color: #1877f2;
 }
 
 /* 5. Bản quyền phía dưới */
