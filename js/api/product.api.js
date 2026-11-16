@@ -69,3 +69,13 @@ export async function getActiveColors() {
   return await client.get('/colors');
 }
 
+/**
+ * Lấy danh sách sản phẩm nổi bật (Featured Products) đang kích hoạt để hiển thị trang chủ.
+ * 
+ * @returns {Promise<Array>} Danh sách sản phẩm nổi bật từ bảng featured_products
+ */
+export async function getFeaturedProducts() {
+  return await client.get('/featured-products');
+}
+
+

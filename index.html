@@ -145,29 +145,47 @@
     </section>
 
     <!-- =========================================================================
-         4. KHU VỰC DANH SÁCH SẢN PHẨM TÔN SÓNG
+         4. KHU VỰC SẢN PHẨM TÔN LỢP NỔI BẬT (SLIDER TRƯỢT NGANG)
          ========================================================================= -->
     <section id="product-section" class="catalog-section container">
       <div class="section-head">
-        <h2 class="section-title">Sản Phẩm Tôn Lợp Nổi Bật</h2>
+        <h2 class="section-title">Sản phẩm nổi bật</h2>
         
-        <!-- Tab lọc nhanh danh mục -->
-        <div id="category-tab-bar" class="category-tabs">
-          <button class="category-tab category-tab--active" data-cat-id="">Tất cả sản phẩm</button>
-        </div>
+        <a href="./pages/product/catalog.html" class="section-head__link">
+          Xem tất cả sản phẩm
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
       </div>
 
-      <!-- Lưới sản phẩm (Render qua Template) -->
-      <div id="product-list" class="product-grid">
-        <div class="state-box">
-          <div class="state-box__spinner"></div>
-          <h4 class="state-box__title">Đang nạp danh mục tôn...</h4>
-          <p class="state-box__desc">Vui lòng chờ trong giây lát</p>
-        </div>
-      </div>
+      <!-- Khung trượt sản phẩm nổi bật có lùi lề 2 bên và nút điều hướng < > -->
+      <div class="featured-slider">
+        <!-- Nút trượt sang trái < -->
+        <button type="button" class="featured-slider__btn featured-slider__btn--prev" id="featured-prev-btn" aria-label="Xem sản phẩm trước" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
 
-      <!-- Phân trang -->
-      <div id="pagination-controls" class="pagination"></div>
+        <!-- Vùng chứa danh sách sản phẩm nổi bật trượt ngang -->
+        <div class="featured-slider__track-wrapper">
+          <div id="product-list" class="featured-slider__track">
+            <div class="state-box">
+              <div class="state-box__spinner"></div>
+              <h4 class="state-box__title">Đang nạp sản phẩm nổi bật...</h4>
+              <p class="state-box__desc">Vui lòng chờ trong giây lát</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút trượt sang phải > -->
+        <button type="button" class="featured-slider__btn featured-slider__btn--next" id="featured-next-btn" aria-label="Xem sản phẩm kế tiếp">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
     </section>
   </main>
 
@@ -220,7 +238,7 @@
   <template id="home-loading-template">
     <div class="state-box">
       <div class="state-box__spinner"></div>
-      <h4 class="state-box__title">Đang tải sản phẩm tôn lợp mái...</h4>
+      <h4 class="state-box__title">Đang tải sản phẩm tôn lợp nổi bật...</h4>
       <p class="state-box__desc">Hệ thống đang kết nối dữ liệu máy chủ HMP</p>
     </div>
   </template>
@@ -228,8 +246,8 @@
   <!-- Template 3: Trạng thái danh sách rỗng (Empty) -->
   <template id="home-empty-template">
     <div class="state-box">
-      <h4 class="state-box__title">Chưa có sản phẩm nào trong danh mục này</h4>
-      <p class="state-box__desc">Vui lòng chọn danh mục khác hoặc quay lại sau</p>
+      <h4 class="state-box__title">Chưa có sản phẩm nổi bật nào</h4>
+      <p class="state-box__desc">Các sản phẩm tôn lợp tiêu biểu sẽ sớm được cập nhật</p>
     </div>
   </template>
 

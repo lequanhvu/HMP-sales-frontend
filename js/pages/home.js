@@ -3,123 +3,66 @@
  */
 
 import { initCommonLayout } from '../components/component-loader.js';
-import { client } from '../api/client.js';
+import { getFeaturedProducts } from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
-
-let currentCategoryId = null;
-let currentPage = 0;
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
   await initCommonLayout();
 
-  // 2. Nạp các tab danh mục tôn và danh sách sản phẩm
-  await Promise.all([
-    loadCategoryTabs(),
-    loadProducts()
-  ]);
+  // 2. Nạp danh sách sản phẩm nổi bật từ bảng FeaturedProduct
+  await loadFeaturedProducts();
 });
 
 /**
- * Nạp danh mục từ backend để tạo các tab lọc nhanh
+ * Nạp danh sách sản phẩm nổi bật từ API backend (/api/v1/featured-products)
+ * và khởi tạo thanh trượt (slider) có 2 nút điều hướng <>
  */
-async function loadCategoryTabs() {
-  const tabBar = document.getElementById('category-tab-bar');
-  if (!tabBar) return;
-
-  try {
-    const categories = await client.get('/categories/tree');
-    if (Array.isArray(categories) && categories.length > 0) {
-      const fragment = document.createDocumentFragment();
-
-      // Nút "Tất cả sản phẩm" đầu tiên
-      const allBtn = document.createElement('button');
-      allBtn.type = 'button';
-      allBtn.className = 'category-tab category-tab--active';
-      allBtn.dataset.catId = '';
-      allBtn.textContent = 'Tất cả sản phẩm';
-      allBtn.addEventListener('click', () => {
-        tabBar.querySelectorAll('.category-tab').forEach(t => t.classList.remove('category-tab--active'));
-        allBtn.classList.add('category-tab--active');
-        currentCategoryId = null;
-        currentPage = 0;
-        loadProducts();
-      });
-      fragment.appendChild(allBtn);
-
-      categories.forEach(cat => {
-        const catId = cat.id || cat.categoryId;
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'category-tab';
-        btn.textContent = cat.categoryName;
-        btn.dataset.catId = String(catId);
-        btn.addEventListener('click', () => {
-          tabBar.querySelectorAll('.category-tab').forEach(t => t.classList.remove('category-tab--active'));
-          btn.classList.add('category-tab--active');
-
-          currentCategoryId = catId;
-          currentPage = 0;
-          loadProducts();
-        });
-        fragment.appendChild(btn);
-      });
-
-      tabBar.replaceChildren(fragment);
-    }
-  } catch (error) {
-    console.warn('Không thể nạp danh mục tôn:', error);
-  }
-}
-
-/**
- * Nạp danh sách sản phẩm tôn sóng từ API backend và render qua <template>
- */
-async function loadProducts() {
-  const productListEl = document.getElementById('product-list');
-  const template = document.getElementById('product-card-template');
+async function loadFeaturedProducts() {
+  const trackEl = document.getElementById('product-list');
+  const prevBtn = document.getElementById('featured-prev-btn');
+  const nextBtn = document.getElementById('featured-next-btn');
+  const cardTemplate = document.getElementById('product-card-template');
   const loadingTemplate = document.getElementById('home-loading-template');
   const emptyTemplate = document.getElementById('home-empty-template');
   const errorTemplate = document.getElementById('home-error-template');
 
-  if (!productListEl || !template) return;
+  if (!trackEl || !cardTemplate) return;
 
   // Hiển thị trạng thái đang tải qua <template>
   if (loadingTemplate) {
-    productListEl.replaceChildren(loadingTemplate.content.cloneNode(true));
+    trackEl.replaceChildren(loadingTemplate.content.cloneNode(true));
   }
 
   try {
-    const params = { page: currentPage, size: 8 };
-    if (currentCategoryId) {
-      params.categoryId = currentCategoryId;
-    }
+    const products = await getFeaturedProducts();
 
-    const response = await client.get('/products', params);
-    const products = response.result || [];
-
-    if (products.length === 0) {
+    if (!Array.isArray(products) || products.length === 0) {
       if (emptyTemplate) {
-        productListEl.replaceChildren(emptyTemplate.content.cloneNode(true));
+        trackEl.replaceChildren(emptyTemplate.content.cloneNode(true));
       }
+      if (prevBtn) prevBtn.disabled = true;
+      if (nextBtn) nextBtn.disabled = true;
       return;
     }
 
     const fragment = document.createDocumentFragment();
 
-    // Render từng sản phẩm bằng cách clone template (KHÔNG nhúng chuỗi HTML thô)
-    products.forEach(product => {
-      const clone = template.content.cloneNode(true);
-      const productId = product.id || product.productId;
+    // Render từng sản phẩm bằng cách clone template
+    products.forEach(item => {
+      const clone = cardTemplate.content.cloneNode(true);
+      const productId = item.productId || item.id;
 
-      // 1. Gán thương hiệu
+      // 1. Gán thương hiệu / danh mục
       const brandEl = clone.querySelector('.product-card__brand');
-      if (brandEl) brandEl.textContent = product.brandName || 'Chính hãng';
+      if (brandEl) {
+        brandEl.textContent = item.brandName || item.categoryName || 'Chính hãng';
+      }
 
       // 2. Gán tên sản phẩm & đường link
       const titleLink = clone.querySelector('.product-card__link');
       if (titleLink) {
-        titleLink.textContent = product.productName;
+        titleLink.textContent = item.productName;
         titleLink.href = `./pages/product/detail.html?id=${productId}`;
       }
 
@@ -129,8 +72,8 @@ async function loadProducts() {
       const defaultEmptyImage = './assets/images/empty-picture.png';
 
       if (imageEl) {
-        imageEl.src = product.primaryImageUrl || defaultEmptyImage;
-        imageEl.alt = product.productName;
+        imageEl.src = item.primaryImageUrl || defaultEmptyImage;
+        imageEl.alt = item.productName;
         imageEl.onerror = () => {
           imageEl.src = defaultEmptyImage;
         };
@@ -143,12 +86,12 @@ async function loadProducts() {
       const priceEl = clone.querySelector('.product-card__price');
       const priceLabelEl = clone.querySelector('.product-card__price-label');
       if (priceEl) {
-        if (product.price === null || product.price === undefined) {
+        if (!item.priceVisible || item.price === null || item.price === undefined) {
           priceEl.textContent = 'Liên hệ báo giá';
           priceEl.className = 'badge badge--contact';
           if (priceLabelEl) priceLabelEl.classList.add('hidden');
         } else {
-          priceEl.textContent = formatVnd(product.price);
+          priceEl.textContent = formatVnd(item.price);
         }
       }
 
@@ -162,16 +105,106 @@ async function loadProducts() {
       fragment.appendChild(clone);
     });
 
-    productListEl.replaceChildren(fragment);
+    trackEl.replaceChildren(fragment);
+
+    // Khởi tạo các sự kiện trượt cho 2 nút <>
+    initSliderNavigation(trackEl, prevBtn, nextBtn);
 
   } catch (error) {
     if (errorTemplate) {
       const errorClone = errorTemplate.content.cloneNode(true);
       const msgEl = errorClone.querySelector('.home-error-msg');
       if (msgEl) {
-        msgEl.textContent = error.message || 'Lỗi mạng khi tải dữ liệu';
+        msgEl.textContent = error.message || 'Lỗi mạng khi tải dữ liệu sản phẩm nổi bật';
       }
-      productListEl.replaceChildren(errorClone);
+      trackEl.replaceChildren(errorClone);
     }
+    if (prevBtn) prevBtn.disabled = true;
+    if (nextBtn) nextBtn.disabled = true;
   }
+}
+
+/**
+ * Khởi tạo tính năng trượt ngang mượt mà với 2 nút điều hướng <>
+ *
+ * @param {HTMLElement} trackEl Khung chứa danh sách thẻ sản phẩm
+ * @param {HTMLButtonElement|null} prevBtn Nút trượt sang trái
+ * @param {HTMLButtonElement|null} nextBtn Nút trượt sang phải
+ */
+function initSliderNavigation(trackEl, prevBtn, nextBtn) {
+  if (!trackEl) return;
+
+  function updateButtons() {
+    if (!prevBtn || !nextBtn) return;
+    const maxScroll = trackEl.scrollWidth - trackEl.clientWidth;
+    if (maxScroll <= 5) {
+      // Dữ liệu ít, vừa vặn khung hình -> ẩn hoặc disable cả 2 nút
+      prevBtn.disabled = true;
+      nextBtn.disabled = true;
+      return;
+    }
+
+    prevBtn.disabled = trackEl.scrollLeft <= 10;
+    nextBtn.disabled = trackEl.scrollLeft >= maxScroll - 10;
+  }
+
+  function getScrollStep() {
+    // Trượt theo kích thước 1 card + khoảng cách gap, hoặc 75% chiều rộng khung
+    const firstCard = trackEl.querySelector('.product-card');
+    if (firstCard) {
+      const cardWidth = firstCard.getBoundingClientRect().width;
+      const gap = 20; // 1.25rem = 20px
+      return (cardWidth + gap) * 2; // trượt 2 sản phẩm mỗi lần bấm
+    }
+    return trackEl.clientWidth * 0.75;
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', () => {
+      const step = getScrollStep();
+      trackEl.scrollBy({ left: -step, behavior: 'smooth' });
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', () => {
+      const step = getScrollStep();
+      trackEl.scrollBy({ left: step, behavior: 'smooth' });
+    });
+  }
+
+  // Cập nhật trạng thái nút khi người dùng cuộn
+  trackEl.addEventListener('scroll', updateButtons, { passive: true });
+  window.addEventListener('resize', updateButtons, { passive: true });
+
+  // Kiểm tra ban đầu sau khi render
+  setTimeout(updateButtons, 100);
+
+  // Hỗ trợ kéo rê chuột mượt mà trên Desktop (Drag-to-scroll)
+  let isDown = false;
+  let startX = 0;
+  let scrollLeft = 0;
+
+  trackEl.addEventListener('mousedown', (e) => {
+    // Chỉ kích hoạt khi click chuột trái và không click vào nút hành động / link
+    if (e.button !== 0 || e.target.closest('a') || e.target.closest('button')) return;
+    isDown = true;
+    trackEl.style.cursor = 'grabbing';
+    startX = e.pageX - trackEl.offsetLeft;
+    scrollLeft = trackEl.scrollLeft;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDown) return;
+    isDown = false;
+    trackEl.style.cursor = '';
+  });
+
+  trackEl.addEventListener('mousemove', (e) => {
+    if (!isDown) return;
+    e.preventDefault();
+    const x = e.pageX - trackEl.offsetLeft;
+    const walk = (x - startX) * 1.5;
+    trackEl.scrollLeft = scrollLeft - walk;
+  });
 }
