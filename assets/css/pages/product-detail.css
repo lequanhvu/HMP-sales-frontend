@@ -226,14 +226,6 @@
   flex-direction: column;
 }
 
-.product-price-box__label {
-  font-size: 0.75rem;
-  color: #3b82f6;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
 .product-price-box__amount {
   font-size: 1.75rem;
   font-weight: 800;
@@ -261,12 +253,6 @@
   background-color: #fef3c7;
   color: #b45309;
   border: 1px solid #fde68a;
-}
-
-.product-price-box__badge--verified {
-  background-color: #dcfce7;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
 }
 
 /* 6. Nhóm Tùy Chọn: Biến Thể & Màu Sắc */
@@ -389,180 +375,6 @@
 .color-swatch-btn--active .color-swatch-btn__name {
   color: var(--color-primary);
   font-weight: 600;
-}
-
-/* 7. Khung Đặt Hàng & Nhập Kích Thước Tôn */
-.product-calc-card {
-  background-color: #f8fafc;
-  border: 1.5px solid #e2e8f0;
-  border-radius: var(--radius-md);
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.product-calc-card__title {
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.product-calc-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 576px) {
-  .product-calc-grid {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.product-field {
-  display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.product-field__label {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #475569;
-}
-
-.product-field__input-wrap {
-  display: flex;
-  align-items: center;
-  position: relative;
-}
-
-.product-field__input {
-  width: 100%;
-  padding: 0.6rem 0.875rem;
-  border-radius: var(--radius-md);
-  border: 1px solid #cbd5e1;
-  background-color: #fff;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--color-text-main);
-  outline: none;
-  transition: border-color var(--transition-fast);
-}
-
-.product-field__input:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(19, 81, 180, 0.12);
-}
-
-.product-field__suffix {
-  position: absolute;
-  right: 0.875rem;
-  font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 500;
-  pointer-events: none;
-}
-
-/* Bộ nút chọn nhanh chiều dài */
-.length-quick-chips {
-  display: flex;
-  gap: 0.35rem;
-  flex-wrap: wrap;
-  margin-top: 0.25rem;
-}
-
-.quick-chip {
-  padding: 0.2rem 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  background-color: #e2e8f0;
-  color: #334155;
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.quick-chip:hover {
-  background-color: #cbd5e1;
-}
-
-/* Bộ nút tăng giảm số lượng */
-.quantity-stepper {
-  display: flex;
-  align-items: center;
-  border: 1px solid #cbd5e1;
-  border-radius: var(--radius-md);
-  background-color: #fff;
-  overflow: hidden;
-}
-
-.quantity-stepper__btn {
-  width: 40px;
-  height: 40px;
-  background-color: #f1f5f9;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color: #334155;
-  cursor: pointer;
-  transition: background-color var(--transition-fast);
-}
-
-.quantity-stepper__btn:hover {
-  background-color: #e2e8f0;
-}
-
-.quantity-stepper__input {
-  flex: 1;
-  height: 40px;
-  border: none;
-  text-align: center;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: var(--color-text-main);
-  outline: none;
-}
-
-/* Khối Thành Tiền Tạm Tính */
-.product-calc-total {
-  background-color: #fff;
-  border: 1px dashed #cbd5e1;
-  border-radius: var(--radius-md);
-  padding: 0.875rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.product-calc-total__label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #475569;
-}
-
-.product-calc-total__amount {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--color-primary);
-}
-
-.product-calc-total__amount--contact {
-  color: #b45309;
-}
-
-.product-calc-total__hint {
-  font-size: 0.8rem;
-  color: #b45309;
-  font-style: italic;
 }
 
 /* 8. Khối Nút Hành Động */
@@ -694,12 +506,121 @@
   line-height: 1.7;
 }
 
-.shipping-commit-list {
-  padding-left: 1.25rem;
-  margin-top: 0.5rem;
+/* Thông báo trong tab (không có quyền xem giá / không có dữ liệu) */
+.tab-message {
+  margin: 0;
+  padding: 0.9rem 1.1rem;
+  border-radius: var(--radius-md);
+  background-color: #fef3c7;
+  border: 1px solid #fde68a;
+  color: #92400e;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Bảng giá: hàng ngang là đơn vị tính, hàng dọc là biến thể sản phẩm */
+.price-table__wrap {
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+}
+
+.price-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 360px;
+}
+
+.price-table th,
+.price-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.9rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.price-table thead th {
+  background-color: #eff6ff;
+  color: var(--color-primary);
+  font-weight: 700;
+  text-align: center;
+}
+
+.price-table__corner {
+  text-align: left !important;
+}
+
+.price-table__variant {
+  text-align: left;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f8fafc;
+  white-space: nowrap;
+}
+
+.price-table__cell {
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-price);
+}
+
+.price-table__cell--empty {
+  color: #94a3b8;
+  font-weight: 400;
+}
+
+.price-table tbody tr:last-child th,
+.price-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Bảng màu */
+.color-palette {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 1rem;
+}
+
+.color-palette__item {
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-md);
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.color-palette__swatch-wrap {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.color-palette__swatch {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #cbd5e1;
+}
+
+.color-palette__dot {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #cbd5e1;
+  border: 1px solid #cbd5e1;
+}
+
+.color-palette__name {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-text-main);
+  line-height: 1.3;
 }
 
 /* Bảng Thông Số Kỹ Thuật */

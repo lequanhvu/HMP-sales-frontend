@@ -77,13 +77,12 @@
                 </span>
               </div>
               <h1 id="product-title" class="product-info__title">Đang tải...</h1>
-              <span id="product-category-text" class="product-info__category-name">Danh mục tôn lợp mái</span>
+              <span id="product-category-text" class="product-info__category-name">Tôn sóng lợp mái</span>
             </div>
 
-            <!-- Bảng Giá Niêm Yết -->
+            <!-- Khung hiển thị đơn giá theo biến thể đang chọn -->
             <div class="product-price-box">
               <div class="product-price-box__current">
-                <span class="product-price-box__label">Đơn giá niêm yết</span>
                 <div>
                   <span id="product-price-amount" class="product-price-box__amount">Liên hệ báo giá</span>
                   <span id="product-price-unit" class="product-price-box__unit">/ mét</span>
@@ -97,7 +96,7 @@
             <!-- Bộ Chọn Biến Thể Tôn (Độ dày, loại sóng) -->
             <div class="product-option-group">
               <label class="product-option-group__label">
-                <span>Chọn độ dày & loại sóng</span>
+                <span>Chọn độ dày &amp; loại sóng</span>
                 <span class="product-option-group__note">(Cắt theo yêu cầu)</span>
               </label>
               <div id="product-variants-list" class="product-variants-list">
@@ -116,55 +115,7 @@
               </div>
             </div>
 
-            <!-- Form Tính Giá & Nhập Kích Thước Tôn Sản Xuất -->
-            <div class="product-calc-card">
-              <div class="product-calc-card__title">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-                  <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-                </svg>
-                <span>Kích thước gia công sản xuất</span>
-              </div>
-
-              <div class="product-calc-grid">
-                <!-- Nhập Chiều Dài (mét) -->
-                <div class="product-field">
-                  <label for="input-length" class="product-field__label">Chiều dài mỗi tấm (mét):</label>
-                  <div class="product-field__input-wrap">
-                    <input type="number" id="input-length" class="product-field__input" min="0.5" max="30" step="0.1" value="6.0" placeholder="Ví dụ: 6.0">
-                    <span class="product-field__suffix">mét (m)</span>
-                  </div>
-                  <!-- Nút chọn nhanh -->
-                  <div class="length-quick-chips">
-                    <button type="button" class="quick-chip" data-length="3.0">3.0m</button>
-                    <button type="button" class="quick-chip" data-length="4.0">4.0m</button>
-                    <button type="button" class="quick-chip" data-length="5.0">5.0m</button>
-                    <button type="button" class="quick-chip" data-length="6.0">6.0m</button>
-                  </div>
-                </div>
-
-                <!-- Nhập Số Lượng (tấm) -->
-                <div class="product-field">
-                  <label for="input-quantity" class="product-field__label">Số lượng tấm tôn:</label>
-                  <div class="quantity-stepper">
-                    <button type="button" id="btn-qty-minus" class="quantity-stepper__btn" aria-label="Giảm">−</button>
-                    <input type="number" id="input-quantity" class="quantity-stepper__input" min="1" max="1000" step="1" value="10">
-                    <button type="button" id="btn-qty-plus" class="quantity-stepper__btn" aria-label="Tăng">+</button>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tổng Tiền Tạm Tính -->
-              <div class="product-calc-total">
-                <span class="product-calc-total__label">Tổng tiền tạm tính:</span>
-                <div>
-                  <span id="product-calc-total-amount" class="product-calc-total__amount">Liên hệ báo giá</span>
-                  <div id="product-calc-formula-hint" class="product-calc-total__hint">Công thức: Đơn giá × Chiều dài × Số lượng</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Nút Hành Động Đặt Hàng -->
+            <!-- Nút Hành Động -->
             <div class="product-actions">
               <button type="button" id="btn-order-now" class="btn btn--order-now">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -172,13 +123,13 @@
                   <line x1="3" y1="6" x2="21" y2="6"></line>
                   <path d="M16 10a4 4 0 0 1-8 0"></path>
                 </svg>
-                <span>Tiến hành đặt tôn</span>
+                <span>Mua ngay</span>
               </button>
               <a href="tel:0987654321" class="btn btn--call-advisor">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
                 </svg>
-                <span>Hotline tư vấn: 0987 654 321</span>
+                <span>Liên hệ tư vấn</span>
               </a>
             </div>
 
@@ -190,7 +141,8 @@
           <div class="product-tab-nav" role="tablist">
             <button type="button" class="product-tab-btn product-tab-btn--active" data-tab="tab-description" role="tab">Mô tả sản phẩm</button>
             <button type="button" class="product-tab-btn" data-tab="tab-specs" role="tab">Thông số kỹ thuật</button>
-            <button type="button" class="product-tab-btn" data-tab="tab-shipping" role="tab">Chính sách & Vận chuyển</button>
+            <button type="button" class="product-tab-btn" data-tab="tab-prices" role="tab">Bảng giá</button>
+            <button type="button" class="product-tab-btn" data-tab="tab-colors" role="tab">Bảng màu</button>
           </div>
 
           <!-- Tab 1: Mô tả -->
@@ -217,6 +169,10 @@
                   <td id="spec-thickness">0.45 mm</td>
                 </tr>
                 <tr>
+                  <td>Khổ rộng:</td>
+                  <td id="spec-width">1070 mm</td>
+                </tr>
+                <tr>
                   <td>Loại sóng gia công:</td>
                   <td id="spec-type-value">5 sóng công nghiệp</td>
                 </tr>
@@ -232,17 +188,32 @@
             </table>
           </div>
 
-          <!-- Tab 3: Chính sách -->
-          <div id="tab-shipping" class="product-tab-pane" role="tabpanel">
-            <p><strong>Cam kết chất lượng từ Nhà máy HMP:</strong></p>
-            <ul class="shipping-commit-list">
-              <li>Cắt chính xác theo kích thước chiều dài công trình yêu cầu (dung sai ± 5mm).</li>
-              <li>Tôn cuộn nguyên đai, tem mác chính hãng từ nhà máy Hoa Sen, Đông Á, Nam Kim, Hòa Phát.</li>
-              <li>Hỗ trợ cẩu hàng và vận chuyển tận chân công trình trong khu vực tỉnh.</li>
-              <li>Bảo hành chống ăn mòn thủng lên đến 10 - 20 năm theo tiêu chuẩn nhà sản xuất.</li>
-            </ul>
+          <!-- Tab 3: Bảng giá (hàng ngang: đơn vị tính, hàng dọc: biến thể sản phẩm) -->
+          <div id="tab-prices" class="product-tab-pane" role="tabpanel">
+            <p id="price-table-message" class="tab-message hidden"></p>
+            <div id="price-table-wrap" class="price-table__wrap hidden">
+              <table class="price-table">
+                <thead>
+                  <tr id="price-table-head">
+                    <th class="price-table__corner" scope="col">Biến thể</th>
+                  </tr>
+                </thead>
+                <tbody id="price-table-body">
+                  <!-- Render động qua thẻ <template id="price-row-template"> -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab 4: Bảng màu -->
+          <div id="tab-colors" class="product-tab-pane" role="tabpanel">
+            <p id="color-palette-message" class="tab-message hidden"></p>
+            <div id="color-palette-list" class="color-palette">
+              <!-- Render động qua thẻ <template id="color-palette-item-template"> -->
+            </div>
           </div>
         </section>
+
 
       </section>
 
@@ -285,6 +256,34 @@
         <polyline points="9 18 15 12 9 6"></polyline>
       </svg>
     </a>
+  </template>
+
+  <!-- Template 5: Ô tiêu đề cột đơn vị tính trong Bảng giá -->
+  <template id="price-head-cell-template">
+    <th class="price-table__unit" scope="col"></th>
+  </template>
+
+  <!-- Template 6: Dòng biến thể trong Bảng giá -->
+  <template id="price-row-template">
+    <tr class="price-table__row">
+      <th class="price-table__variant" scope="row"></th>
+    </tr>
+  </template>
+
+  <!-- Template 7: Ô giá theo đơn vị tính trong Bảng giá -->
+  <template id="price-cell-template">
+    <td class="price-table__cell"></td>
+  </template>
+
+  <!-- Template 8: Ô màu trong Bảng màu -->
+  <template id="color-palette-item-template">
+    <div class="color-palette__item">
+      <div class="color-palette__swatch-wrap">
+        <img src="" alt="Mẫu màu" class="color-palette__swatch hidden">
+        <span class="color-palette__dot hidden"></span>
+      </div>
+      <span class="color-palette__name"></span>
+    </div>
   </template>
 
   <!-- Script Điều Khiển Trang Chi Tiết -->

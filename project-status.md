@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-11 | By: @antigravity | Session: #1
+> Last updated: 2026-11-16 | By: @antigravity | Session: #2
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,23 @@
 ---
 
 ## Completed
+- ✅ **Cải Tiến Trang Danh Mục Sản Phẩm & Trang Chi Tiết Sản Phẩm (Session #2)**:
+  - **Trang danh mục (`pages/product/catalog.html` & `js/pages/product-catalog.js`)**:
+    - Bấm vào bất kỳ danh mục nào (kể cả danh mục cha của cha) đều hiển thị sản phẩm của danh mục đó VÀ toàn bộ danh mục con cháu — backend `GET /api/v1/categories/{id}/products` đã được nâng cấp gộp cả cây con.
+    - Bỏ ô sắp xếp (HTML, CSS, JS liên quan).
+    - Tìm kiếm sản phẩm: ô nhập có gợi ý type-ahead debounce 300ms (`GET /api/v1/search/suggestions`, không dấu + sửa lỗi gõ sai, không hiển thị ô hình ảnh), điều hướng bàn phím (↑ ↓ Enter Esc); chọn gợi ý Sản phẩm / Thương hiệu → tìm kiếm ngay trên trang sản phẩm, Danh mục → lọc danh mục; gửi form tìm `GET /api/v1/products?productName=...&status=ACTIVE` (không phân biệt dấu); khi không có kết quả hiển thị "Có phải bạn muốn tìm: ..." dựa trên bộ gợi ý của backend. Hỗ trợ URL `?keyword=`.
+    - Chuyển đổi hiển thị Grid View / List View (ghi nhớ lựa chọn trong `localStorage`).
+    - Bấm vào ảnh sản phẩm cũng đi vào trang chi tiết (ảnh là thẻ `<a>`).
+    - Lưới "Tất cả sản phẩm" chỉ lấy sản phẩm `ACTIVE`.
+  - **Trang chi tiết (`pages/product/detail.html` & `js/pages/product-detail.js`)**:
+    - Bỏ mục "Kích thước gia công sản xuất" (HTML, CSS, JS: ô nhập chiều dài, số lượng, tổng tiền tạm tính).
+    - Đổi nội dung: bỏ "Danh mục:", bỏ nhãn "Đơn giá niêm yết" và "Giá niêm yết nhà máy", "Tiến hành đặt tôn" → "Mua ngay", "Hotline tư vấn: ..." → "Liên hệ tư vấn".
+    - Tab "Chính sách & Vận chuyển" thay bằng tab **Bảng giá** (hàng ngang: đơn vị tính, hàng dọc: biến thể; thiếu quyền `PRODUCT_PRICE_VIEW` hiển thị "Bạn không có quyền xem giá sản phẩm").
+    - Thêm tab **Bảng màu** (gom màu của mọi biến thể, ghép ảnh mẫu màu từ `GET /api/v1/colors`; không có dữ liệu hiển thị "Sản phẩm không có thông tin về màu sắc").
+    - Mục "Thông số kỹ thuật" bổ sung dòng **Khổ rộng** (thuộc tính `width` mới của `ProductVariant`, hiển thị theo mm) và đồng bộ theo biến thể đang chọn.
+  - Bổ sung `js/utils/debounce.js`, `getSearchSuggestions()` và `getActiveColors()` trong `js/api/product.api.js`.
+  - ⚠️ Chưa kiểm thử thủ công trên trình duyệt (môi trường không có Node/trình duyệt) — cần mở bằng Live Server để kiểm tra.
+
 - ✅ **Kiến Trúc Nhúng Component Dùng Chung (`pages/components/` & `js/components/component-loader.js`)**:
   - Trích xuất toàn bộ khối Header và Footer từ Trang chủ sang các file component riêng biệt: `pages/components/common/header.html` và `pages/components/common/footer.html`.
   - Tách bạch 100% cả 3 tầng HTML, CSS và JS độc lập cho từng Component:

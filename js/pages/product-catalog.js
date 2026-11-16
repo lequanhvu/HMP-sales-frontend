@@ -4,38 +4,69 @@
  * Tính năng:
  * - Nạp động cây danh mục đa cấp từ backend (GET /api/v1/categories/tree)
  * - Tương tác Sidebar accordion (mở/đóng danh mục con, lọc sản phẩm)
- * - Nạp sản phẩm phân trang từ API động (GET /api/v1/categories/{id}/products hoặc GET /api/v1/products)
+ * - Chọn một danh mục: hiển thị sản phẩm của danh mục đó VÀ toàn bộ danh mục con cháu
+ *   (GET /api/v1/categories/{id}/products — backend gộp cả cây con)
+ * - Tìm kiếm sản phẩm: không dấu, gợi ý type-ahead (debounce), gợi ý sửa lỗi chính tả
+ *   (GET /api/v1/products?productName=... và GET /api/v1/search/suggestions)
+ * - Chuyển đổi hiển thị Grid View / List View
+ * - Bấm vào ảnh hoặc tên sản phẩm đều đi tới trang chi tiết
  * - Tự động fallback ảnh thiếu/lỗi về empty-picture.png
  * - Phân trang chuẩn 0-indexed chuyển đổi sang 1-indexed
- * - Sắp xếp theo tên / thời gian tạo
  */
 
 import { initCommonLayout } from '../components/component-loader.js';
-import { getCategoriesTree, getProducts, getProductsByCategory } from '../api/product.api.js';
+import {
+  getCategoriesTree,
+  getProducts,
+  getProductsByCategory,
+  getSearchSuggestions
+} from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
+import { debounce } from '../utils/debounce.js';
 
 // Trạng thái cục bộ của trang
 let selectedCategoryId = null;
 let currentPage = 0;
 const pageSize = 6; // 6 sản phẩm (2 hàng x 3 cột) chuẩn theo mẫu giao diện
-let sortBy = 'createdAt';
-let sortDirection = 'asc';
+let keyword = '';
+let viewMode = 'grid';
 
+// Trạng thái ô gợi ý tìm kiếm
+let suggestionItems = [];
+let activeSuggestionIndex = -1;
+let suggestionRequestSeq = 0;
+
+const SUGGESTION_DEBOUNCE_MS = 300;
+const SEARCH_MAX_LENGTH = 50;
+const VIEW_MODE_STORAGE_KEY = 'hmp_catalog_view_mode';
 const DEFAULT_EMPTY_IMG = '../../assets/images/empty-picture.png';
+
+const SUGGESTION_TYPE_LABELS = {
+  PRODUCT: 'Sản phẩm',
+  CATEGORY: 'Danh mục',
+  BRAND: 'Thương hiệu'
+};
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
   await initCommonLayout();
 
-  // 2. Đọc categoryId từ URL (nếu có chuyển hướng từ Header dropdown)
+  // 2. Đọc tham số từ URL (categoryId từ Header dropdown, keyword từ liên kết tìm kiếm)
   const urlParams = new URLSearchParams(window.location.search);
   const catIdParam = urlParams.get('categoryId');
   if (catIdParam) {
     selectedCategoryId = parseInt(catIdParam, 10);
   }
+  const keywordParam = (urlParams.get('keyword') || '').trim().slice(0, SEARCH_MAX_LENGTH);
+  if (keywordParam) {
+    keyword = keywordParam;
+    selectedCategoryId = null;
+  }
 
-  // 3. Khởi tạo sự kiện thanh công cụ sắp xếp
-  initToolbar();
+  // 3. Khôi phục chế độ xem đã chọn & khởi tạo thanh công cụ (tìm kiếm + Grid/List)
+  restoreViewMode();
+  initViewToggle();
+  initSearch();
 
   // 4. Nạp cây danh mục và danh sách sản phẩm song song
   await Promise.all([
@@ -44,21 +75,391 @@ document.addEventListener('DOMContentLoaded', async () => {
   ]);
 });
 
+/* ==========================================================================
+   CHẾ ĐỘ HIỂN THỊ GRID / LIST
+   ========================================================================== */
+
 /**
- * Khởi tạo sự kiện chọn sắp xếp
+ * Đọc chế độ xem đã lưu (grid | list) và áp dụng lên giao diện.
  */
-function initToolbar() {
-  const sortSelect = document.getElementById('sort-select');
-  if (sortSelect) {
-    sortSelect.addEventListener('change', (e) => {
-      const parts = e.target.value.split(',');
-      sortBy = parts[0] || 'createdAt';
-      sortDirection = parts[1] || 'asc';
-      currentPage = 0;
-      loadProducts();
+function restoreViewMode() {
+  let saved = null;
+  try {
+    saved = localStorage.getItem(VIEW_MODE_STORAGE_KEY);
+  } catch {
+    saved = null;
+  }
+  applyViewMode(saved === 'list' ? 'list' : 'grid');
+}
+
+/**
+ * Gắn sự kiện cho 2 nút chuyển đổi Grid View / List View.
+ */
+function initViewToggle() {
+  document.querySelectorAll('.catalog-view-btn[data-view]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const mode = btn.dataset.view === 'list' ? 'list' : 'grid';
+      applyViewMode(mode);
+      try {
+        localStorage.setItem(VIEW_MODE_STORAGE_KEY, mode);
+      } catch {
+        // Bỏ qua nếu trình duyệt chặn localStorage
+      }
+    });
+  });
+}
+
+/**
+ * Áp dụng chế độ hiển thị lên danh sách sản phẩm và trạng thái nút bấm.
+ *
+ * @param {'grid'|'list'} mode - Chế độ hiển thị
+ */
+function applyViewMode(mode) {
+  viewMode = mode;
+  const listEl = document.getElementById('catalog-products-list');
+  if (listEl) {
+    listEl.classList.toggle('catalog-grid--list', mode === 'list');
+  }
+
+  document.querySelectorAll('.catalog-view-btn[data-view]').forEach(btn => {
+    const isActive = btn.dataset.view === mode;
+    btn.classList.toggle('catalog-view-btn--active', isActive);
+    btn.setAttribute('aria-pressed', String(isActive));
+  });
+}
+
+/* ==========================================================================
+   TÌM KIẾM SẢN PHẨM (GỢI Ý + SỬA LỖI CHÍNH TẢ)
+   ========================================================================== */
+
+/**
+ * Khởi tạo ô tìm kiếm: gợi ý type-ahead có debounce, điều hướng bàn phím, gửi form.
+ */
+function initSearch() {
+  const formEl = document.getElementById('catalog-search-form');
+  const inputEl = document.getElementById('catalog-search-input');
+  const clearBtn = document.getElementById('catalog-search-clear');
+  const dropdownEl = document.getElementById('catalog-search-suggestions');
+
+  if (!formEl || !inputEl || !dropdownEl) return;
+
+  // Hiển thị lại từ khóa nếu vào trang từ liên kết có ?keyword=
+  inputEl.value = keyword;
+  toggleClearButton();
+
+  const fetchSuggestionsDebounced = debounce(fetchAndRenderSuggestions, SUGGESTION_DEBOUNCE_MS);
+
+  inputEl.addEventListener('input', () => {
+    toggleClearButton();
+    const text = inputEl.value.trim();
+    if (!text) {
+      fetchSuggestionsDebounced.cancel();
+      suggestionRequestSeq++;
+      closeSuggestions();
+      return;
+    }
+    fetchSuggestionsDebounced(text);
+  });
+
+  inputEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeSuggestions();
+      return;
+    }
+    if (dropdownEl.classList.contains('hidden') || suggestionItems.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveSuggestion((activeSuggestionIndex + 1) % suggestionItems.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveSuggestion((activeSuggestionIndex - 1 + suggestionItems.length) % suggestionItems.length);
+    } else if (e.key === 'Enter' && activeSuggestionIndex >= 0) {
+      e.preventDefault();
+      selectSuggestion(suggestionItems[activeSuggestionIndex]);
+    }
+  });
+
+  inputEl.addEventListener('focus', () => {
+    if (suggestionItems.length > 0 && inputEl.value.trim()) {
+      openSuggestions();
+    }
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      inputEl.value = '';
+      toggleClearButton();
+      closeSuggestions();
+      inputEl.focus();
+      if (keyword || selectedCategoryId) {
+        keyword = '';
+        currentPage = 0;
+        resetSidebarToAll();
+        loadProducts();
+      }
     });
   }
+
+  formEl.addEventListener('submit', (e) => {
+    e.preventDefault();
+    fetchSuggestionsDebounced.cancel();
+    suggestionRequestSeq++;
+    closeSuggestions();
+    runSearch(inputEl.value);
+  });
+
+  // Đóng danh sách gợi ý khi bấm ra ngoài ô tìm kiếm
+  document.addEventListener('click', (e) => {
+    if (!formEl.contains(e.target)) {
+      closeSuggestions();
+    }
+  });
 }
+
+/**
+ * Ẩn/hiện nút xóa nhanh từ khóa theo nội dung ô nhập.
+ */
+function toggleClearButton() {
+  const inputEl = document.getElementById('catalog-search-input');
+  const clearBtn = document.getElementById('catalog-search-clear');
+  if (inputEl && clearBtn) {
+    clearBtn.classList.toggle('hidden', inputEl.value.length === 0);
+  }
+}
+
+/**
+ * Thực hiện tìm kiếm sản phẩm theo từ khóa người dùng nhập (tìm toàn bộ sản phẩm, không phân biệt dấu).
+ *
+ * @param {string} rawKeyword - Từ khóa thô người dùng nhập
+ */
+function runSearch(rawKeyword) {
+  const text = (rawKeyword || '').trim().slice(0, SEARCH_MAX_LENGTH);
+  const inputEl = document.getElementById('catalog-search-input');
+  if (inputEl) {
+    inputEl.value = text;
+    toggleClearButton();
+  }
+
+  keyword = text;
+  currentPage = 0;
+
+  if (text) {
+    // Tìm kiếm áp dụng trên toàn bộ sản phẩm nên bỏ chọn danh mục
+    selectedCategoryId = null;
+    clearSidebarActive();
+    updateBreadcrumb('Kết quả tìm kiếm');
+  } else {
+    resetSidebarToAll();
+  }
+  loadProducts();
+}
+
+/**
+ * Gọi API gợi ý và hiển thị danh sách thả xuống.
+ *
+ * @param {string} text - Từ khóa đang gõ
+ */
+async function fetchAndRenderSuggestions(text) {
+  const requestSeq = ++suggestionRequestSeq;
+  try {
+    const items = await getSearchSuggestions(text.slice(0, SEARCH_MAX_LENGTH));
+    // Bỏ qua kết quả cũ nếu người dùng đã gõ tiếp hoặc đã gửi tìm kiếm
+    if (requestSeq !== suggestionRequestSeq) return;
+    renderSuggestions(Array.isArray(items) ? items : []);
+  } catch (err) {
+    if (requestSeq !== suggestionRequestSeq) return;
+    console.warn('Không thể nạp gợi ý tìm kiếm:', err);
+    closeSuggestions();
+  }
+}
+
+/**
+ * Render danh sách gợi ý bằng thẻ <template>.
+ *
+ * @param {Array} items - Danh sách gợi ý { id, name, type, imageUrl, extraInfo }
+ */
+function renderSuggestions(items) {
+  const dropdownEl = document.getElementById('catalog-search-suggestions');
+  const template = document.getElementById('search-suggestion-template');
+  if (!dropdownEl || !template) return;
+
+  suggestionItems = items;
+  activeSuggestionIndex = -1;
+
+  if (items.length === 0) {
+    closeSuggestions();
+    return;
+  }
+
+  const fragment = document.createDocumentFragment();
+  items.forEach((item, index) => {
+    const clone = template.content.cloneNode(true);
+    const optionEl = clone.querySelector('.catalog-search__option');
+    const nameEl = clone.querySelector('.catalog-search__option-name');
+    const metaEl = clone.querySelector('.catalog-search__option-meta');
+    const typeEl = clone.querySelector('.catalog-search__option-type');
+
+    nameEl.textContent = item.name;
+    metaEl.textContent = item.extraInfo || '';
+    typeEl.textContent = SUGGESTION_TYPE_LABELS[item.type] || '';
+
+    optionEl.dataset.index = String(index);
+    // mousedown để xử lý trước khi ô nhập mất focus
+    optionEl.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      selectSuggestion(item);
+    });
+
+    fragment.appendChild(clone);
+  });
+
+  dropdownEl.replaceChildren(fragment);
+  openSuggestions();
+}
+
+/**
+ * Đánh dấu mục gợi ý đang được chọn bằng bàn phím.
+ *
+ * @param {number} index - Vị trí mục gợi ý
+ */
+function setActiveSuggestion(index) {
+  const dropdownEl = document.getElementById('catalog-search-suggestions');
+  if (!dropdownEl) return;
+
+  activeSuggestionIndex = index;
+  dropdownEl.querySelectorAll('.catalog-search__option').forEach((el, i) => {
+    const isActive = i === index;
+    el.classList.toggle('catalog-search__option--active', isActive);
+    el.setAttribute('aria-selected', String(isActive));
+    if (isActive) {
+      el.scrollIntoView({ block: 'nearest' });
+    }
+  });
+}
+
+/**
+ * Xử lý khi người dùng chọn một mục gợi ý (hoặc một nút gợi ý sửa lỗi chính tả).
+ * - CATEGORY: lọc theo danh mục (gồm cả danh mục con)
+ * - PRODUCT / BRAND: ở lại trang sản phẩm và tìm kiếm theo tên được gợi ý
+ *
+ * @param {{id: number, name: string, type: string}} item - Mục gợi ý được chọn
+ */
+function selectSuggestion(item) {
+  closeSuggestions();
+
+  if (item.type === 'CATEGORY') {
+    selectCategoryFromSuggestion(item);
+    return;
+  }
+
+  runSearch(item.name);
+}
+
+/**
+ * Chọn danh mục từ gợi ý tìm kiếm: điền tên danh mục vào ô tìm kiếm, làm sáng danh mục trên Sidebar và nạp sản phẩm.
+ *
+ * @param {{id: number, name: string}} item - Danh mục được gợi ý
+ */
+function selectCategoryFromSuggestion(item) {
+  keyword = '';
+  const inputEl = document.getElementById('catalog-search-input');
+  if (inputEl) {
+    inputEl.value = item.name || '';
+    toggleClearButton();
+  }
+
+  selectedCategoryId = item.id;
+  currentPage = 0;
+  highlightActiveCategory(item.id);
+  updateBreadcrumb(item.name);
+  loadProducts();
+}
+
+/**
+ * Mở danh sách gợi ý thả xuống.
+ */
+function openSuggestions() {
+  const dropdownEl = document.getElementById('catalog-search-suggestions');
+  const inputEl = document.getElementById('catalog-search-input');
+  if (dropdownEl) dropdownEl.classList.remove('hidden');
+  if (inputEl) inputEl.setAttribute('aria-expanded', 'true');
+}
+
+/**
+ * Đóng danh sách gợi ý thả xuống.
+ */
+function closeSuggestions() {
+  const dropdownEl = document.getElementById('catalog-search-suggestions');
+  const inputEl = document.getElementById('catalog-search-input');
+  if (dropdownEl) dropdownEl.classList.add('hidden');
+  if (inputEl) inputEl.setAttribute('aria-expanded', 'false');
+  activeSuggestionIndex = -1;
+}
+
+/**
+ * Hiển thị thông báo tìm kiếm (số kết quả / không có kết quả kèm gợi ý "Có phải bạn muốn tìm").
+ *
+ * @param {string} message - Nội dung thông báo (null để ẩn hoàn toàn khung thông báo)
+ * @param {Array} [suggestions] - Danh sách gợi ý sửa lỗi chính tả hiển thị dạng nút
+ */
+function renderSearchNotice(message, suggestions = []) {
+  const noticeEl = document.getElementById('catalog-search-notice');
+  const textEl = document.getElementById('catalog-notice-text');
+  const chipsEl = document.getElementById('catalog-notice-chips');
+  const chipTemplate = document.getElementById('search-chip-template');
+  if (!noticeEl || !textEl || !chipsEl) return;
+
+  if (!message) {
+    noticeEl.classList.add('hidden');
+    textEl.textContent = '';
+    chipsEl.replaceChildren();
+    return;
+  }
+
+  textEl.textContent = message;
+
+  const fragment = document.createDocumentFragment();
+  if (chipTemplate) {
+    suggestions.forEach(item => {
+      const clone = chipTemplate.content.cloneNode(true);
+      const chipBtn = clone.querySelector('.catalog-notice__chip');
+      chipBtn.textContent = item.name;
+      chipBtn.addEventListener('click', () => selectSuggestion(item));
+      fragment.appendChild(clone);
+    });
+  }
+  chipsEl.replaceChildren(fragment);
+  noticeEl.classList.remove('hidden');
+}
+
+/**
+ * Khi tìm kiếm không có kết quả: nhờ bộ gợi ý (không dấu + sửa lỗi gõ sai) đề xuất từ khóa gần đúng nhất.
+ *
+ * @param {string} searchedKeyword - Từ khóa đã tìm nhưng không có kết quả
+ */
+async function showSpellingSuggestions(searchedKeyword) {
+  let suggestions = [];
+  try {
+    const items = await getSearchSuggestions(searchedKeyword, { limit: 5 });
+    suggestions = Array.isArray(items) ? items : [];
+  } catch (err) {
+    console.warn('Không thể nạp gợi ý sửa lỗi chính tả:', err);
+  }
+
+  // Tránh hiển thị kết quả muộn nếu người dùng đã đổi từ khóa khác
+  if (keyword !== searchedKeyword) return;
+
+  if (suggestions.length > 0) {
+    renderSearchNotice(`Không tìm thấy sản phẩm nào cho “${searchedKeyword}”. Có phải bạn muốn tìm:`, suggestions);
+  } else {
+    renderSearchNotice(`Không tìm thấy sản phẩm nào cho “${searchedKeyword}”. Vui lòng thử từ khóa khác.`);
+  }
+}
+
+/* ==========================================================================
+   SIDEBAR CÂY DANH MỤC
+   ========================================================================== */
 
 /**
  * Nạp cây danh mục đa cấp từ backend vào Sidebar và gắn sự kiện click
@@ -77,6 +478,7 @@ async function loadCategorySidebar() {
     clearSidebarActive();
     btnAll.classList.add('cat-tree__parent-btn--active');
     selectedCategoryId = null;
+    clearSearchState();
     currentPage = 0;
     updateBreadcrumb('Tất cả sản phẩm');
     loadProducts();
@@ -104,6 +506,8 @@ async function loadCategorySidebar() {
     // Kích hoạt trạng thái active nếu có danh mục được chọn sẵn
     if (selectedCategoryId) {
       highlightActiveCategory(selectedCategoryId);
+    } else if (keyword) {
+      clearSidebarActive();
     } else {
       btnAll.classList.add('cat-tree__parent-btn--active');
     }
@@ -111,6 +515,31 @@ async function loadCategorySidebar() {
   } catch (err) {
     console.warn('Không thể nạp cây danh mục từ BE:', err);
   }
+}
+
+/**
+ * Xóa trạng thái tìm kiếm hiện tại (từ khóa, ô nhập, thông báo) khi người dùng chuyển sang lọc theo danh mục.
+ */
+function clearSearchState() {
+  keyword = '';
+  const inputEl = document.getElementById('catalog-search-input');
+  if (inputEl) {
+    inputEl.value = '';
+    toggleClearButton();
+  }
+  closeSuggestions();
+  renderSearchNotice(null);
+}
+
+/**
+ * Đưa Sidebar về trạng thái "Tất cả sản phẩm" (sau khi xóa từ khóa tìm kiếm).
+ */
+function resetSidebarToAll() {
+  const btnAll = document.getElementById('btn-cat-all');
+  selectedCategoryId = null;
+  clearSidebarActive();
+  if (btnAll) btnAll.classList.add('cat-tree__parent-btn--active');
+  updateBreadcrumb('Tất cả sản phẩm');
 }
 
 /**
@@ -166,7 +595,8 @@ function renderCategoryTreeNode(cat, level = 0) {
           childrenList.classList.add('cat-tree__children--open');
         }
       } else {
-        // Bấm vào tên danh mục: chọn lọc sản phẩm + tự động mở nhánh con nếu đang đóng
+        // Bấm vào tên danh mục: lọc sản phẩm của danh mục + toàn bộ danh mục con cháu,
+        // đồng thời tự động mở nhánh con nếu đang đóng
         if (!isExpanded) {
           parentBtn.classList.add('cat-tree__parent-btn--expanded');
           childrenList.classList.add('cat-tree__children--open');
@@ -176,6 +606,7 @@ function renderCategoryTreeNode(cat, level = 0) {
         parentBtn.classList.add('cat-tree__parent-btn--active');
 
         selectedCategoryId = catId;
+        clearSearchState();
         currentPage = 0;
         updateBreadcrumb(catName);
         loadProducts();
@@ -201,6 +632,7 @@ function renderCategoryTreeNode(cat, level = 0) {
       openParentBranches(childBtn);
 
       selectedCategoryId = catId;
+      clearSearchState();
       currentPage = 0;
       updateBreadcrumb(catName);
       loadProducts();
@@ -269,8 +701,13 @@ function updateBreadcrumb(categoryName) {
   }
 }
 
+/* ==========================================================================
+   DANH SÁCH SẢN PHẨM & PHÂN TRANG
+   ========================================================================== */
+
 /**
- * Nạp danh sách sản phẩm động từ backend theo danh mục và phân trang
+ * Nạp danh sách sản phẩm động từ backend theo từ khóa tìm kiếm hoặc danh mục và phân trang.
+ * Ưu tiên: từ khóa tìm kiếm > danh mục đang chọn > toàn bộ sản phẩm.
  */
 async function loadProducts() {
   const productListEl = document.getElementById('catalog-products-list');
@@ -282,6 +719,11 @@ async function loadProducts() {
 
   if (!productListEl || !cardTemplate) return;
 
+  // Ghi nhớ từ khóa của lần nạp này để bỏ qua kết quả cũ nếu người dùng đổi điều kiện giữa chừng
+  const requestKeyword = keyword;
+  const requestCategoryId = selectedCategoryId;
+  const requestPage = currentPage;
+
   // Hiển thị trạng thái đang tải qua <template>
   if (loadingTemplate) {
     productListEl.replaceChildren(loadingTemplate.content.cloneNode(true));
@@ -289,12 +731,22 @@ async function loadProducts() {
 
   try {
     let products = [];
-    let meta = { page: 0, totalPages: 1 };
+    let meta = { page: 0, totalPages: 1, totalElements: 0 };
 
-    if (selectedCategoryId) {
-      // 1. Gọi API lấy theo danh mục cụ thể: GET /categories/{id}/products
-      const response = await getProductsByCategory(selectedCategoryId, {
-        page: currentPage,
+    if (requestKeyword) {
+      // 1. Tìm theo tên sản phẩm (không phân biệt dấu & hoa thường), chỉ sản phẩm đang bán
+      const response = await getProducts({
+        productName: requestKeyword,
+        status: 'ACTIVE',
+        page: requestPage,
+        size: pageSize
+      });
+      products = (response && response.result) || [];
+      meta = (response && response.meta) || meta;
+    } else if (requestCategoryId) {
+      // 2. Lấy theo danh mục: backend tự động gộp sản phẩm của danh mục và toàn bộ danh mục con cháu
+      const response = await getProductsByCategory(requestCategoryId, {
+        page: requestPage,
         size: pageSize
       });
 
@@ -306,25 +758,40 @@ async function loadProducts() {
         }
       }
     } else {
-      // 2. Gọi API lấy toàn bộ sản phẩm: GET /products
-      const params = {
-        page: currentPage,
-        size: pageSize,
-        sortBy: sortBy,
-        sortDirection: sortDirection
-      };
-      const response = await getProducts(params);
-      products = response.result || [];
-      meta = response.meta || meta;
+      // 3. Lấy toàn bộ sản phẩm đang bán: GET /products
+      const response = await getProducts({
+        status: 'ACTIVE',
+        page: requestPage,
+        size: pageSize
+      });
+      products = (response && response.result) || [];
+      meta = (response && response.meta) || meta;
     }
 
-    // Nếu không có sản phẩm nào trong danh mục
+    // Bỏ qua kết quả đã cũ (người dùng đã đổi từ khóa / danh mục / trang trong lúc chờ)
+    if (requestKeyword !== keyword || requestCategoryId !== selectedCategoryId || requestPage !== currentPage) {
+      return;
+    }
+
+    // Thông báo kết quả tìm kiếm
+    if (requestKeyword && products.length > 0) {
+      const total = meta.totalElements !== undefined ? meta.totalElements : products.length;
+      renderSearchNotice(`Tìm thấy ${total} sản phẩm cho “${requestKeyword}”.`);
+    } else if (!requestKeyword) {
+      renderSearchNotice(null);
+    }
+
+    // Nếu không có sản phẩm nào
     if (products.length === 0) {
       if (emptyTemplate) {
         productListEl.replaceChildren(emptyTemplate.content.cloneNode(true));
       }
       if (paginationWrap) {
         paginationWrap.replaceChildren();
+      }
+      if (requestKeyword) {
+        // Gợi ý sửa lỗi chính tả / không dấu từ bộ gợi ý của backend
+        showSpellingSuggestions(requestKeyword);
       }
       return;
     }
@@ -337,12 +804,18 @@ async function loadProducts() {
       const productId = product.id || product.productId;
       const detailUrl = `./detail.html?id=${productId}`;
 
-      // Ảnh sản phẩm (hoặc fallback empty-picture.png)
+      // Ảnh sản phẩm (hoặc fallback empty-picture.png) — bấm vào ảnh đi tới trang chi tiết
+      const imageLinkEl = clone.querySelector('.catalog-card__image-wrap');
+      if (imageLinkEl) {
+        imageLinkEl.href = detailUrl;
+      }
+
       const imgEl = clone.querySelector('.catalog-card__img');
       if (imgEl) {
         imgEl.src = product.primaryImageUrl || DEFAULT_EMPTY_IMG;
         imgEl.alt = product.productName;
         imgEl.onerror = () => {
+          imgEl.onerror = null;
           imgEl.src = DEFAULT_EMPTY_IMG;
         };
       }
@@ -470,4 +943,3 @@ function renderPagination(meta) {
 
   paginationWrap.replaceChildren(fragment);
 }
-

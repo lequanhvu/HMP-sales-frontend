@@ -26,6 +26,7 @@ export async function getProducts(params = {}) {
 
 /**
  * Lấy danh sách sản phẩm thuộc một danh mục cụ thể có phân trang.
+ * Backend trả về sản phẩm của chính danh mục đó và toàn bộ danh mục con cháu của nó.
  * 
  * @param {number|string} categoryId - ID danh mục
  * @param {Object} [params] - Tham số phân trang { page, size }
@@ -43,3 +44,28 @@ export async function getProductsByCategory(categoryId, params = {}) {
 export async function getCategoriesTree() {
   return await client.get('/categories/tree');
 }
+
+/**
+ * Lấy gợi ý tìm kiếm tức thời (type-ahead). Hỗ trợ tiếng Việt không dấu và tự sửa lỗi gõ sai chính tả.
+ * 
+ * @param {string} keyword - Từ khóa đang gõ (tối đa 50 ký tự)
+ * @param {Object} [options] - Tùy chọn { type: 'PRODUCT'|'CATEGORY'|'BRAND', limit }
+ * @returns {Promise<Array>} Danh sách gợi ý { id, name, type, imageUrl, extraInfo }
+ */
+export async function getSearchSuggestions(keyword, options = {}) {
+  return await client.get('/search/suggestions', {
+    keyword,
+    type: options.type,
+    limit: options.limit || 8
+  });
+}
+
+/**
+ * Lấy danh sách màu sắc tôn đang hoạt động (kèm ảnh mẫu màu) từ dữ liệu danh mục chung.
+ * 
+ * @returns {Promise<Array>} Danh sách màu { id, colorName, imageUrl }
+ */
+export async function getActiveColors() {
+  return await client.get('/colors');
+}
+
