@@ -51,6 +51,7 @@ Do not invent business behavior or API contracts when requirements are silent. M
 - Write modular ES6 JavaScript inside `js/api/`, `js/components/`, `js/pages/`, or `js/utils/`.
 - Never write inline JavaScript in HTML attributes (no `onclick="..."` or `href="javascript:..."`). Use `addEventListener`.
 - Separate CSS into `assets/css/base/`, `assets/css/components/`, or `assets/css/pages/`. Never use inline `style="..."` except for dynamic values (e.g. background-image or calculated width).
+- Create or update `CONTEXT.md` inside `pages/{module}/` using `/write-context` to document UX/technical decisions.
 - Update `project-status.md` only after the implementation is complete and verified.
 
 ## 4. Frontend architecture expectations

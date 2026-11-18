@@ -33,5 +33,6 @@ Create a new page or UI feature. Follow these steps in exact order.
 - [ ] No inline styles or inline JS.
 - [ ] API error handling displays a user-friendly Vietnamese toast or message.
 - [ ] Price visibility check: displays "Liên hệ báo giá" if price is `null`.
-- [ ] Update `project-status.md` upon completion.
+- [ ] Create or update `CONTEXT.md` inside `pages/{module}/` using `/write-context`.
+- [ ] Update `project-status.md` using `/update-status` upon completion.
 
