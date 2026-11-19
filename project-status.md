@@ -168,7 +168,6 @@ _Nothing._
   - [x] Bộ chọn biến thể (độ dày, mã biến thể)
   - [x] Bộ chọn màu sắc (hiển thị ảnh mẫu màu lấy từ Cloudflare R2 / danh sách màu)
   - [x] Bảng giá theo đơn vị tính (m, tấm) — kiểm soát quyền `PRODUCT_PRICE_VIEW`
-  - [x] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền `UnitPrice × Size × Quantity`
 
 ### Phase 3 — Xác thực Khách hàng & Sổ địa chỉ
 - [ ] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google` (`pages/auth/login.html`)
@@ -178,6 +177,7 @@ _Nothing._
 
 ### Phase 4 — Quy trình Đặt hàng Tôn sóng & Xác thực OTP
 - [ ] Trang đặt hàng (`pages/customer/order.html`):
+  - [ ] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền `UnitPrice × Size × Quantity`
   - [ ] Tóm tắt sản phẩm tôn đã chọn (chiều dài, số lượng, màu sắc, đơn giá snapshot)
   - [ ] Chọn địa chỉ giao hàng từ sổ địa chỉ hoặc nhập thông tin người nhận mới
   - [ ] Modal xác thực OTP số điện thoại: đếm ngược 60s, nhập 6 số gửi `POST /api/v1/orders/otp/verify`
