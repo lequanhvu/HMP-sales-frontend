@@ -9,6 +9,7 @@
  */
 
 import { storage } from '../utils/storage.js';
+import { translateMessage } from '../utils/i18n.js';
 
 export const API_BASE_URL = 'http://localhost:8080/api/v1';
 
@@ -100,7 +101,8 @@ async function request(endpoint, options = {}) {
     const json = await response.json().catch(() => ({}));
 
     if (!response.ok) {
-      const errorMessage = json.message || `Lỗi yêu cầu: ${response.status}`;
+      const rawMessage = json.message || `Lỗi yêu cầu: ${response.status}`;
+      const errorMessage = translateMessage(rawMessage);
       const error = new Error(errorMessage);
       error.statusCode = response.status;
       error.errors = json.errors || [];

@@ -164,3 +164,27 @@ Tất cả class CSS của các thành phần giao diện đều tuân theo quy 
 - **Element**: Phần tử con bên trong Block (ví dụ: `.product-card__image`, `.product-card__title`, `.product-card__price`).
 - **Modifier**: Trạng thái hoặc biến thể (ví dụ: `.product-card--featured`, `.btn--primary`, `.btn--outline`, `.btn--disabled`).
 
+---
+
+## 6. Hệ thống Quản lý Bản dịch Tập trung (Centralized Translation Architecture)
+
+Toàn bộ việc Việt hóa giao diện được điều phối tập trung qua module `js/utils/i18n.js` theo mô hình **3 Trụ Cột Độc Lập**:
+
+1. **`fieldTranslations`**: Quản lý tên trường và nhãn dữ liệu (`translateField(fieldName, domain)`).
+   - Phân theo Domain: Product, Order, User, Address, Category, MasterData, và Common.
+   - Hỗ trợ kế thừa từ nhóm trường dùng chung `COMMON_FIELDS` và fallback tự động chuyển camelCase sang chuỗi đọc được khi chưa có bản dịch.
+2. **`enumTranslations`**: Quản lý giá trị Enum và trạng thái nghiệp vụ (`translateEnum`, `translateOrderStatus`, `translateProductStatus`...).
+   - Không phân biệt chữ hoa / thường (`trim().toUpperCase()`).
+   - Xử lý an toàn `null`, `undefined`, chuỗi rỗng.
+   - Bảo toàn giá trị gốc nếu Backend bổ sung Enum mới chưa kịp khai báo, tránh làm gián đoạn giao diện.
+   - Đi kèm hàm `getStatusBadgeClass(status)` để đồng bộ màu sắc badge trạng thái theo chuẩn BEM (`badge--success`, `badge--warning`, `badge--danger`, `badge--info`).
+3. **`messageTranslations`**: Quản lý thông điệp hệ thống và mã lỗi từ API (`translateMessage(msg)`).
+   - Tự động nhận diện chuỗi có dấu tiếng Việt: **Nếu Backend đã trả về tiếng Việt, giữ nguyên 100% không dịch lại.**
+   - Chuyển ngữ các thông báo lỗi tiếng Anh chuẩn của Spring Boot/Security sang tiếng Việt thân thiện với người dùng.
+
+### Nguyên tắc Bất biến:
+- **Bảo toàn dữ liệu mạng**: Không bao giờ gửi chuỗi tiếng Việt lên Backend. Payload gửi đi phải là Enum và thuộc tính tiếng Anh chuẩn của API contract (`../sales-backend/api-spec.md`).
+- **Phân tách rạch ròi**: Thuộc tính code giữ nguyên tiếng Anh (`item.thickness`), chỉ nhãn hiển thị mới dịch thành tiếng Việt (`Độ dày`).
+- **Nghiêm cấm rải rác**: Cấm tuyệt đối viết `switch/case` hoặc `if/else` để dịch trạng thái rải rác trong từng component/page.
+
+

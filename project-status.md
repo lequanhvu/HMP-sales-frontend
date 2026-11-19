@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-16 | By: @antigravity | Session: #3
+> Last updated: 2026-11-18 | By: @antigravity | Session: #4
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,19 @@
 ---
 
 ## Completed
+- ✅ **Hệ Thống Quản Lý Bản Dịch Tiếng Việt Tập Trung (Centralized Translation Architecture - Session #4)**:
+  - **Khởi tạo module `js/utils/i18n.js` theo chuẩn 3 Trụ Cột Độc Lập**:
+    - **`fieldTranslations`**: Quản lý bản dịch tên trường/nhãn (`translateField(fieldName, domain)`), phân tách theo các Domain: `product`, `order`, `user`, `address`, `category`, `masterData`, và kế thừa `common`. Hỗ trợ fallback thông minh tự động chuyển đổi camelCase sang chuỗi đọc được khi chưa có bản dịch.
+    - **`enumTranslations`**: Quản lý bản dịch các giá trị Enum/Status từ Backend (`OrderStatus`, `ProductStatus`, `UserStatus`, `RoleCode`, `CategoryStatus`, `MasterData`, `SearchResourceType`, `NotificationType`, `Permissions`). Hỗ trợ không phân biệt hoa thường (`trim().toUpperCase()`), bảo toàn giá trị gốc khi gặp enum mới, và hàm `getStatusBadgeClass(status)` hỗ trợ hiển thị Badge chuẩn BEM.
+    - **`messageTranslations`**: Quản lý bản dịch thông điệp & mã lỗi từ API (`translateMessage(msg)`). Nhận diện tự động chuỗi tiếng Việt: **Nếu Backend đã trả về tiếng Việt thì giữ nguyên 100%, không dịch lại**.
+  - **Tích hợp Tầng Giao diện & Tầng Mạng**:
+    - `js/pages/product-catalog.js`: Xóa bỏ biến hardcode `SUGGESTION_TYPE_LABELS`, tích hợp `translateSearchType(item.type)`.
+    - `js/api/client.js`: Tích hợp `translateMessage(rawMessage)` trong quá trình bóc tách lỗi HTTP, giữ nguyên các thông điệp tiếng Việt từ Backend.
+    - Bảo toàn 100% API contract: Các tham số request gửi lên BE vẫn giữ nguyên Enum tiếng Anh (`getProducts({ status: 'ACTIVE' })`).
+  - **Cập nhật Hợp Đồng Dự Án (Project Contract)**:
+    - Bổ sung Quy tắc 7 vào `.agents/rules/project-rules.md` nghiêm cấm viết `if/else` hoặc `switch/case` phân mảnh trong component để dịch dữ liệu từ Backend.
+    - Bổ sung Mục 6 vào `architecture.md` chuẩn hóa kiến trúc Quản lý bản dịch tập trung 3 Trụ Cột.
+  - **Kiểm thử chất lượng**: Đã chạy test tự động trên trình duyệt headless (Microsoft Edge) xác nhận 100% test case (Field labels, Enums, Case insensitivity, Badge classes, Message handling) đều đạt kết quả `PASSED`.
 - ✅ **Phát Triển Giao Diện Trang Giới Thiệu & Trang Liên Hệ Chuẩn Mẫu Thực Tế (Session #3)**:
   - **Trang Giới thiệu (`pages/introduction/introduction.html`, `assets/css/pages/introduction.css`, `js/pages/introduction.js`)**:
     - **Hero Banner**: Nền ảnh `assets/images/introduction/banner.png` kết hợp gradient xanh thương hiệu, breadcrumb `Trang chủ > Giới thiệu`, tiêu đề lớn.

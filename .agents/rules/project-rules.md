@@ -77,6 +77,7 @@ sales-frontend/
     │   ├── toast.js            # Toast notifications (success, error, info)
     │   └── modal-otp.js        # Phone OTP verification dialog
     ├── utils/                  # Helper utilities
+    │   ├── i18n.js             # Centralized Vietnamese translation (Fields, Enums, Messages)
     │   ├── format.js           # formatVnd(), formatDate(), sanitizeHtml()
     │   ├── debounce.js         # Debounce for search suggestions
     │   └── storage.js          # Token & session storage helpers
@@ -160,6 +161,16 @@ sales-frontend/
    - Convert for query: `page: selectedPage - 1`.
 6. **Debounce Search Suggestions**:
    - Autocomplete/search input must be debounced by 250–300ms before calling `GET /api/v1/search/suggestions`.
+7. **Centralized Translation Mapping (`js/utils/i18n.js`)**:
+   - **Tuyệt đối không viết các câu điều kiện `if/else` hoặc `switch/case` phân mảnh rải rác trong từng component/page để dịch các giá trị từ Backend.**
+   - Mọi bản dịch sang tiếng Việt phải được quản lý tập trung tại `js/utils/i18n.js` theo mô hình **3 Trụ Cột**:
+     1. `fieldTranslations`: Dịch tên trường/thuộc tính (`translateField(fieldName, domain)`: ví dụ `length` → `Chiều dài`, `thickness` → `Độ dày`, `productName` → `Tên sản phẩm`).
+     2. `enumTranslations`: Dịch giá trị trạng thái/phân loại (`translateOrderStatus`, `translateProductStatus`, `translateUserStatus`, `translateRole`, `translateSearchType`, `translateEnum`).
+     3. `messageTranslations`: Dịch thông điệp/mã lỗi API (`translateMessage(msg)`). **Lưu ý:** Nếu Backend đã trả về thông điệp tiếng Việt thì giữ nguyên 100%, không dịch lại.
+   - **Bảo toàn dữ liệu gốc (Data Contract Preservation)**:
+     - Tên thuộc tính trong code (object keys) và payload/query parameters gửi lên Backend **bắt buộc giữ nguyên Enum tiếng Anh** (ví dụ: `getProducts({ status: 'ACTIVE' })`, `payload.length`).
+     - Tuyệt đối không gửi giá trị tiếng Việt lên BE và không đổi tên thuộc tính DTO/API để phục vụ hiển thị.
+     - Chỉ chuyển đổi ngôn ngữ khi hiển thị nhãn và dữ liệu ra giao diện người dùng (Presentation Layer).
 
 ---
 

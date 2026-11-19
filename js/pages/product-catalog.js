@@ -23,6 +23,7 @@ import {
 } from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
 import { debounce } from '../utils/debounce.js';
+import { translateSearchType } from '../utils/i18n.js';
 
 // Trạng thái cục bộ của trang
 let selectedCategoryId = null;
@@ -40,12 +41,6 @@ const SUGGESTION_DEBOUNCE_MS = 300;
 const SEARCH_MAX_LENGTH = 50;
 const VIEW_MODE_STORAGE_KEY = 'hmp_catalog_view_mode';
 const DEFAULT_EMPTY_IMG = '../../assets/images/empty-picture.png';
-
-const SUGGESTION_TYPE_LABELS = {
-  PRODUCT: 'Sản phẩm',
-  CATEGORY: 'Danh mục',
-  BRAND: 'Thương hiệu'
-};
 
 document.addEventListener('DOMContentLoaded', async () => {
   // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
@@ -302,7 +297,7 @@ function renderSuggestions(items) {
 
     nameEl.textContent = item.name;
     metaEl.textContent = item.extraInfo || '';
-    typeEl.textContent = SUGGESTION_TYPE_LABELS[item.type] || '';
+    typeEl.textContent = translateSearchType(item.type);
 
     optionEl.dataset.index = String(index);
     // mousedown để xử lý trước khi ô nhập mất focus
