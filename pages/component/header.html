@@ -16,7 +16,7 @@
           <a href="./index.html" class="nav__link" data-nav="home">Trang chủ</a>
         </li>
         <li class="nav__item">
-          <a href="./index.html#about-section" class="nav__link" data-nav="about">Giới thiệu</a>
+          <a href="./pages/introduction/introduction.html" class="nav__link" data-nav="about">Giới thiệu</a>
         </li>
         <li class="nav__item">
           <a href="./pages/product/catalog.html" class="nav__link" data-nav="product">
@@ -34,14 +34,18 @@
           </div>
         </li>
         <li class="nav__item">
-          <a href="./index.html#contact-section" class="nav__link" data-nav="contact">Liên hệ</a>
+          <a href="./pages/contact/contact.html" class="nav__link" data-nav="contact">Liên hệ</a>
+        </li>
+        <!-- Mục Đơn hàng (Hiển thị khi người dùng đã đăng nhập) -->
+        <li id="header-nav-orders-item" class="nav__item hidden">
+          <a href="./pages/customer/my-orders.html" class="nav__link" data-nav="orders" data-link="my-orders">Đơn hàng</a>
         </li>
       </ul>
     </nav>
 
     <!-- Khu vực Tiện ích Bên Phải -->
     <div class="header__actions">
-      <!-- Nút Tìm kiếm điều hướng đến catalog -->
+      <!-- Nút Tìm kiếm (Hiển thị cho khách vãng lai) -->
       <a id="search-toggle-btn" href="./pages/product/catalog.html" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm" data-link="catalog">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -49,14 +53,48 @@
         </svg>
       </a>
 
-      <!-- Nút Đăng nhập bo tròn chuẩn mẫu -->
+      <!-- Nút Chuông Thông Báo (Hiển thị thay thế kính lúp khi đã đăng nhập) -->
+      <a id="header-notification-btn" href="./pages/customer/notifications.html" class="header__icon-btn header__notification-btn hidden" title="Thông báo" aria-label="Thông báo" data-link="notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span id="header-notification-badge" class="header__notification-badge">1</span>
+      </a>
+
+      <!-- Nút Đăng nhập bo tròn chuẩn mẫu (Khách vãng lai) -->
       <a id="header-login-btn" href="./pages/auth/login.html" class="header__login-btn" data-link="login">Đăng nhập</a>
 
-      <!-- Hồ sơ tài khoản (khi đã đăng nhập) -->
-      <a id="header-user-profile" href="./pages/customer/my-orders.html" class="header__user-profile" data-link="my-orders">
-        <div id="header-user-avatar" class="header__user-avatar">U</div>
-        <span id="header-user-name" class="header__user-name">Khách hàng</span>
-      </a>
+      <!-- Hồ sơ tài khoản với dropdown (Khi đã đăng nhập: hiển thị avatar) -->
+      <div id="header-user-wrapper" class="header__user-wrapper hidden">
+        <button id="header-user-profile" class="header__user-profile" type="button" aria-expanded="false" aria-haspopup="true">
+          <div id="header-user-avatar" class="header__user-avatar">
+            <img src="./assets/images/avatar-empty.jpg" alt="Avatar" class="header__avatar-img">
+          </div>
+          <span id="header-user-name" class="header__user-name">Khách hàng</span>
+          <svg class="header__user-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+
+        <!-- Dropdown menu tài khoản (Hiện tùy chọn Đăng xuất) -->
+        <div id="header-user-dropdown" class="header__user-dropdown">
+          <div class="user-dropdown__header">
+            <span id="dropdown-user-fullname" class="user-dropdown__name">Khách hàng</span>
+            <span id="dropdown-user-email" class="user-dropdown__email">user@example.com</span>
+            <span id="dropdown-user-role" class="user-dropdown__badge">Khách hàng</span>
+          </div>
+          <div class="user-dropdown__divider"></div>
+          <button id="header-logout-btn" class="user-dropdown__item user-dropdown__item--danger" type="button">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Đăng xuất</span>
+          </button>
+        </div>
+      </div>
 
       <!-- Nút Menu Mobile -->
       <button id="mobile-menu-toggle" class="header__mobile-toggle" aria-label="Menu">
@@ -72,12 +110,34 @@
   <!-- Drawer Menu Mobile -->
   <div id="mobile-nav-drawer" class="mobile-nav">
     <div class="mobile-nav__panel">
+      <!-- Mục người dùng trên mobile -->
+      <div id="mobile-user-section" class="mobile-nav__user-section">
+        <a id="mobile-login-link" href="./pages/auth/login.html" class="mobile-nav__login-btn" data-link="login">Đăng nhập tài khoản</a>
+        <div id="mobile-profile-box" class="mobile-nav__profile-box hidden">
+          <div id="mobile-user-avatar" class="header__user-avatar">
+            <img src="./assets/images/avatar-empty.jpg" alt="Avatar" class="header__avatar-img">
+          </div>
+          <div class="mobile-nav__user-info">
+            <span id="mobile-user-name" class="mobile-nav__user-name">Khách hàng</span>
+            <span id="mobile-user-email" class="mobile-nav__user-email">email</span>
+          </div>
+        </div>
+      </div>
+      <div class="mobile-nav__divider"></div>
+
       <a href="./index.html" class="mobile-nav__link" data-nav="home">Trang chủ</a>
-      <a href="./index.html#about-section" class="mobile-nav__link" data-nav="about">Giới thiệu</a>
+      <a href="./pages/introduction/introduction.html" class="mobile-nav__link" data-nav="about">Giới thiệu</a>
       <a href="./pages/product/catalog.html" class="mobile-nav__link" data-nav="product">Sản phẩm tôn lợp</a>
-      <a href="./index.html#contact-section" class="mobile-nav__link" data-nav="contact">Liên hệ</a>
+      <a href="./pages/contact/contact.html" class="mobile-nav__link" data-nav="contact">Liên hệ</a>
+
+      <!-- Menu riêng tư trên mobile -->
+      <div id="mobile-auth-links" class="mobile-nav__auth-links hidden">
+        <div class="mobile-nav__divider"></div>
+        <a href="./pages/customer/my-orders.html" class="mobile-nav__link" data-link="my-orders">Đơn hàng của tôi</a>
+        <a href="./pages/customer/profile.html" class="mobile-nav__link" data-link="profile">Thông tin tài khoản</a>
+        <button id="mobile-logout-btn" class="mobile-nav__logout-btn" type="button">Đăng xuất</button>
+      </div>
     </div>
   </div>
 </header>
-</body>
 

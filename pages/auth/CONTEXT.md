@@ -38,12 +38,17 @@ Theo quyết định kiến trúc đã thống nhất:
   - Chặn chuyển hướng lặp vô tận về chính `/pages/auth/login.html` hoặc chuyển hướng vượt quyền vào phân hệ `/pages/admin/*`.
   - Fallback an toàn về trang chủ `/index.html`.
 
-### 3.2. Quản Lý Token Trong Memory & Khôi Phục Phiên (Silent Session Bootstrap)
-* Module `js/auth/auth.state.js`:
-  - **In-Memory JWT Access Token**: JWT Access Token được lưu trữ độc quyền trong biến bộ nhớ JS (RAM closure), **tuyệt đối không lưu vào `localStorage`** để triệt tiêu bề mặt tấn công đánh cắp token qua XSS.
-  - **Session Indicator**: Sử dụng cờ nhẹ `hmp_has_session` trong `localStorage` để đánh dấu người dùng đang có phiên hoạt động.
-  - **Silent Session Bootstrap**: Khi người dùng F5 hoặc mở lại website, hệ thống tự động gọi ngầm `POST /api/v1/auth/refresh` (cookie `refresh_token` HttpOnly tự động gửi kèm). Nếu hợp lệ, hệ thống nạp lại Access Token vào memory và khôi phục trạng thái đăng nhập mà không gây gián đoạn trải nghiệm người dùng.
-  - **Single-Flight Refresh Promise**: Khóa toàn cục chuỗi Promise làm mới token, gộp mọi request đồng thời vào cùng một Promise duy nhất, ngăn ngừa triệt để xung đột Token Family Rotation (Replay Attack detection) ở Backend.
+### 3.2. Quản Lý Phiên Đăng Nhập Qua HttpOnly Cookie (Cookie-Based Authentication)
+* **Toàn bộ Token được lưu trong Cookie HttpOnly (Cách 1 - Chuẩn Bảo Mật Công Nghiệp)**:
+  - **Access Token**: Backend tự động gắn vào cookie `access_token` với cờ `HttpOnly; SameSite=Lax; Path=/`.
+  - **Refresh Token**: Backend tự động gắn vào cookie `refresh_token` với cờ `HttpOnly; SameSite=Lax; Path=/api/v1/auth`.
+  - **Chống XSS Triệt Để (100%)**: JavaScript ở Frontend **tuyệt đối không chạm vào Token**, không lưu token vào `localStorage` hay `sessionStorage`. Trình duyệt web tự động đính kèm Cookie trong mọi request qua `credentials: 'include'`.
+  - **Backend BearerTokenResolver Linh Hoạt**: Spring Security sử dụng `BearerTokenResolver` tùy biến:
+    1. Ưu tiên đọc từ Header `Authorization: Bearer <token>` (cho Postman, Mobile, Swagger).
+    2. Nếu không có header, tự động bóc tách từ Cookie `access_token` (cho Web Frontend).
+  - **Kiểm Tra Trạng Thái Sống Qua Redis (100%)**: Dù nhận token từ Cookie hay Header, `RedisTokenValidationFilter` vẫn trích xuất `jti` và xác thực key `auth:access:{jti}` trên Redis. Đảm bảo hỗ trợ thu hồi tức thì (Instant Revocation) khi Logout hoặc khi Admin khóa tài khoản.
+  - **Session Cache Cho UI**: `localStorage` chỉ lưu cờ nhẹ `hmp_has_session` và thông tin hiển thị cơ bản `hmp_user_info` (tên, role) để Header hiển thị ngay tức thì mà không bị chớp giật.
+  - **Silent Token Rotation**: Khi `access_token` hết hạn (401 Unauthorized), `client.js` gọi ngầm `POST /api/v1/auth/refresh`. Backend tự động cấp lại cặp cookie mới và gửi lại request ban đầu mà không làm gián đoạn người dùng.
 
 ### 3.3. Phân Quyền Đa Tầng (Defense-in-Depth)
 * **Frontend Guard (`auth.guard.js`)**: Kiểm tra và hỗ trợ điều hướng nhanh về trang đăng nhập đối với các trang riêng tư (Order, Profile, My Orders).

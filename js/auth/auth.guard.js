@@ -47,3 +47,35 @@ export async function requireCustomerAuth(customRedirectPath = null) {
   window.location.href = finalRedirectUrl;
   return false;
 }
+
+/**
+ * Kiểm tra xác thực quyền Quản trị viên (Admin)
+ * @returns {Promise<boolean>}
+ */
+export async function requireAdminAuth(customRedirectPath = null) {
+  const isAuth = await requireCustomerAuth(customRedirectPath);
+  if (!isAuth) return false;
+
+  const user = authState.getCurrentUser();
+  if (!user || user.role !== 'ADMIN') {
+    window.location.href = '../../index.html';
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Kiểm tra xác thực quyền Quản lý hoặc Quản trị viên (Manager / Admin)
+ * @returns {Promise<boolean>}
+ */
+export async function requireManagerAuth(customRedirectPath = null) {
+  const isAuth = await requireCustomerAuth(customRedirectPath);
+  if (!isAuth) return false;
+
+  const user = authState.getCurrentUser();
+  if (!user || (user.role !== 'MANAGER' && user.role !== 'ADMIN')) {
+    window.location.href = '../../index.html';
+    return false;
+  }
+  return true;
+}

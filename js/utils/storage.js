@@ -8,26 +8,30 @@ const ACCESS_TOKEN_KEY = 'hmp_access_token';
 const USER_INFO_KEY = 'hmp_user_info';
 const SESSION_INDICATOR_KEY = 'hmp_has_session';
 
-// Biến lưu Access Token trong RAM (In-Memory)
+// Biến lưu Access Token trong RAM (In-Memory closure — tuyệt đối không lưu vào localStorage để chống XSS)
 let inMemoryAccessToken = null;
 
 export const storage = {
   /**
-   * Lấy Access Token (ưu tiên từ memory, fallback sang localStorage nếu có)
+   * Lấy Access Token (chỉ đọc từ biến bộ nhớ RAM)
    */
   getAccessToken() {
-    return inMemoryAccessToken || localStorage.getItem(ACCESS_TOKEN_KEY);
+    return inMemoryAccessToken;
   },
 
   /**
-   * Lưu Access Token (mặc định lưu trong RAM, không lưu JWT dài hạn vào localStorage để chống XSS)
-   * Đồng thời bật cờ session indicator
+   * Lưu Access Token vào RAM (In-Memory) và đặt cờ session indicator vào localStorage
+   * TUYỆT ĐỐI không lưu chuỗi JWT Access Token vào localStorage.
    */
   setAccessToken(token) {
     inMemoryAccessToken = token || null;
     if (token) {
       localStorage.setItem(SESSION_INDICATOR_KEY, 'true');
+    } else {
+      localStorage.removeItem(SESSION_INDICATOR_KEY);
     }
+    // Dọn dẹp key cũ nếu từng tồn tại
+    localStorage.removeItem(ACCESS_TOKEN_KEY);
   },
 
   /**
@@ -82,9 +86,10 @@ export const storage = {
   },
 
   /**
-   * Kiểm tra người dùng có token xác thực không
+   * Kiểm tra người dùng có phiên đăng nhập hợp lệ không
+   * (Có Access Token trong RAM HOẶC có cờ phiên kèm thông tin người dùng đã lưu)
    */
   isAuthenticated() {
-    return Boolean(this.getAccessToken());
+    return Boolean(inMemoryAccessToken) || (this.hasSessionIndicator() && Boolean(this.getUser()));
   }
 };

@@ -36,12 +36,16 @@
         <li class="nav__item">
           <a href="./pages/contact/contact.html" class="nav__link" data-nav="contact">Liên hệ</a>
         </li>
+        <!-- Mục Đơn hàng (Hiển thị khi người dùng đã đăng nhập) -->
+        <li id="header-nav-orders-item" class="nav__item hidden">
+          <a href="./pages/customer/my-orders.html" class="nav__link" data-nav="orders" data-link="my-orders">Đơn hàng</a>
+        </li>
       </ul>
     </nav>
 
     <!-- Khu vực Tiện ích Bên Phải -->
     <div class="header__actions">
-      <!-- Nút Tìm kiếm điều hướng đến catalog -->
+      <!-- Nút Tìm kiếm (Hiển thị cho khách vãng lai) -->
       <a id="search-toggle-btn" href="./pages/product/catalog.html" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm" data-link="catalog">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -49,42 +53,37 @@
         </svg>
       </a>
 
-      <!-- Nút Đăng nhập bo tròn chuẩn mẫu -->
+      <!-- Nút Chuông Thông Báo (Hiển thị thay thế kính lúp khi đã đăng nhập) -->
+      <a id="header-notification-btn" href="./pages/customer/notifications.html" class="header__icon-btn header__notification-btn hidden" title="Thông báo" aria-label="Thông báo" data-link="notifications">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+        </svg>
+        <span id="header-notification-badge" class="header__notification-badge">1</span>
+      </a>
+
+      <!-- Nút Đăng nhập bo tròn chuẩn mẫu (Khách vãng lai) -->
       <a id="header-login-btn" href="./pages/auth/login.html" class="header__login-btn" data-link="login">Đăng nhập</a>
 
-      <!-- Hồ sơ tài khoản với dropdown (khi đã đăng nhập) -->
+      <!-- Hồ sơ tài khoản với dropdown (Khi đã đăng nhập: hiển thị avatar) -->
       <div id="header-user-wrapper" class="header__user-wrapper hidden">
         <button id="header-user-profile" class="header__user-profile" type="button" aria-expanded="false" aria-haspopup="true">
-          <div id="header-user-avatar" class="header__user-avatar">U</div>
+          <div id="header-user-avatar" class="header__user-avatar">
+            <img src="./assets/images/avatar-empty.jpg" alt="Avatar" class="header__avatar-img">
+          </div>
           <span id="header-user-name" class="header__user-name">Khách hàng</span>
           <svg class="header__user-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
             <polyline points="6 9 12 15 18 9"></polyline>
           </svg>
         </button>
 
-        <!-- Dropdown menu tài khoản -->
+        <!-- Dropdown menu tài khoản (Hiện tùy chọn Đăng xuất) -->
         <div id="header-user-dropdown" class="header__user-dropdown">
           <div class="user-dropdown__header">
             <span id="dropdown-user-fullname" class="user-dropdown__name">Khách hàng</span>
             <span id="dropdown-user-email" class="user-dropdown__email">user@example.com</span>
             <span id="dropdown-user-role" class="user-dropdown__badge">Khách hàng</span>
           </div>
-          <div class="user-dropdown__divider"></div>
-          <a href="./pages/customer/my-orders.html" class="user-dropdown__item" data-link="my-orders">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-              <line x1="3" y1="6" x2="21" y2="6"></line>
-              <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-            <span>Đơn hàng của tôi</span>
-          </a>
-          <a href="./pages/customer/profile.html" class="user-dropdown__item" data-link="profile">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span>Thông tin tài khoản</span>
-          </a>
           <div class="user-dropdown__divider"></div>
           <button id="header-logout-btn" class="user-dropdown__item user-dropdown__item--danger" type="button">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -115,7 +114,9 @@
       <div id="mobile-user-section" class="mobile-nav__user-section">
         <a id="mobile-login-link" href="./pages/auth/login.html" class="mobile-nav__login-btn" data-link="login">Đăng nhập tài khoản</a>
         <div id="mobile-profile-box" class="mobile-nav__profile-box hidden">
-          <div id="mobile-user-avatar" class="header__user-avatar">U</div>
+          <div id="mobile-user-avatar" class="header__user-avatar">
+            <img src="./assets/images/avatar-empty.jpg" alt="Avatar" class="header__avatar-img">
+          </div>
           <div class="mobile-nav__user-info">
             <span id="mobile-user-name" class="mobile-nav__user-name">Khách hàng</span>
             <span id="mobile-user-email" class="mobile-nav__user-email">email</span>

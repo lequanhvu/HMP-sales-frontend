@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const safeRedirectUrl = getSafeRedirectUrl(rawRedirect, '../../index.html');
 
   // 2. Khởi tạo ngay công cụ Dev và Google Sign-In (gắn listener ngay, không đợi async)
-  initDevConfig(safeRedirectUrl);
-  initGoogleAuth(safeRedirectUrl);
+  initDevConfig(safeRedirectUrl, rawRedirect);
+  initGoogleAuth(safeRedirectUrl, rawRedirect);
 
   // 3. Nếu người dùng đã đăng nhập từ trước, lập tức chuyển hướng an toàn
   if (authState.isAuthenticated()) {
@@ -71,7 +71,7 @@ function showAlert(message) {
 /**
  * Khởi tạo Google Identity Services SDK
  */
-function initGoogleAuth(safeRedirectUrl) {
+function initGoogleAuth(safeRedirectUrl, rawRedirect) {
   const clientId = authApi.getGoogleClientId();
   const isPlaceholder = !clientId || clientId.includes('placeholder');
 
@@ -86,7 +86,7 @@ function initGoogleAuth(safeRedirectUrl) {
   const checkGisInterval = setInterval(() => {
     if (window.google && window.google.accounts && window.google.accounts.id) {
       clearInterval(checkGisInterval);
-      setupGis(clientId, safeRedirectUrl);
+      setupGis(clientId, safeRedirectUrl, rawRedirect);
     }
   }, 100);
 
@@ -103,14 +103,14 @@ function initGoogleAuth(safeRedirectUrl) {
 /**
  * Thiết lập cấu hình và render duy nhất 1 nút Google Sign-In chính thức
  */
-function setupGis(clientId, safeRedirectUrl) {
+function setupGis(clientId, safeRedirectUrl, rawRedirect) {
   const gisContainer = document.getElementById('g_id_signin_container');
   if (!gisContainer) return;
 
   try {
     window.google.accounts.id.initialize({
       client_id: clientId,
-      callback: (response) => handleCredentialResponse(response, safeRedirectUrl),
+      callback: (response) => handleCredentialResponse(response, safeRedirectUrl, rawRedirect),
       auto_select: false,
       cancel_on_tap_outside: true,
       itp_support: true
@@ -145,7 +145,7 @@ function setupGis(clientId, safeRedirectUrl) {
 /**
  * Xử lý sau khi người dùng chọn tài khoản Google thành công
  */
-async function handleCredentialResponse(response, safeRedirectUrl) {
+async function handleCredentialResponse(response, safeRedirectUrl, rawRedirect) {
   if (!response || !response.credential) {
     showAlert('Không nhận được thông tin xác thực từ Google. Vui lòng thử lại.');
     return;
@@ -176,12 +176,26 @@ async function handleCredentialResponse(response, safeRedirectUrl) {
     // 3. Đánh dấu đăng nhập thành công vào Auth State
     authState.handleLoginSuccess(authResult.accessToken, userProfile);
 
-    // 4. Thông báo và điều hướng an toàn
+    // 4. Thông báo và điều hướng an toàn dựa theo Role
     const welcomeName = userProfile.fullName || userProfile.email || 'bạn';
     toast.success(`Chào mừng ${welcomeName} quay trở lại!`, 'Đăng nhập thành công');
 
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectParam = rawRedirect || urlParams.get('redirect');
+
+    let targetUrl = safeRedirectUrl;
+    if (!redirectParam || redirectParam === '../../index.html' || redirectParam === '/' || redirectParam === '/index.html') {
+      if (userProfile.role === 'ADMIN') {
+        targetUrl = '../admin/dashboard.html';
+      } else if (userProfile.role === 'MANAGER') {
+        targetUrl = '../manager/dashboard.html';
+      } else {
+        targetUrl = '../../index.html';
+      }
+    }
+
     setTimeout(() => {
-      window.location.href = safeRedirectUrl;
+      window.location.href = targetUrl;
     }, 700);
   } catch (error) {
     console.error('[Login] Lỗi xác thực với máy chủ:', error);
@@ -203,6 +217,8 @@ function initDevConfig(safeRedirectUrl) {
   const input = document.getElementById('dev-client-id-input');
   const saveBtn = document.getElementById('dev-save-btn');
   const mockBtn = document.getElementById('dev-mock-login-btn');
+  const mockManagerBtn = document.getElementById('dev-mock-manager-btn');
+  const mockAdminBtn = document.getElementById('dev-mock-admin-btn');
   const currentOriginEl = document.getElementById('dev-current-origin');
 
   if (!toggleBtn || !panel || !input || !saveBtn) return;
@@ -252,7 +268,7 @@ function initDevConfig(safeRedirectUrl) {
     }
   });
 
-  // Xử lý nút Đăng nhập Thử nghiệm (Dev Mock Login)
+  // 1. Giả lập đăng nhập Khách hàng (Customer)
   if (mockBtn) {
     mockBtn.addEventListener('click', () => {
       const mockUser = {
@@ -261,16 +277,54 @@ function initDevConfig(safeRedirectUrl) {
         email: 'khachhang@gmail.com',
         phone: '0987654321',
         role: 'CUSTOMER',
-        status: 'ACTIVE'
+        status: 'ACTIVE',
+        isMock: true
       };
-      const mockToken = 'mock-jwt-token-hmp-dev-environment';
-
-      authState.handleLoginSuccess(mockToken, mockUser);
-      toast.success('Đăng nhập thử nghiệm thành công! Chào mừng ' + mockUser.fullName, 'Dev Mode');
-
+      authState.handleLoginSuccess('mock-jwt-customer-token', mockUser);
+      toast.success('Đăng nhập thành công với vai trò Khách hàng!', 'Dev Mode');
       setTimeout(() => {
-        window.location.href = safeRedirectUrl || '../../index.html';
-      }, 700);
+        window.location.href = '../../index.html';
+      }, 600);
+    });
+  }
+
+  // 2. Giả lập đăng nhập Quản lý (Manager)
+  if (mockManagerBtn) {
+    mockManagerBtn.addEventListener('click', () => {
+      const mockUser = {
+        userId: 2,
+        fullName: 'Trần Thị Quản Lý',
+        email: 'quanly@hmp.vn',
+        phone: '0912345678',
+        role: 'MANAGER',
+        status: 'ACTIVE',
+        isMock: true
+      };
+      authState.handleLoginSuccess('mock-jwt-manager-token', mockUser);
+      toast.success('Đăng nhập thành công với vai trò Quản lý!', 'Dev Mode');
+      setTimeout(() => {
+        window.location.href = '../manager/dashboard.html';
+      }, 600);
+    });
+  }
+
+  // 3. Giả lập đăng nhập Quản trị viên (Admin)
+  if (mockAdminBtn) {
+    mockAdminBtn.addEventListener('click', () => {
+      const mockUser = {
+        userId: 3,
+        fullName: 'Lê Quản Trị Viên',
+        email: 'admin@hmp.vn',
+        phone: '0900000000',
+        role: 'ADMIN',
+        status: 'ACTIVE',
+        isMock: true
+      };
+      authState.handleLoginSuccess('mock-jwt-admin-token', mockUser);
+      toast.success('Đăng nhập thành công với vai trò Quản trị viên (Admin)!', 'Dev Mode');
+      setTimeout(() => {
+        window.location.href = '../admin/dashboard.html';
+      }, 600);
     });
   }
 }

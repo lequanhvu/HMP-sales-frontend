@@ -24,7 +24,9 @@ export const ALLOWED_REDIRECT_PATHS = [
   '/pages/customer/my-orders.html',
   '/pages/customer/profile.html',
   '/pages/introduction/introduction.html',
-  '/pages/contact/contact.html'
+  '/pages/contact/contact.html',
+  '/pages/admin/dashboard.html',
+  '/pages/manager/dashboard.html'
 ];
 
 export const FORBIDDEN_CUSTOMER_REDIRECTS = [

@@ -6,6 +6,7 @@ import { authState } from '../auth/auth.state.js';
 import { storage } from '../utils/storage.js';
 import { client } from '../api/client.js';
 import { toast } from './toast.js';
+import { showLogoutConfirm } from './confirm-modal.js';
 
 let isHeaderInitialized = false;
 
@@ -20,6 +21,11 @@ export function initHeader() {
   const dropdownEmailEl = document.getElementById('dropdown-user-email');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
   const logoutBtn = document.getElementById('header-logout-btn');
+  const searchBtn = document.getElementById('search-toggle-btn');
+  const notificationBtn = document.getElementById('header-notification-btn');
+  const notificationBadge = document.getElementById('header-notification-badge');
+  const navOrdersItem = document.getElementById('header-nav-orders-item');
+  const dashboardLinksContainer = document.getElementById('dropdown-dashboard-links');
 
   // Mobile elements
   const mobileLoginLink = document.getElementById('mobile-login-link');
@@ -42,12 +48,21 @@ export function initHeader() {
       userWrapper.classList.toggle('hidden', !isAuthenticated);
     }
 
+    // Thay đổi biểu tượng tìm kiếm -> chuông thông báo và hiển thị mục đơn hàng
+    if (searchBtn) {
+      searchBtn.classList.toggle('hidden', isAuthenticated);
+    }
+    if (notificationBtn) {
+      notificationBtn.classList.toggle('hidden', !isAuthenticated);
+    }
+    if (navOrdersItem) {
+      navOrdersItem.classList.toggle('hidden', !isAuthenticated);
+    }
+
     if (isAuthenticated && user) {
       const displayName = user.fullName || user.email || 'Khách hàng';
-      const initial = displayName.charAt(0).toUpperCase();
 
       if (userNameEl) userNameEl.textContent = displayName;
-      if (userAvatarEl) userAvatarEl.textContent = initial;
 
       if (dropdownNameEl) dropdownNameEl.textContent = displayName;
       if (dropdownEmailEl) dropdownEmailEl.textContent = user.email || '';
@@ -56,19 +71,53 @@ export function initHeader() {
           : user.role === 'MANAGER' ? 'Quản lý' : 'Khách hàng';
       }
 
+      // Tạo lối tắt vào Dashboard tương ứng với vai trò quản trị/quản lý
+      if (dashboardLinksContainer) {
+        if (user.role === 'ADMIN') {
+          dashboardLinksContainer.innerHTML = `
+            <a href="./pages/admin/dashboard.html" class="user-dropdown__item" data-link="admin-dashboard">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Trang quản trị (Admin)</span>
+            </a>
+          `;
+        } else if (user.role === 'MANAGER') {
+          dashboardLinksContainer.innerHTML = `
+            <a href="./pages/manager/dashboard.html" class="user-dropdown__item" data-link="manager-dashboard">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+              <span>Trang điều hành (Quản lý)</span>
+            </a>
+          `;
+        } else {
+          dashboardLinksContainer.innerHTML = '';
+        }
+      }
+
+      // Nạp số lượng thông báo chưa đọc từ backend
+      fetchUnreadNotifications(notificationBadge);
+
       // Cập nhật Mobile Drawer
       if (mobileLoginLink) mobileLoginLink.classList.add('hidden');
       if (mobileProfileBox) mobileProfileBox.classList.remove('hidden');
       if (mobileAuthLinks) mobileAuthLinks.classList.remove('hidden');
       if (mobileUserName) mobileUserName.textContent = displayName;
       if (mobileUserEmail) mobileUserEmail.textContent = user.email || '';
-      if (mobileUserAvatar) mobileUserAvatar.textContent = initial;
     } else {
       if (mobileLoginLink) mobileLoginLink.classList.remove('hidden');
       if (mobileProfileBox) mobileProfileBox.classList.add('hidden');
       if (mobileAuthLinks) mobileAuthLinks.classList.add('hidden');
       if (userDropdown) userDropdown.classList.remove('header__user-dropdown--open');
       if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
+      if (dashboardLinksContainer) dashboardLinksContainer.innerHTML = '';
     }
   }
 
@@ -98,40 +147,61 @@ export function initHeader() {
     isHeaderInitialized = true;
   }
 
-  // 3. Đóng mở Dropdown tài khoản trên Desktop
-  if (userProfileBtn && userDropdown) {
-    userProfileBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const isOpen = userDropdown.classList.toggle('header__user-dropdown--open');
-      userProfileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-    });
+  // 3. Đóng mở Dropdown tài khoản trên Desktop (Đảm bảo click vào Avatar, Tên hay Button đều toggle chính xác)
+  const toggleUserDropdown = (e) => {
+    if (e) e.stopPropagation();
+    if (!userDropdown) return;
+    const isOpen = userDropdown.classList.toggle('header__user-dropdown--open');
+    if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  };
 
-    document.addEventListener('click', (e) => {
-      if (!userWrapper || !userWrapper.contains(e.target)) {
-        userDropdown.classList.remove('header__user-dropdown--open');
-        userProfileBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
+  if (userProfileBtn) {
+    userProfileBtn.onclick = toggleUserDropdown;
+  }
+  if (userAvatarEl) {
+    userAvatarEl.onclick = toggleUserDropdown;
   }
 
-  // 4. Xử lý Đăng xuất
-  const onLogout = async () => {
-    if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
-      const res = await authState.handleLogout();
-      if (res.serverRevoked) {
-        toast.success('Đã đăng xuất thành công.');
-      } else {
-        toast.info('Đã đăng xuất trên thiết bị này.');
-      }
-      renderAuthState();
-
-      // Nếu đang ở các trang riêng tư của khách hàng, chuyển hướng về trang chủ
-      const path = window.location.pathname.toLowerCase();
-      if (path.includes('/pages/customer/') || path.includes('/pages/admin/')) {
-        const homeUrl = path.includes('/pages/') ? '../../index.html' : './index.html';
-        window.location.href = homeUrl;
+  // Đóng khi click ngoài
+  document.addEventListener('click', (e) => {
+    if (userDropdown && userDropdown.classList.contains('header__user-dropdown--open')) {
+      if (!userWrapper || !userWrapper.contains(e.target)) {
+        userDropdown.classList.remove('header__user-dropdown--open');
+        if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
       }
     }
+  });
+
+  // 4. Xử lý Đăng xuất (Hiển thị Confirm Modal chuẩn HMP)
+  const onLogout = () => {
+    showLogoutConfirm({
+      title: 'Xác nhận đăng xuất',
+      message: 'Bạn có chắc chắn muốn đăng xuất khỏi tài khoản không?',
+      confirmText: 'Đăng xuất',
+      cancelText: 'Hủy',
+      onConfirm: async () => {
+        const res = await authState.handleLogout();
+        if (res.serverRevoked) {
+          toast.success('Đã đăng xuất thành công.');
+        } else {
+          toast.info('Đã đăng xuất trên thiết bị này.');
+        }
+        renderAuthState();
+
+        // Chuyển hướng hoặc làm mới trang
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('/pages/customer/') || path.includes('/pages/admin/') || path.includes('/pages/manager/')) {
+          const homeUrl = path.includes('/pages/') ? '../../index.html' : './index.html';
+          setTimeout(() => {
+            window.location.href = homeUrl;
+          }, 300);
+        } else {
+          setTimeout(() => {
+            window.location.reload();
+          }, 400);
+        }
+      }
+    });
   };
 
   if (logoutBtn) {
@@ -174,6 +244,24 @@ function getCatalogPageUrl(categoryId) {
     base = '../product/catalog.html';
   }
   return categoryId ? `${base}?categoryId=${categoryId}` : base;
+}
+
+async function fetchUnreadNotifications(badgeEl) {
+  if (!badgeEl) return;
+  try {
+    const res = await client.get('/notifications/unread-count');
+    const count = (res && typeof res.unreadCount === 'number') ? res.unreadCount : (res && res.data && res.data.unreadCount) || 1;
+    if (count > 0) {
+      badgeEl.textContent = count > 99 ? '99+' : String(count);
+      badgeEl.classList.remove('hidden');
+    } else {
+      badgeEl.classList.add('hidden');
+    }
+  } catch {
+    // Nếu chưa có thông báo hoặc offline, hiển thị chấm đỏ 1 thông báo chào mừng
+    badgeEl.textContent = '1';
+    badgeEl.classList.remove('hidden');
+  }
 }
 
 async function loadCategoryDropdown() {

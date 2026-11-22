@@ -11,7 +11,10 @@
 import { storage } from '../utils/storage.js';
 import { translateMessage } from '../utils/i18n.js';
 
-export const API_BASE_URL = 'http://localhost:8080/api/v1';
+const currentHostname = (typeof window !== 'undefined' && window.location && window.location.hostname)
+  ? window.location.hostname
+  : 'localhost';
+export const API_BASE_URL = `http://${currentHostname}:8080/api/v1`;
 
 let isRefreshing = false;
 let failedQueue = [];

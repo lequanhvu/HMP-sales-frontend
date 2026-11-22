@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tổng quan hệ thống — Quản trị viên HMP</title>
+  <meta name="description" content="Trang tổng quan hệ thống quản trị viên HMP — Thống kê sản phẩm, đơn hàng, người dùng và doanh thu.">
+
+  <!-- Base CSS -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- Components CSS -->
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+
+  <!-- Page CSS -->
+  <link rel="stylesheet" href="../../assets/css/pages/admin-dashboard.css?v=2">
+</head>
+<body class="admin-layout">
+
+  <!-- Sidebar Điều Hướng Admin -->
+  <aside id="admin-sidebar" class="admin-sidebar">
+    <div class="admin-sidebar__header">
+      <a href="./dashboard.html" class="admin-sidebar__brand">
+        <img src="../../assets/images/logo/logo-hmp-removed-background-v2.png" alt="HMP Logo" class="admin-sidebar__logo">
+      </a>
+      <button id="sidebar-close-btn" class="admin-sidebar__close-btn" aria-label="Đóng menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="admin-sidebar__nav">
+      <ul class="admin-sidebar__menu">
+        <li>
+          <a href="./dashboard.html" class="admin-sidebar__item admin-sidebar__item--active">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Tổng quan</span>
+          </a>
+        </li>
+        <li>
+          <a href="../../pages/product/catalog.html" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <span>Sản phẩm</span>
+          </a>
+        </li>
+        <li>
+          <a href="#categories" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"></line>
+              <line x1="8" y1="12" x2="21" y2="12"></line>
+              <line x1="8" y1="18" x2="21" y2="18"></line>
+              <line x1="3" y1="6" x2="3.01" y2="6"></line>
+              <line x1="3" y1="12" x2="3.01" y2="12"></line>
+              <line x1="3" y1="18" x2="3.01" y2="18"></line>
+            </svg>
+            <span>Danh mục</span>
+          </a>
+        </li>
+        <li>
+          <a href="../manager/dashboard.html" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Đơn hàng</span>
+          </a>
+        </li>
+        <li>
+          <a href="#users" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+            <span>Người dùng</span>
+          </a>
+        </li>
+        <li>
+          <a href="#logs" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+            <span>Nhật ký hệ thống</span>
+          </a>
+        </li>
+        <li>
+          <a href="#settings" class="admin-sidebar__item">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+            <span>Cài đặt hệ thống</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Khối thông tin Admin góc dưới sidebar -->
+    <div class="admin-sidebar__footer">
+      <div id="admin-sidebar-user" class="admin-sidebar__user" role="button" tabindex="0" title="Tài khoản Admin - Nhấn để mở menu đăng xuất">
+        <div class="admin-sidebar__avatar">
+          <img src="../../assets/images/avatar-empty.jpg" alt="Avatar Admin" class="admin-avatar-img">
+        </div>
+        <div class="admin-sidebar__user-meta">
+          <span id="sidebar-user-name" class="admin-sidebar__user-name">Admin</span>
+          <span class="admin-sidebar__user-role">Quản trị viên</span>
+        </div>
+        <button id="admin-sidebar-quick-logout" class="admin-sidebar__logout-btn" type="button" title="Đăng xuất nhanh">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Popup Dropdown mở lên từ Avatar chân Sidebar -->
+      <div id="admin-sidebar-dropdown" class="admin-sidebar-dropdown hidden">
+        <div class="admin-sidebar-dropdown__header">
+          <span id="sidebar-dropdown-name" class="admin-dropdown__title">Admin</span>
+          <span id="sidebar-dropdown-email" class="admin-dropdown__subtitle">admin@hmp.vn</span>
+        </div>
+        <div class="admin-dropdown__divider"></div>
+        <button id="admin-sidebar-logout-btn" class="admin-dropdown__item admin-dropdown__item--danger" type="button">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          <span>Đăng xuất</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Lớp phủ cho Mobile khi mở Sidebar -->
+  <div id="sidebar-overlay" class="admin-sidebar__overlay"></div>
+
+  <!-- Vùng nội dung chính -->
+  <div class="admin-main">
+    <!-- Top Header -->
+    <header class="admin-header">
+      <div class="admin-header__left">
+        <button id="sidebar-toggle-btn" class="admin-header__toggle" aria-label="Mở menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <div>
+          <h1 class="admin-header__title">Tổng quan hệ thống</h1>
+          <span class="admin-header__subtitle">Báo cáo hiệu suất và hoạt động toàn diện</span>
+        </div>
+      </div>
+
+      <div class="admin-header__right">
+        <!-- Nút Chuông Thông Báo -->
+        <button id="admin-notification-btn" class="admin-header__btn" title="Thông báo" aria-label="Thông báo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span id="admin-notification-badge" class="admin-header__badge">1</span>
+        </button>
+
+        <!-- Profile Dropdown góc trên bên phải -->
+        <div class="admin-header__profile-wrap">
+          <button id="admin-profile-btn" class="admin-header__profile" type="button" aria-expanded="false">
+            <div class="admin-header__avatar">
+              <img src="../../assets/images/avatar-empty.jpg" alt="Avatar Admin" class="admin-avatar-img">
+            </div>
+            <span id="header-user-name" class="admin-header__name">Admin</span>
+            <svg class="admin-header__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </button>
+
+          <!-- Dropdown menu (Hiện nút Đăng xuất) -->
+          <div id="admin-dropdown-menu" class="admin-dropdown hidden">
+            <div class="admin-dropdown__header">
+              <span id="dropdown-full-name" class="admin-dropdown__title">Admin</span>
+              <span id="dropdown-email" class="admin-dropdown__subtitle">admin@hmp.vn</span>
+            </div>
+            <div class="admin-dropdown__divider"></div>
+            <button id="admin-logout-btn" class="admin-dropdown__item admin-dropdown__item--danger" type="button">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+              </svg>
+              <span>Đăng xuất</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="admin-content">
+      <!-- 4 Metric Cards chuẩn thiết kế -->
+      <section class="admin-metrics-grid">
+        <!-- Card 1: Sản phẩm -->
+        <div class="admin-metric-card">
+          <div class="admin-metric-card__icon-box admin-metric-card__icon-box--blue">
+            <!-- Icon 3D Box / Sản phẩm -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <div class="admin-metric-card__data">
+            <span id="metric-products-count" class="admin-metric-card__number">1.250</span>
+            <span class="admin-metric-card__label">Sản phẩm</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Đơn hàng -->
+        <div class="admin-metric-card">
+          <div class="admin-metric-card__icon-box admin-metric-card__icon-box--cyan">
+            <!-- Icon Giỏ hàng / Đơn hàng -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+          </div>
+          <div class="admin-metric-card__data">
+            <span id="metric-orders-count" class="admin-metric-card__number">3.680</span>
+            <span class="admin-metric-card__label">Đơn hàng</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Người dùng -->
+        <div class="admin-metric-card">
+          <div class="admin-metric-card__icon-box admin-metric-card__icon-box--indigo">
+            <!-- Icon Người dùng -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <div class="admin-metric-card__data">
+            <span id="metric-users-count" class="admin-metric-card__number">8.920</span>
+            <span class="admin-metric-card__label">Người dùng</span>
+          </div>
+        </div>
+
+        <!-- Card 4: Doanh thu (Data tĩnh theo hướng dẫn) -->
+        <div class="admin-metric-card">
+          <div class="admin-metric-card__icon-box admin-metric-card__icon-box--amber">
+            <!-- Icon Đồng tiền / Doanh thu -->
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
+              <line x1="12" y1="6" x2="12" y2="8"></line>
+              <line x1="12" y1="16" x2="12" y2="18"></line>
+            </svg>
+          </div>
+          <div class="admin-metric-card__data">
+            <span class="admin-metric-card__number">2.8 tỷ</span>
+            <span class="admin-metric-card__label">Doanh thu</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Khối Biểu đồ & Phân tích Đồ họa -->
+      <section class="admin-charts-grid">
+        <!-- Biểu đồ 1: Doanh thu theo thời gian -->
+        <div class="admin-chart-card">
+          <div class="admin-chart-card__header">
+            <h2 class="admin-chart-card__title">Doanh thu theo thời gian</h2>
+            <span class="admin-chart-card__badge">Năm 2026</span>
+          </div>
+          <div class="admin-chart-card__body">
+            <!-- SVG Line Chart Responsive -->
+            <div class="admin-line-chart-wrap">
+              <svg class="admin-line-chart" viewBox="0 0 600 240" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="revenue-area" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3"></stop>
+                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0"></stop>
+                  </linearGradient>
+                </defs>
+                <!-- Lưới trục ngang -->
+                <line x1="40" y1="40" x2="580" y2="40" stroke="#f1f5f9" stroke-width="1"></line>
+                <line x1="40" y1="90" x2="580" y2="90" stroke="#f1f5f9" stroke-width="1"></line>
+                <line x1="40" y1="140" x2="580" y2="140" stroke="#f1f5f9" stroke-width="1"></line>
+                <line x1="40" y1="190" x2="580" y2="190" stroke="#e2e8f0" stroke-width="1.5"></line>
+
+                <!-- Nhãn trục tung -->
+                <text x="10" y="44" fill="#94a3b8" font-size="11" font-family="sans-serif">3.0</text>
+                <text x="10" y="94" fill="#94a3b8" font-size="11" font-family="sans-serif">2.0</text>
+                <text x="10" y="144" fill="#94a3b8" font-size="11" font-family="sans-serif">1.0</text>
+                <text x="25" y="194" fill="#94a3b8" font-size="11" font-family="sans-serif">0</text>
+
+                <!-- Vùng tô màu Gradient -->
+                <polygon points="50,185 90,170 135,178 180,150 225,142 270,146 315,135 360,138 405,100 450,118 495,95 540,65 540,190 50,190" fill="url(#revenue-area)"></polygon>
+
+                <!-- Đường vẽ Line Chart chính -->
+                <polyline points="50,185 90,170 135,178 180,150 225,142 270,146 315,135 360,138 405,100 450,118 495,95 540,65" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></polyline>
+
+                <!-- Điểm đánh dấu trên biểu đồ -->
+                <circle cx="405" cy="100" r="5" fill="#ffffff" stroke="#2563eb" stroke-width="3"></circle>
+                <circle cx="540" cy="65" r="5" fill="#ffffff" stroke="#2563eb" stroke-width="3"></circle>
+
+                <!-- Tooltip nổi T8: 2,1 tỷ -->
+                <g transform="translate(375, 45)">
+                  <rect x="0" y="0" width="60" height="30" rx="6" fill="#ffffff" filter="drop-shadow(0 2px 5px rgba(0,0,0,0.15))" stroke="#e2e8f0"></rect>
+                  <text x="30" y="13" text-anchor="middle" fill="#64748b" font-size="9" font-weight="600">T8</text>
+                  <text x="30" y="24" text-anchor="middle" fill="#0f172a" font-size="11" font-weight="800">2,1 tỷ</text>
+                </g>
+
+                <!-- Nhãn trục hoành T1 -> T12 -->
+                <text x="50" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T1</text>
+                <text x="95" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T2</text>
+                <text x="140" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T3</text>
+                <text x="185" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T4</text>
+                <text x="230" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T5</text>
+                <text x="275" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T6</text>
+                <text x="320" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T7</text>
+                <text x="365" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T8</text>
+                <text x="410" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T9</text>
+                <text x="455" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T10</text>
+                <text x="500" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T11</text>
+                <text x="540" y="212" text-anchor="middle" fill="#94a3b8" font-size="11">T12</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biểu đồ 2: Đơn hàng theo trạng thái -->
+        <div class="admin-chart-card">
+          <div class="admin-chart-card__header">
+            <h2 class="admin-chart-card__title">Đơn hàng theo trạng thái</h2>
+          </div>
+          <div class="admin-chart-card__body admin-donut-card-body">
+            <!-- Donut Chart SVG -->
+            <div class="admin-donut-wrap">
+              <svg class="admin-donut-svg" viewBox="0 0 160 160">
+                <circle cx="80" cy="80" r="54" fill="none" stroke="#f1f5f9" stroke-width="22"></circle>
+                <!-- Đoạn 1: Đã giao (45%) -->
+                <circle cx="80" cy="80" r="54" fill="none" stroke="#10b981" stroke-width="22" stroke-dasharray="152 340" stroke-dashoffset="0"></circle>
+                <!-- Đoạn 2: Đang xử lý (40%) -->
+                <circle cx="80" cy="80" r="54" fill="none" stroke="#3b82f6" stroke-width="22" stroke-dasharray="136 340" stroke-dashoffset="-152"></circle>
+                <!-- Đoạn 3: Chờ xác nhận (15%) -->
+                <circle cx="80" cy="80" r="54" fill="none" stroke="#f59e0b" stroke-width="22" stroke-dasharray="52 340" stroke-dashoffset="-288"></circle>
+              </svg>
+              <!-- Nội dung trung tâm Donut -->
+              <div class="admin-donut-center">
+                <span id="donut-total-number" class="admin-donut-number">580</span>
+                <span class="admin-donut-label">Tổng cộng</span>
+              </div>
+            </div>
+
+            <!-- Chú thích Legend -->
+            <div class="admin-donut-legend">
+              <div class="admin-legend-item">
+                <span class="admin-legend-dot admin-legend-dot--amber"></span>
+                <span class="admin-legend-text">Chờ xác nhận</span>
+                <span class="admin-legend-percent">15%</span>
+              </div>
+              <div class="admin-legend-item">
+                <span class="admin-legend-dot admin-legend-dot--blue"></span>
+                <span class="admin-legend-text">Đang xử lý</span>
+                <span class="admin-legend-percent">40%</span>
+              </div>
+              <div class="admin-legend-item">
+                <span class="admin-legend-dot admin-legend-dot--green"></span>
+                <span class="admin-legend-text">Đã giao</span>
+                <span class="admin-legend-percent">45%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Module khởi chạy trang Admin Dashboard (Cache-busted v2) -->
+  <script type="module" src="../../js/pages/admin-dashboard.js?v=2"></script>
+</body>
+</html>

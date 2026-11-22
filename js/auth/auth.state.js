@@ -46,6 +46,21 @@ export const authState = {
 
     refreshPromise = (async () => {
       try {
+        // 1. Nếu là phiên thử nghiệm giả lập (Dev Mock), tự khôi phục token trong RAM
+        const cachedUser = storage.getUser();
+        if (cachedUser && cachedUser.isMock) {
+          const mockToken = `mock-jwt-${(cachedUser.role || 'customer').toLowerCase()}-token`;
+          storage.setAccessToken(mockToken);
+          window.dispatchEvent(new CustomEvent('hmp:session-restored', {
+            detail: { user: cachedUser }
+          }));
+          window.dispatchEvent(new CustomEvent('hmp:auth-changed', {
+            detail: { isAuthenticated: true, user: cachedUser }
+          }));
+          return mockToken;
+        }
+
+        // 2. Phiên chính thức: Gọi ngầm refresh token bằng HttpOnly Cookie
         const authData = await authApi.refreshToken();
         if (authData && authData.accessToken) {
           storage.setAccessToken(authData.accessToken);
@@ -69,13 +84,18 @@ export const authState = {
         }
         throw new Error('Không nhận được token từ máy chủ');
       } catch (err) {
-        this.clearAuth();
-        window.dispatchEvent(new CustomEvent('hmp:auth-expired', {
-          detail: { error: err.message }
-        }));
-        window.dispatchEvent(new CustomEvent('hmp:auth-changed', {
-          detail: { isAuthenticated: false, user: null }
-        }));
+        // Chỉ xóa session khi server trả về lỗi xác thực 401/403 (phiên đã hết hạn thực sự)
+        if (err.statusCode === 401 || err.statusCode === 403) {
+          this.clearAuth();
+          window.dispatchEvent(new CustomEvent('hmp:auth-expired', {
+            detail: { error: err.message }
+          }));
+          window.dispatchEvent(new CustomEvent('hmp:auth-changed', {
+            detail: { isAuthenticated: false, user: null }
+          }));
+        } else {
+          console.warn('[AuthState] Chưa thể khôi phục token từ server:', err.message);
+        }
         return null;
       } finally {
         refreshPromise = null;

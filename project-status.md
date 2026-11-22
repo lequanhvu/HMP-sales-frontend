@@ -191,7 +191,13 @@ _Nothing._
 
 ### Phase 3 — Xác thực Khách hàng & Sổ địa chỉ
 - [x] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google` (`pages/auth/login.html`)
+- [x] Triển khai Kiến trúc Xác thực Cookie-Based (Cách 1 - Full HttpOnly Cookie):
+  - [x] Backend Spring Boot: Cấp `access_token` và `refresh_token` qua HttpOnly Cookie (`Path=/`, `SameSite=Lax`)
+  - [x] Backend Spring Security: Tùy biến `BearerTokenResolver` tự động bóc tách token từ Cookie `access_token` (vẫn duy trì hỗ trợ header `Authorization: Bearer` cho Postman/Swagger)
+  - [x] Kiểm tra tính hợp lệ và trạng thái sống của Token qua Redis (`auth:access:{jti}`) giữ nguyên 100%
+  - [x] Frontend Vanilla JS: Chống XSS triệt để, không lưu token vào `localStorage`/`sessionStorage`, trình duyệt tự động gửi cookie qua `credentials: 'include'` khi chuyển trang
 - [x] Lưu trạng thái đăng nhập, cập nhật Header hiển thị tên, avatar, role và menu Dropdown (Đơn hàng, Thông tin, Đăng xuất)
+- [x] Tối ưu hóa UI Header cho Khách hàng: Thêm mục "Đơn hàng" trên menu điều hướng, thay icon kính lúp thành chuông thông báo (kèm badge), thay nút Đăng nhập bằng Avatar (`avatar-empty.jpg`) và dropdown menu
 - [ ] Trang thông tin tài khoản (`pages/customer/profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
 - [ ] Quản lý sổ địa chỉ giao hàng (`GET/POST/PATCH/DELETE /api/v1/me/addresses`)
 
@@ -210,10 +216,19 @@ _Nothing._
   - [ ] Xem chi tiết đơn hàng: trạng thái, tổng tiền khi Quản lý đã tính giá
   - [ ] Hủy đơn hàng trong cửa sổ cho phép (`POST /api/v1/orders/{orderId}/cancel`)
   - [ ] Hoàn tác hủy đơn hàng (`POST /api/v1/orders/{orderId}/undo-cancel`) trong vòng 60 phút
-- [ ] Component chuông thông báo đơn hàng (`GET /api/v1/notifications`, đánh dấu đã đọc)
+- [x] Component chuông thông báo đơn hàng (`GET /api/v1/notifications/unread-count`, badge trên Header và Dashboard)
 
 ### Phase 6 — Cổng Quản lý / Quản trị viên (Manager & Admin Portal)
-- [ ] Giao diện Đăng nhập Quản lý / Admin
+- [x] Giao diện Đăng nhập Quản lý / Admin / Khách hàng đa vai trò (`pages/auth/login.html`)
+- [x] Trang chủ Tổng quan Quản trị viên (`pages/admin/dashboard.html` & `js/pages/admin-dashboard.js`):
+  - [x] Thẻ metric Sản phẩm, Đơn hàng, Người dùng (lấy động từ BE), Doanh thu 2.8 tỷ (dữ liệu tĩnh)
+  - [x] Biểu đồ Line chart SVG "Doanh thu theo thời gian" & Donut chart SVG "Đơn hàng theo trạng thái"
+  - [x] Sidebar xanh navy thương hiệu HMP, menu 7 mục, avatar đồng bộ `avatar-empty.jpg`
+- [x] Trang chủ Tổng quan Quản lý Điều hành (`pages/manager/dashboard.html` & `js/pages/manager-dashboard.js`):
+  - [x] Thẻ metric Đơn chờ xác nhận, Đang xử lý, Đã hoàn thành (lấy động theo status từ BE)
+  - [x] Biểu đồ Bar chart SVG "Doanh thu 30 ngày gần nhất" (dữ liệu tĩnh)
+  - [x] Danh sách "Đơn hàng mới nhất" (lấy động từ `GET /api/v1/manager/orders?size=4`)
+  - [x] Sidebar xanh navy 4 mục, avatar đồng bộ `avatar-empty.jpg`
 - [ ] Quản lý đơn hàng (`pages/admin/orders.html`): Xem danh sách đơn `PENDING`, form nhập đơn giá / chiết khấu và tính giá (`/calculate`), nút xác nhận đơn (`/confirm`), cập nhật trạng thái đơn (`/status`)
 - [ ] Quản lý danh mục & sản phẩm (`pages/admin/products.html`): Thêm danh mục con, tạo sản phẩm, upload ảnh
 - [ ] Quản lý Master data (`pages/admin/master-data.html`): Quản trị thương hiệu, đơn vị tính, màu sắc (upload ảnh mẫu màu 1 bước)

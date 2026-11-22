@@ -255,6 +255,40 @@
   justify-content: center;
   font-weight: 700;
   font-size: 0.875rem;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  flex-shrink: 0;
+}
+
+.header__avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Chuông thông báo */
+.header__notification-btn {
+  position: relative;
+}
+
+.header__notification-badge {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  background-color: #ef4444;
+  color: #ffffff;
+  border-radius: var(--radius-full);
+  font-size: 0.65rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  line-height: 1;
 }
 
 .header__user-name {
@@ -285,16 +319,19 @@
   background-color: #ffffff;
   border-radius: var(--radius-md, 8px);
   border: 1px solid var(--color-border);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
   display: none;
   flex-direction: column;
   padding: 0.5rem 0;
-  z-index: 1000;
+  z-index: 10000;
   animation: dropdown-fade 0.2s ease forwards;
 }
 
-.header__user-dropdown--open {
-  display: flex;
+.header__user-dropdown--open,
+.header__user-dropdown:not(.hidden) {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .user-dropdown__header {

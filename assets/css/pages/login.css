@@ -286,9 +286,15 @@
   margin: 0.85rem 0;
 }
 
+.auth-card__dev-mock-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .auth-card__dev-mock-btn {
   width: 100%;
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 1rem;
   background-color: #10b981;
   color: #ffffff;
   border: none;
@@ -305,6 +311,22 @@
 
 .auth-card__dev-mock-btn:hover {
   background-color: #059669;
+}
+
+.auth-card__dev-mock-btn--manager {
+  background-color: #f59e0b;
+}
+
+.auth-card__dev-mock-btn--manager:hover {
+  background-color: #d97706;
+}
+
+.auth-card__dev-mock-btn--admin {
+  background-color: #3b82f6;
+}
+
+.auth-card__dev-mock-btn--admin:hover {
+  background-color: #2563eb;
 }
 
 /* Thông báo lỗi dạng Alert */
