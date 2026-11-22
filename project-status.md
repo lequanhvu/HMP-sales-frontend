@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-18 | By: @antigravity | Session: #4
+> Last updated: 2026-11-21 | By: @antigravity | Session: #5
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,26 @@
 ---
 
 ## Completed
+- ✅ **Phân Hệ Đăng Nhập & Xác Thực Khách Hàng Chuẩn Thực Tế (Authentication & Authorization - Session #5)**:
+  - **Trang Đăng Nhập Chuẩn Thiết Kế Tôn Việt (`pages/auth/login.html`, `assets/css/pages/login.css`, `js/pages/login.js`)**:
+    - Thiết kế giao diện trung thực theo mẫu đồ họa thực tế: nền nhà xưởng công nghiệp `assets/images/auth/background.png` bao phủ toàn màn hình, thẻ đăng nhập `.auth-card` hiệu ứng kính mờ (`backdrop-filter: blur(12px)`), viền bo tròn 28px, đổ bóng sâu nổi khối sang trọng.
+    - Tiêu đề nổi bật *"Chào mừng bạn!"* với từ *"bạn!"* màu xanh thương hiệu `#0066cc`.
+    - Nút Google Sign-In dạng con nhộng (Pill button `#0066cc`, bo tròn 9999px) tích hợp logo Google "G" 4 màu chính thức và mũi tên điều hướng.
+    - Huy hiệu bảo mật: Biểu tượng khiên xanh và thông điệp *"Thông tin của bạn được bảo mật tuyệt đối"*.
+    - Công cụ Dev/Localhost: Hộp thiết lập nhanh Google Client ID lưu tạm vào `localStorage` giúp kiểm thử trực tiếp trên localhost mà không cần sửa code.
+    - Thẻ template `<template id="auth-alert-template">` hiển thị thông báo lỗi an toàn, 0% chèn chuỗi HTML thô (chống XSS).
+  - **Kiến Trúc Quản Lý Phiên & Bảo Mật Đa Tầng**:
+    - **`js/auth/redirect-validator.js`**: Chống triệt để lỗ hổng Open Redirect (CWE-601) bằng Whitelist đường dẫn nội bộ, loại trừ mọi URL ngoại vi, protocol-relative (`//evil.com`), `javascript:`, CRLF injection, và chặn chuyển hướng lặp về trang đăng nhập hoặc vượt quyền vào trang Admin.
+    - **`js/auth/auth.state.js`**: Quản lý Access Token độc quyền trong RAM (In-Memory closure), không lưu vào `localStorage` nhằm chống rò rỉ token qua XSS. Sử dụng cờ phiên `hmp_has_session` hỗ trợ cơ chế Silent Session Bootstrap khi F5/tải trang. Tích hợp Single-Flight Refresh Promise ngăn chặn xung đột Replay Attack ở Backend.
+    - **`js/auth/auth.guard.js`**: Cung cấp tiện ích bảo vệ UX cho các trang riêng tư của khách hàng (`order.html`, `profile.html`, `my-orders.html`).
+    - **`js/api/auth.api.js`**: Đóng gói các hàm gọi API `/auth/google`, `/auth/refresh`, `/auth/logout`, `/me`.
+    - **`js/components/toast.js` & `assets/css/components/toast.css`**: Xây dựng mới hoàn chỉnh component thông báo nổi BEM (Success, Error, Warning, Info), chống XSS bằng `textContent`.
+  - **Nâng Cấp Header Chung & Quản Trị Trạng Thái Tài Khoản**:
+    - Tích hợp Dropdown Menu người dùng trên Header: Hiển thị Avatar chữ cái đầu, họ tên, email và vai trò (`Khách hàng` / `Quản lý` / `Quản trị viên`).
+    - Các liên kết nhanh: *"Đơn hàng của tôi"*, *"Thông tin tài khoản"*, và nút *"Đăng xuất"* (gọi API thu hồi token tại Backend).
+    - Đồng bộ trạng thái đăng nhập tức thì giữa Desktop Navbar và Mobile Drawer qua hệ thống sự kiện `hmp:auth-changed`, `hmp:session-restored`, `hmp:auth-expired`.
+  - **Đồng Bộ Phía Backend**:
+    - Bổ sung trường `role` vào DTO `UserProfileResponse` và cập nhật tài liệu `api-spec.md`. Toàn bộ kiểm thử đơn vị và controller phía backend đều đạt 100% `BUILD SUCCESS`.
 - ✅ **Hệ Thống Quản Lý Bản Dịch Tiếng Việt Tập Trung (Centralized Translation Architecture - Session #4)**:
   - **Khởi tạo module `js/utils/i18n.js` theo chuẩn 3 Trụ Cột Độc Lập**:
     - **`fieldTranslations`**: Quản lý bản dịch tên trường/nhãn (`translateField(fieldName, domain)`), phân tách theo các Domain: `product`, `order`, `user`, `address`, `category`, `masterData`, và kế thừa `common`. Hỗ trợ fallback thông minh tự động chuyển đổi camelCase sang chuỗi đọc được khi chưa có bản dịch.
@@ -170,8 +190,8 @@ _Nothing._
   - [x] Bảng giá theo đơn vị tính (m, tấm) — kiểm soát quyền `PRODUCT_PRICE_VIEW`
 
 ### Phase 3 — Xác thực Khách hàng & Sổ địa chỉ
-- [ ] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google` (`pages/auth/login.html`)
-- [ ] Lưu trạng thái đăng nhập, cập nhật Header hiển thị tên & avatar người dùng
+- [x] Tích hợp Google Identity Services (GIS SDK): Đăng nhập Google, lấy ID Token gửi về `POST /api/v1/auth/google` (`pages/auth/login.html`)
+- [x] Lưu trạng thái đăng nhập, cập nhật Header hiển thị tên, avatar, role và menu Dropdown (Đơn hàng, Thông tin, Đăng xuất)
 - [ ] Trang thông tin tài khoản (`pages/customer/profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
 - [ ] Quản lý sổ địa chỉ giao hàng (`GET/POST/PATCH/DELETE /api/v1/me/addresses`)
 

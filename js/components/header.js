@@ -2,34 +2,146 @@
  * header.js — Điều khiển logic và trạng thái của Header
  */
 
+import { authState } from '../auth/auth.state.js';
 import { storage } from '../utils/storage.js';
 import { client } from '../api/client.js';
+import { toast } from './toast.js';
+
+let isHeaderInitialized = false;
 
 export function initHeader() {
   const loginBtn = document.getElementById('header-login-btn');
-  const userProfile = document.getElementById('header-user-profile');
+  const userWrapper = document.getElementById('header-user-wrapper');
+  const userProfileBtn = document.getElementById('header-user-profile');
+  const userDropdown = document.getElementById('header-user-dropdown');
   const userNameEl = document.getElementById('header-user-name');
   const userAvatarEl = document.getElementById('header-user-avatar');
+  const dropdownNameEl = document.getElementById('dropdown-user-fullname');
+  const dropdownEmailEl = document.getElementById('dropdown-user-email');
+  const dropdownRoleEl = document.getElementById('dropdown-user-role');
+  const logoutBtn = document.getElementById('header-logout-btn');
 
-  // 1. Kiểm tra trạng thái đăng nhập
-  const user = storage.getUser();
-  const isAuthenticated = Boolean(user && storage.isAuthenticated());
+  // Mobile elements
+  const mobileLoginLink = document.getElementById('mobile-login-link');
+  const mobileProfileBox = document.getElementById('mobile-profile-box');
+  const mobileUserAvatar = document.getElementById('mobile-user-avatar');
+  const mobileUserName = document.getElementById('mobile-user-name');
+  const mobileUserEmail = document.getElementById('mobile-user-email');
+  const mobileAuthLinks = document.getElementById('mobile-auth-links');
+  const mobileLogoutBtn = document.getElementById('mobile-logout-btn');
 
-  if (loginBtn) {
-    loginBtn.classList.toggle('hidden', isAuthenticated);
-  }
-  if (userProfile) {
-    userProfile.classList.toggle('header__user-profile--visible', isAuthenticated);
-    if (isAuthenticated) {
-      if (userNameEl) userNameEl.textContent = user.fullName || user.email || 'Tài khoản';
-      if (userAvatarEl) {
-        const initial = (user.fullName || user.email || 'U').charAt(0).toUpperCase();
-        userAvatarEl.textContent = initial;
+  // Hàm render trạng thái xác thực
+  function renderAuthState() {
+    const user = authState.getCurrentUser() || storage.getUser();
+    const isAuthenticated = authState.isAuthenticated() || (authState.hasSessionIndicator() && Boolean(user));
+
+    if (loginBtn) {
+      loginBtn.classList.toggle('hidden', isAuthenticated);
+    }
+    if (userWrapper) {
+      userWrapper.classList.toggle('hidden', !isAuthenticated);
+    }
+
+    if (isAuthenticated && user) {
+      const displayName = user.fullName || user.email || 'Khách hàng';
+      const initial = displayName.charAt(0).toUpperCase();
+
+      if (userNameEl) userNameEl.textContent = displayName;
+      if (userAvatarEl) userAvatarEl.textContent = initial;
+
+      if (dropdownNameEl) dropdownNameEl.textContent = displayName;
+      if (dropdownEmailEl) dropdownEmailEl.textContent = user.email || '';
+      if (dropdownRoleEl) {
+        dropdownRoleEl.textContent = user.role === 'ADMIN' ? 'Quản trị viên' 
+          : user.role === 'MANAGER' ? 'Quản lý' : 'Khách hàng';
       }
+
+      // Cập nhật Mobile Drawer
+      if (mobileLoginLink) mobileLoginLink.classList.add('hidden');
+      if (mobileProfileBox) mobileProfileBox.classList.remove('hidden');
+      if (mobileAuthLinks) mobileAuthLinks.classList.remove('hidden');
+      if (mobileUserName) mobileUserName.textContent = displayName;
+      if (mobileUserEmail) mobileUserEmail.textContent = user.email || '';
+      if (mobileUserAvatar) mobileUserAvatar.textContent = initial;
+    } else {
+      if (mobileLoginLink) mobileLoginLink.classList.remove('hidden');
+      if (mobileProfileBox) mobileProfileBox.classList.add('hidden');
+      if (mobileAuthLinks) mobileAuthLinks.classList.add('hidden');
+      if (userDropdown) userDropdown.classList.remove('header__user-dropdown--open');
+      if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
     }
   }
 
-  // 2. Xử lý mở Menu trên Mobile
+  // Khởi tạo hiển thị lần đầu
+  renderAuthState();
+
+  // 1. Silent Session Bootstrap nếu có cờ session mà chưa nạp token vào memory
+  if (authState.hasSessionIndicator() && !authState.isAuthenticated()) {
+    authState.restoreSession().then(token => {
+      if (token) {
+        renderAuthState();
+      }
+    }).catch(() => {
+      renderAuthState();
+    });
+  }
+
+  // 2. Lắng nghe các sự kiện xác thực tập trung để đồng bộ tức thì
+  if (!isHeaderInitialized) {
+    window.addEventListener('hmp:auth-changed', () => renderAuthState());
+    window.addEventListener('hmp:session-restored', () => renderAuthState());
+    window.addEventListener('hmp:auth-expired', () => {
+      renderAuthState();
+      toast.warning('Phiên đăng nhập đã kết thúc. Vui lòng đăng nhập lại.', 'Hết phiên');
+    });
+
+    isHeaderInitialized = true;
+  }
+
+  // 3. Đóng mở Dropdown tài khoản trên Desktop
+  if (userProfileBtn && userDropdown) {
+    userProfileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = userDropdown.classList.toggle('header__user-dropdown--open');
+      userProfileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!userWrapper || !userWrapper.contains(e.target)) {
+        userDropdown.classList.remove('header__user-dropdown--open');
+        userProfileBtn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
+
+  // 4. Xử lý Đăng xuất
+  const onLogout = async () => {
+    if (confirm('Bạn có chắc chắn muốn đăng xuất không?')) {
+      const res = await authState.handleLogout();
+      if (res.serverRevoked) {
+        toast.success('Đã đăng xuất thành công.');
+      } else {
+        toast.info('Đã đăng xuất trên thiết bị này.');
+      }
+      renderAuthState();
+
+      // Nếu đang ở các trang riêng tư của khách hàng, chuyển hướng về trang chủ
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('/pages/customer/') || path.includes('/pages/admin/')) {
+        const homeUrl = path.includes('/pages/') ? '../../index.html' : './index.html';
+        window.location.href = homeUrl;
+      }
+    }
+  };
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', onLogout);
+  }
+  if (mobileLogoutBtn) {
+    mobileLogoutBtn.addEventListener('click', onLogout);
+  }
+
+  // 5. Xử lý mở Menu trên Mobile
   const mobileToggle = document.getElementById('mobile-menu-toggle');
   const mobileNav = document.getElementById('mobile-nav-drawer');
 
@@ -45,7 +157,7 @@ export function initHeader() {
     });
   }
 
-  // 4. Nạp động danh mục tôn vào dropdown (nếu có)
+  // 6. Nạp động danh mục tôn vào dropdown (nếu có)
   loadCategoryDropdown();
 }
 

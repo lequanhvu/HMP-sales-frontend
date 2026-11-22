@@ -58,6 +58,20 @@
   text-decoration: none;
 }
 
+.footer__logo-img {
+  height: 42px;
+  width: auto;
+  max-width: 160px;
+  object-fit: contain;
+  display: block;
+  filter: brightness(0) invert(1); /* Chuyển màu logo sang trắng tinh tế nổi bật trên nền xanh navy */
+  transition: opacity var(--transition-base, 0.2s ease);
+}
+
+.footer__logo-wrap:hover .footer__logo-img {
+  opacity: 0.85;
+}
+
 .footer__logo-icon {
   width: 26px;
   height: 26px;

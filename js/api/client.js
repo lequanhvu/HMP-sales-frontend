@@ -5,7 +5,7 @@
  * - Tự động đính kèm Bearer JWT Token vào header.
  * - Luôn gửi kèm credentials: 'include' để chuyển Cookie HttpOnly (chứa Refresh Token).
  * - Bóc tách envelope chuẩn của Spring Boot backend { statusCode, data, message }.
- * - Tự động Silent Refresh Token khi nhận mã lỗi 401 Unauthorized.
+ * - Tự động Silent Refresh Token khi nhận mã lỗi 401 Unauthorized (xử lý single-flight queue).
  */
 
 import { storage } from '../utils/storage.js';
@@ -42,7 +42,7 @@ async function request(endpoint, options = {}) {
   // Luôn gửi kèm cookie HttpOnly chứa Refresh Token
   options.credentials = 'include';
 
-  // Đính kèm Access Token nếu có
+  // Đính kèm Access Token nếu có (từ in-memory storage)
   const token = storage.getAccessToken();
   if (token && !headers['Authorization']) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -84,14 +84,23 @@ async function request(endpoint, options = {}) {
         storage.setAccessToken(newAccessToken);
         processQueue(null, newAccessToken);
 
+        window.dispatchEvent(new CustomEvent('hmp:session-restored', {
+          detail: { accessToken: newAccessToken }
+        }));
+        window.dispatchEvent(new CustomEvent('hmp:auth-changed', {
+          detail: { isAuthenticated: true }
+        }));
+
         // Gọi lại request ban đầu với token mới
         options.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return request(endpoint, options);
       } catch (refreshErr) {
         processQueue(refreshErr, null);
         storage.clearAuth();
-        // Thông báo hoặc điều hướng khi hết phiên làm việc
         window.dispatchEvent(new CustomEvent('hmp:auth-expired'));
+        window.dispatchEvent(new CustomEvent('hmp:auth-changed', {
+          detail: { isAuthenticated: false, user: null }
+        }));
         throw refreshErr;
       } finally {
         isRefreshing = false;
@@ -154,4 +163,3 @@ export const client = {
     return request(endpoint, { method: 'DELETE' });
   }
 };
-

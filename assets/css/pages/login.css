@@ -1,0 +1,389 @@
+/* ==========================================================================
+   LOGIN PAGE STYLES (assets/css/pages/login.css)
+   Chuẩn BEM, Mobile-first, sử dụng CSS Variables
+   Phỏng theo thiết kế chuẩn thực tế thương hiệu Tôn Việt
+   ========================================================================== */
+
+/* Khung toàn trang Đăng nhập độc lập toàn màn hình */
+.auth-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  background-image: url('../../../assets/images/auth/background.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  overflow-x: hidden;
+}
+
+/* Nút quay lại trang chủ góc trên bên trái */
+.auth-page__back-link {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.5rem 1rem;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: var(--radius-full, 9999px);
+  color: var(--color-primary, #1b3f7e);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.auth-page__back-link:hover {
+  background-color: #ffffff;
+  color: #0066cc;
+  transform: translateX(-3px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* Lớp phủ chuyển màu dịu mắt tăng độ tương phản */
+.auth-page__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(27, 63, 126, 0.08) 0%, rgba(255, 255, 255, 0.15) 100%);
+  pointer-events: none;
+}
+
+.auth-page__container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+/* Thẻ đăng nhập trung tâm (Auth Card) */
+.auth-card {
+  width: 100%;
+  max-width: 490px;
+  background-color: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 28px;
+  padding: 2.75rem 2.25rem 2.25rem;
+  box-shadow: 0 20px 50px -10px rgba(15, 34, 69, 0.18), 0 0 1px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  text-align: center;
+  animation: card-appear 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Logo thương hiệu HMP */
+.auth-card__brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.auth-card__logo-img {
+  height: 52px;
+  width: auto;
+  max-width: 200px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Tiêu đề chính */
+.auth-card__title {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 0.75rem;
+  line-height: 1.25;
+}
+
+.auth-card__title--highlight {
+  color: #0066cc;
+}
+
+/* Mô tả ngắn */
+.auth-card__description {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #4b5563;
+  max-width: 380px;
+  margin: 0 auto 1.75rem;
+}
+
+/* Khối nút Đăng nhập */
+.auth-card__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+/* Khối nút Đăng nhập Google (Duy nhất 1 container render chính thức từ Google) */
+.auth-card__gis-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 52px;
+}
+
+/* Đảm bảo iframe nút Google được căn giữa đẹp */
+.auth-card__gis-container iframe {
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+/* Khối cam kết bảo mật */
+.auth-card__security {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.auth-card__security-divider {
+  flex: 1;
+  height: 1px;
+  background-color: #e5e7eb;
+}
+
+.auth-card__security-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.auth-card__security-icon {
+  color: #0066cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-card__security-text {
+  font-size: 0.825rem;
+  color: #6b7280;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Khung công cụ Dev / Localhost */
+.auth-card__dev-box {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed #e5e7eb;
+  text-align: left;
+}
+
+.auth-card__dev-toggle {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0;
+  transition: color 0.15s ease;
+}
+
+.auth-card__dev-toggle svg {
+  transition: transform 0.2s ease;
+}
+
+.auth-card__dev-toggle--open svg {
+  transform: rotate(180deg);
+}
+
+.auth-card__dev-toggle:hover {
+  color: #4b5563;
+}
+
+.auth-card__dev-panel {
+  margin-top: 0.75rem;
+  padding: 0.85rem;
+  background-color: #f9fafb;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.auth-card__dev-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 0.35rem;
+}
+
+.auth-card__dev-input-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.auth-card__dev-input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.8rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-family: monospace;
+}
+
+.auth-card__dev-save-btn {
+  padding: 0.4rem 0.85rem;
+  background-color: #374151;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.auth-card__dev-save-btn:hover {
+  background-color: #111827;
+}
+
+.auth-card__dev-hint {
+  font-size: 0.725rem;
+  color: #6b7280;
+  margin-top: 0.45rem;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.auth-card__dev-hint p {
+  margin-bottom: 0.25rem;
+}
+
+.auth-card__dev-origins-list {
+  margin: 0.25rem 0 0.5rem 1.25rem;
+  padding: 0;
+  list-style-type: disc;
+}
+
+.auth-card__dev-origins-list li {
+  margin-bottom: 0.2rem;
+}
+
+.auth-card__dev-divider {
+  height: 1px;
+  background-color: #e5e7eb;
+  margin: 0.85rem 0;
+}
+
+.auth-card__dev-mock-btn {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  background-color: #10b981;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  transition: background-color 0.2s ease;
+}
+
+.auth-card__dev-mock-btn:hover {
+  background-color: #059669;
+}
+
+/* Thông báo lỗi dạng Alert */
+.auth-alert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-size: 0.875rem;
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+
+.auth-alert__icon {
+  flex-shrink: 0;
+}
+
+.auth-alert__message {
+  flex: 1;
+  word-break: break-word;
+}
+
+.auth-alert__close {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Animation */
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .auth-page {
+    padding: 2rem 0.75rem;
+  }
+
+  .auth-card {
+    padding: 2rem 1.25rem 1.75rem;
+    border-radius: 20px;
+  }
+
+  .auth-card__logo-img {
+    height: 44px;
+  }
+
+  .auth-card__title {
+    font-size: 1.55rem;
+  }
+
+  .auth-card__btn-google {
+    height: 48px;
+    font-size: 0.9rem;
+  }
+
+  .auth-card__btn-google-icon-wrapper {
+    width: 36px;
+    height: 36px;
+  }
+
+  .auth-card__security-text {
+    font-size: 0.75rem;
+  }
+}
