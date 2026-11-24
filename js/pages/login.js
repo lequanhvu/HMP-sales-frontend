@@ -3,8 +3,10 @@
  */
 
 import { authState } from '../auth/auth.state.js';
+import { storage } from '../utils/storage.js';
 import { authApi } from '../api/auth.api.js';
 import { getSafeRedirectUrl } from '../auth/redirect-validator.js';
+import { getDashboardUrlByRole } from '../auth/auth.guard.js';
 import { toast } from '../components/toast.js';
 import { translateMessage } from '../utils/i18n.js';
 
@@ -18,12 +20,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   initDevConfig(safeRedirectUrl, rawRedirect);
   initGoogleAuth(safeRedirectUrl, rawRedirect);
 
-  // 3. Nếu người dùng đã đăng nhập từ trước, lập tức chuyển hướng an toàn
-  if (authState.isAuthenticated()) {
+  // 3. Nếu người dùng đã đăng nhập từ trước, lập tức chuyển hướng an toàn theo Role
+  const currentUser = authState.getCurrentUser() || storage.getUser();
+  if (authState.isAuthenticated() && currentUser) {
+    const targetUrl = (rawRedirect && rawRedirect !== '../../index.html' && rawRedirect !== '/' && rawRedirect !== '/index.html') 
+      ? safeRedirectUrl 
+      : getDashboardUrlByRole(currentUser.role);
     toast.info('Bạn đã đăng nhập hệ thống.');
     setTimeout(() => {
-      window.location.href = safeRedirectUrl;
-    }, 600);
+      window.location.href = targetUrl;
+    }, 500);
     return;
   }
 
@@ -31,11 +37,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (authState.hasSessionIndicator()) {
     try {
       const restoredToken = await authState.restoreSession();
-      if (restoredToken) {
+      const user = authState.getCurrentUser() || storage.getUser();
+      if (restoredToken && user) {
+        const targetUrl = (rawRedirect && rawRedirect !== '../../index.html' && rawRedirect !== '/' && rawRedirect !== '/index.html') 
+          ? safeRedirectUrl 
+          : getDashboardUrlByRole(user.role);
         toast.success('Đã khôi phục phiên đăng nhập trước đó.');
         setTimeout(() => {
-          window.location.href = safeRedirectUrl;
-        }, 600);
+          window.location.href = targetUrl;
+        }, 500);
         return;
       }
     } catch {
@@ -185,13 +195,7 @@ async function handleCredentialResponse(response, safeRedirectUrl, rawRedirect) 
 
     let targetUrl = safeRedirectUrl;
     if (!redirectParam || redirectParam === '../../index.html' || redirectParam === '/' || redirectParam === '/index.html') {
-      if (userProfile.role === 'ADMIN') {
-        targetUrl = '../admin/dashboard.html';
-      } else if (userProfile.role === 'MANAGER') {
-        targetUrl = '../manager/dashboard.html';
-      } else {
-        targetUrl = '../../index.html';
-      }
+      targetUrl = getDashboardUrlByRole(userProfile.role);
     }
 
     setTimeout(() => {

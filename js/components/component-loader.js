@@ -132,7 +132,7 @@ export async function loadHeader(targetSelector = '#site-header', customComponen
   ensureStylesheet(`${prefix}assets/css/components/header.css`);
 
   const componentUrl = customComponentPath || `${prefix}pages/components/common/header.html`;
-  const fetchUrl = `${componentUrl}?_v=${Date.now()}`;
+  const fetchUrl = componentUrl;
 
   try {
     const res = await fetch(fetchUrl, {
@@ -194,7 +194,7 @@ export async function loadFooter(targetSelector = '#site-footer', customComponen
   ensureStylesheet(`${prefix}assets/css/components/footer.css`);
 
   const componentUrl = customComponentPath || `${prefix}pages/components/common/footer.html`;
-  const fetchUrl = `${componentUrl}?_v=${Date.now()}`;
+  const fetchUrl = componentUrl;
 
   try {
     const res = await fetch(fetchUrl, {

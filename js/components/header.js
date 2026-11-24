@@ -21,7 +21,6 @@ export function initHeader() {
   const dropdownEmailEl = document.getElementById('dropdown-user-email');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
   const logoutBtn = document.getElementById('header-logout-btn');
-  const searchBtn = document.getElementById('search-toggle-btn');
   const notificationBtn = document.getElementById('header-notification-btn');
   const notificationBadge = document.getElementById('header-notification-badge');
   const navOrdersItem = document.getElementById('header-nav-orders-item');
@@ -48,10 +47,7 @@ export function initHeader() {
       userWrapper.classList.toggle('hidden', !isAuthenticated);
     }
 
-    // Thay đổi biểu tượng tìm kiếm -> chuông thông báo và hiển thị mục đơn hàng
-    if (searchBtn) {
-      searchBtn.classList.toggle('hidden', isAuthenticated);
-    }
+    // Hiển thị chuông thông báo và mục đơn hàng khi đã đăng nhập
     if (notificationBtn) {
       notificationBtn.classList.toggle('hidden', !isAuthenticated);
     }
@@ -115,7 +111,10 @@ export function initHeader() {
       if (mobileLoginLink) mobileLoginLink.classList.remove('hidden');
       if (mobileProfileBox) mobileProfileBox.classList.add('hidden');
       if (mobileAuthLinks) mobileAuthLinks.classList.add('hidden');
-      if (userDropdown) userDropdown.classList.remove('header__user-dropdown--open');
+      if (userDropdown) {
+        userDropdown.classList.add('hidden');
+        userDropdown.classList.remove('header__user-dropdown--open');
+      }
       if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
       if (dashboardLinksContainer) dashboardLinksContainer.innerHTML = '';
     }
@@ -147,25 +146,38 @@ export function initHeader() {
     isHeaderInitialized = true;
   }
 
-  // 3. Đóng mở Dropdown tài khoản trên Desktop (Đảm bảo click vào Avatar, Tên hay Button đều toggle chính xác)
+  // 3. Đóng mở Dropdown tài khoản trên Desktop (Đồng bộ 100% cơ chế như Manager Dashboard)
   const toggleUserDropdown = (e) => {
-    if (e) e.stopPropagation();
-    if (!userDropdown) return;
-    const isOpen = userDropdown.classList.toggle('header__user-dropdown--open');
-    if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!userDropdown) {
+      console.warn('[Header] Không tìm thấy phần tử #header-user-dropdown!');
+      return;
+    }
+    const isHidden = userDropdown.classList.contains('hidden');
+
+    if (isHidden) {
+      userDropdown.classList.remove('hidden');
+      userDropdown.classList.add('header__user-dropdown--open');
+      if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'true');
+    } else {
+      userDropdown.classList.add('hidden');
+      userDropdown.classList.remove('header__user-dropdown--open');
+      if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
+    }
   };
 
   if (userProfileBtn) {
     userProfileBtn.onclick = toggleUserDropdown;
   }
-  if (userAvatarEl) {
-    userAvatarEl.onclick = toggleUserDropdown;
-  }
 
   // Đóng khi click ngoài
   document.addEventListener('click', (e) => {
-    if (userDropdown && userDropdown.classList.contains('header__user-dropdown--open')) {
+    if (userDropdown && !userDropdown.classList.contains('hidden')) {
       if (!userWrapper || !userWrapper.contains(e.target)) {
+        userDropdown.classList.add('hidden');
         userDropdown.classList.remove('header__user-dropdown--open');
         if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
       }

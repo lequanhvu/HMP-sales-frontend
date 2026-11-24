@@ -5,12 +5,28 @@
 import { initCommonLayout } from '../components/component-loader.js';
 import { getFeaturedProducts } from '../api/product.api.js';
 import { formatVnd } from '../utils/format.js';
+import { authState } from '../auth/auth.state.js';
+import { storage } from '../utils/storage.js';
+import { redirectByRoleIfSpecial, getDashboardUrlByRole } from '../auth/auth.guard.js';
+
+// 1. Kiểm tra chuyển hướng ngay lập tức nếu phiên là ADMIN / MANAGER (giảm tối đa hiện tượng nháy trang)
+const immediateUser = authState.getCurrentUser() || storage.getUser();
+if (immediateUser && authState.hasSessionIndicator()) {
+  const normRole = (immediateUser.role || '').toUpperCase();
+  if (normRole === 'ADMIN' || normRole === 'MANAGER') {
+    window.location.replace(getDashboardUrlByRole(normRole));
+  }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // 1. Nhúng đồng bộ Header & Footer từ Component dùng chung
+  // 2. Kiểm tra nếu phiên là Admin/Manager cần bootstrap qua API
+  const redirected = await redirectByRoleIfSpecial();
+  if (redirected) return;
+
+  // 3. Nhúng đồng bộ Header & Footer từ Component dùng chung
   await initCommonLayout();
 
-  // 2. Nạp danh sách sản phẩm nổi bật từ bảng FeaturedProduct
+  // 4. Nạp danh sách sản phẩm nổi bật từ bảng FeaturedProduct
   await loadFeaturedProducts();
 });
 

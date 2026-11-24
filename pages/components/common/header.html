@@ -45,15 +45,7 @@
 
     <!-- Khu vực Tiện ích Bên Phải -->
     <div class="header__actions">
-      <!-- Nút Tìm kiếm (Hiển thị cho khách vãng lai) -->
-      <a id="search-toggle-btn" href="./pages/product/catalog.html" class="header__icon-btn" title="Tìm kiếm tôn sóng" aria-label="Tìm kiếm" data-link="catalog">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-      </a>
-
-      <!-- Nút Chuông Thông Báo (Hiển thị thay thế kính lúp khi đã đăng nhập) -->
+      <!-- Nút Chuông Thông Báo (Hiển thị khi đã đăng nhập) -->
       <a id="header-notification-btn" href="./pages/customer/notifications.html" class="header__icon-btn header__notification-btn hidden" title="Thông báo" aria-label="Thông báo" data-link="notifications">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -78,12 +70,13 @@
         </button>
 
         <!-- Dropdown menu tài khoản (Hiện tùy chọn Đăng xuất) -->
-        <div id="header-user-dropdown" class="header__user-dropdown">
+        <div id="header-user-dropdown" class="header__user-dropdown hidden">
           <div class="user-dropdown__header">
             <span id="dropdown-user-fullname" class="user-dropdown__name">Khách hàng</span>
             <span id="dropdown-user-email" class="user-dropdown__email">user@example.com</span>
             <span id="dropdown-user-role" class="user-dropdown__badge">Khách hàng</span>
           </div>
+          <div id="dropdown-dashboard-links"></div>
           <div class="user-dropdown__divider"></div>
           <button id="header-logout-btn" class="user-dropdown__item user-dropdown__item--danger" type="button">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -140,4 +133,6 @@
     </div>
   </div>
 </header>
+
+<!-- </body> -->
 

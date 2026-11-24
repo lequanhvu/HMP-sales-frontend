@@ -8,7 +8,77 @@
  */
 
 import { authState } from './auth.state.js';
+import { storage } from '../utils/storage.js';
 import { getSafeRedirectUrl } from './redirect-validator.js';
+
+/**
+ * Tính toán tiền tố đường dẫn quay về thư mục gốc của frontend
+ */
+export function getRootPrefix() {
+  const path = window.location.pathname.replace(/\\/g, '/');
+  if (
+    path.includes('/pages/product/') ||
+    path.includes('/pages/customer/') ||
+    path.includes('/pages/admin/') ||
+    path.includes('/pages/manager/') ||
+    path.includes('/pages/auth/') ||
+    path.includes('/pages/introduction/') ||
+    path.includes('/pages/contact/')
+  ) {
+    return '../../';
+  } else if (path.includes('/pages/')) {
+    return '../';
+  }
+  return './';
+}
+
+/**
+ * Lấy URL Dashboard hoặc Trang chủ mặc định dựa trên vai trò (Role)
+ * @param {string} role - ADMIN, MANAGER, CUSTOMER
+ * @returns {string} URL điều hướng theo cấp thư mục hiện tại
+ */
+export function getDashboardUrlByRole(role) {
+  const prefix = getRootPrefix();
+  const normRole = (role || '').toUpperCase();
+  if (normRole === 'ADMIN') {
+    return `${prefix}pages/admin/dashboard.html`;
+  }
+  if (normRole === 'MANAGER') {
+    return `${prefix}pages/manager/dashboard.html`;
+  }
+  return `${prefix}index.html`;
+}
+
+/**
+ * Tự động chuyển hướng sang Dashboard phù hợp nếu người dùng đăng nhập là ADMIN hoặc MANAGER
+ * Dùng ở trang chủ (index.html) hoặc trang đăng nhập (login.html)
+ * 
+ * @returns {Promise<boolean>} Trả về true nếu đã thực hiện chuyển hướng
+ */
+export async function redirectByRoleIfSpecial() {
+  let user = authState.getCurrentUser() || storage.getUser();
+
+  // Nếu chưa có user trong memory, thử lấy lại từ session
+  if (!user && authState.hasSessionIndicator()) {
+    try {
+      await authState.restoreSession();
+      user = authState.getCurrentUser() || storage.getUser();
+    } catch {
+      // Khôi phục thất bại
+    }
+  }
+
+  if (user && user.role) {
+    const normRole = user.role.toUpperCase();
+    if (normRole === 'ADMIN' || normRole === 'MANAGER') {
+      const targetUrl = getDashboardUrlByRole(normRole);
+      window.location.replace(targetUrl);
+      return true;
+    }
+  }
+
+  return false;
+}
 
 /**
  * Kiểm tra xác thực khách hàng trước khi cho phép tương tác trang.

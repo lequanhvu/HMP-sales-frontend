@@ -34,7 +34,9 @@ export const FORBIDDEN_CUSTOMER_REDIRECTS = [
   '/pages/admin/dashboard.html',
   '/pages/admin/orders.html',
   '/pages/admin/products.html',
-  '/pages/admin/master-data.html'
+  '/pages/admin/master-data.html',
+  '/pages/manager/dashboard.html',
+  '/pages/manager/orders.html'
 ];
 
 /**
@@ -102,9 +104,11 @@ export function getSafeRedirectUrl(rawUrl, fallback = '/index.html') {
   // Chuẩn hóa dấu gạch chéo kép nội bộ (ví dụ: "/pages//product/" -> "/pages/product/")
   pathname = pathname.replace(/\/+/g, '/').toLowerCase();
 
-  // 7. Chống các đường dẫn bị cấm (như trang login tránh lặp vòng, trang admin đối với customer)
+  // 7. Chống các đường dẫn bị cấm (như trang login tránh lặp vòng, trang admin/manager đối với customer)
   const isForbidden = FORBIDDEN_CUSTOMER_REDIRECTS.some(forbidden => 
-    pathname === forbidden.toLowerCase() || pathname.startsWith('/pages/admin/')
+    pathname === forbidden.toLowerCase() || 
+    pathname.startsWith('/pages/admin/') || 
+    pathname.startsWith('/pages/manager/')
   );
   if (isForbidden) {
     return fallback;

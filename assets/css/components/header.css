@@ -329,9 +329,10 @@
 
 .header__user-dropdown--open,
 .header__user-dropdown:not(.hidden) {
-  display: flex !important;
+  display: block !important;
   visibility: visible !important;
   opacity: 1 !important;
+  z-index: 99999 !important;
 }
 
 .user-dropdown__header {
