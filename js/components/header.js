@@ -5,6 +5,7 @@
 import { authState } from '../auth/auth.state.js';
 import { storage } from '../utils/storage.js';
 import { client } from '../api/client.js';
+import { cartApi } from '../api/cart.api.js';
 import { toast } from './toast.js';
 import { showLogoutConfirm } from './confirm-modal.js';
 
@@ -21,6 +22,8 @@ export function initHeader() {
   const dropdownEmailEl = document.getElementById('dropdown-user-email');
   const dropdownRoleEl = document.getElementById('dropdown-user-role');
   const logoutBtn = document.getElementById('header-logout-btn');
+  const cartBtn = document.getElementById('header-cart-btn');
+  const cartBadge = document.getElementById('header-cart-badge');
   const notificationBtn = document.getElementById('header-notification-btn');
   const notificationBadge = document.getElementById('header-notification-badge');
   const navOrdersItem = document.getElementById('header-nav-orders-item');
@@ -101,6 +104,9 @@ export function initHeader() {
       // Nạp số lượng thông báo chưa đọc từ backend
       fetchUnreadNotifications(notificationBadge);
 
+      // Nạp số lượng món trong giỏ hàng
+      fetchCartCount(cartBadge);
+
       // Cập nhật Mobile Drawer
       if (mobileLoginLink) mobileLoginLink.classList.add('hidden');
       if (mobileProfileBox) mobileProfileBox.classList.remove('hidden');
@@ -117,6 +123,7 @@ export function initHeader() {
       }
       if (userProfileBtn) userProfileBtn.setAttribute('aria-expanded', 'false');
       if (dashboardLinksContainer) dashboardLinksContainer.innerHTML = '';
+      if (cartBadge) cartBadge.classList.add('hidden');
     }
   }
 
@@ -138,6 +145,7 @@ export function initHeader() {
   if (!isHeaderInitialized) {
     window.addEventListener('hmp:auth-changed', () => renderAuthState());
     window.addEventListener('hmp:session-restored', () => renderAuthState());
+    window.addEventListener('hmp:cart-updated', () => fetchCartCount(cartBadge));
     window.addEventListener('hmp:auth-expired', () => {
       renderAuthState();
       toast.warning('Phiên đăng nhập đã kết thúc. Vui lòng đăng nhập lại.', 'Hết phiên');
@@ -273,6 +281,33 @@ async function fetchUnreadNotifications(badgeEl) {
     // Nếu chưa có thông báo hoặc offline, hiển thị chấm đỏ 1 thông báo chào mừng
     badgeEl.textContent = '1';
     badgeEl.classList.remove('hidden');
+  }
+}
+
+export async function fetchCartCount(badgeEl) {
+  if (!badgeEl) {
+    badgeEl = document.getElementById('header-cart-badge');
+  }
+  if (!badgeEl) return;
+
+  const user = authState.getCurrentUser() || storage.getUser();
+  const isAuthenticated = authState.isAuthenticated() || (authState.hasSessionIndicator() && Boolean(user));
+  if (!isAuthenticated) {
+    badgeEl.classList.add('hidden');
+    return;
+  }
+
+  try {
+    const res = await cartApi.getCartCount();
+    const count = (res && typeof res.totalCount === 'number') ? res.totalCount : (res && res.data && res.data.totalCount) || 0;
+    if (count > 0) {
+      badgeEl.textContent = count > 99 ? '99+' : String(count);
+      badgeEl.classList.remove('hidden');
+    } else {
+      badgeEl.classList.add('hidden');
+    }
+  } catch {
+    badgeEl.classList.add('hidden');
   }
 }
 

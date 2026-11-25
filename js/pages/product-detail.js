@@ -14,6 +14,10 @@
 
 import { initCommonLayout } from '../components/component-loader.js';
 import { getProductDetail, getActiveColors } from '../api/product.api.js';
+import { cartApi } from '../api/cart.api.js';
+import { authState } from '../auth/auth.state.js';
+import { storage } from '../utils/storage.js';
+import { toast } from '../components/toast.js';
 import { formatVnd } from '../utils/format.js';
 
 // Trạng thái cục bộ của trang
@@ -22,6 +26,7 @@ let selectedVariant = null;
 let selectedColor = null;
 // Bản đồ tên màu -> URL ảnh mẫu màu (lấy từ dữ liệu danh mục màu chung)
 let colorImageMap = new Map();
+let activeColorsList = [];
 
 const DEFAULT_EMPTY_IMAGE = '../../assets/images/empty-picture.png';
 const NO_PRICE_PERMISSION_MESSAGE = 'Bạn không có quyền xem giá sản phẩm';
@@ -44,6 +49,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     showError('Không tìm thấy mã sản phẩm trong đường dẫn.');
     return;
   }
+
+  window.addEventListener('resize', () => {
+    if (productData) renderBreadcrumb(productData);
+  });
 
   await loadProductDetail(productId);
 });
@@ -78,6 +87,7 @@ async function loadProductDetail(productId) {
 
     // Render toàn bộ giao diện sản phẩm bằng DOM API
     renderProductHeader(productData);
+    renderDynamicFormFields(productData.productType);
     renderGallery(productData.images || []);
     renderVariants(productData.variants || []);
     renderDescription(productData);
@@ -101,9 +111,15 @@ async function loadColorImageMap() {
   try {
     const colors = await getActiveColors();
     if (Array.isArray(colors)) {
+      activeColorsList = colors;
       colors.forEach(color => {
         if (color && color.colorName && color.imageUrl) {
-          map.set(normalizeColorKey(color.colorName), color.imageUrl);
+          const key = normalizeColorKey(color.colorName);
+          const isDummy = color.imageUrl.includes('example.com');
+          // Ưu tiên URL thật, không để dummy URL (cdn.example.com) ghi đè lên URL ảnh thật
+          if (!map.has(key) || (map.get(key).includes('example.com') && !isDummy)) {
+            map.set(key, color.imageUrl);
+          }
         }
       });
     }
@@ -111,6 +127,56 @@ async function loadColorImageMap() {
     console.warn('Không thể nạp ảnh mẫu màu:', err);
   }
   return map;
+}
+
+/**
+ * Hiển thị/ẩn các nhóm trường nhập liệu đặt hàng theo loại sản phẩm (ProductType).
+ * Quy tắc:
+ * - UNKNOWN hoặc không có: Hiển thị TẤT CẢ các trường (chiều dài/kích thước, quy cách chấn bẻ, số lượng).
+ * - ROOFING_SHEET: Hiện chiều dài, số lượng; ẩn quy cách bẻ chấn.
+ * - GUTTER / GABLE_FLASHING / RIDGE_CAP: Hiện chiều dài, quy cách bẻ chấn, số lượng.
+ * - RETAIL: Ẩn chiều dài và quy cách bẻ chấn; chỉ hiện số lượng.
+ *
+ * @param {object|null} productType - Thông tin loại sản phẩm
+ */
+function renderDynamicFormFields(productType) {
+  const groupSize = document.getElementById('group-product-size');
+  const groupDimensions = document.getElementById('group-product-dimensions');
+  const groupQuantity = document.getElementById('group-product-quantity');
+  const hintDimensions = document.getElementById('hint-product-dimensions');
+
+  if (!groupSize || !groupDimensions || !groupQuantity) return;
+
+  const code = (productType && productType.code) ? productType.code.toUpperCase() : 'UNKNOWN';
+
+  // Thiết lập mặc định
+  groupSize.classList.remove('hidden');
+  groupDimensions.classList.remove('hidden');
+  groupQuantity.classList.remove('hidden');
+
+  // LẤY PLACEHOLDER ĐỘNG TRỰC TIẾP TỪ DB (productType.note)
+  const dbNote = (productType && productType.note) ? productType.note : '';
+
+  const inputSize = document.getElementById('input-product-size');
+  if (inputSize) {
+    inputSize.placeholder = dbNote || 'VD: 5.5 (mét)';
+  }
+
+  const inputDimensions = document.getElementById('input-product-dimensions');
+  if (inputDimensions) {
+    inputDimensions.placeholder = dbNote || 'VD: Chiều cao thành × Đáy × Mép gập';
+  }
+
+  if (hintDimensions && dbNote) {
+    hintDimensions.textContent = `(Gợi ý: ${dbNote})`;
+  }
+
+  if (code === 'ROOFING_SHEET') {
+    groupDimensions.classList.add('hidden');
+  } else if (code === 'RETAIL') {
+    groupSize.classList.add('hidden');
+    groupDimensions.classList.add('hidden');
+  }
 }
 
 /**
@@ -157,10 +223,8 @@ function showError(message) {
 function renderProductHeader(product) {
   document.title = `${product.productName} — HMP Tôn Thép`;
 
-  const breadcrumbCategory = document.getElementById('breadcrumb-category');
-  const breadcrumbProduct = document.getElementById('breadcrumb-product-name');
-  if (breadcrumbCategory) breadcrumbCategory.textContent = product.categoryName || 'Sản phẩm tôn';
-  if (breadcrumbProduct) breadcrumbProduct.textContent = product.productName;
+  // Render breadcrumb động bắt đầu từ "Sản phẩm / [Danh mục] / [Tên sản phẩm]"
+  renderBreadcrumb(product);
 
   const titleEl = document.getElementById('product-title');
   const brandTagEl = document.getElementById('product-brand-tag');
@@ -174,6 +238,70 @@ function renderProductHeader(product) {
   if (statusTextEl) {
     statusTextEl.textContent = product.status === 'ACTIVE' ? 'Sẵn hàng sản xuất' : 'Tạm ngừng nhận đơn';
   }
+}
+
+/**
+ * Render thanh điều hướng breadcrumb: Bắt đầu từ "Sản phẩm / [Danh mục] / [Tên sản phẩm]".
+ * Nếu đường dẫn quá dài hoặc màn hình hẹp, tự động cắt ngắn phần trước thành "... / [Danh mục] / [Tên sản phẩm]".
+ */
+function renderBreadcrumb(product) {
+  const breadcrumbEl = document.getElementById('product-breadcrumb');
+  if (!breadcrumbEl || !product) return;
+
+  breadcrumbEl.replaceChildren();
+
+  const categoryName = product.categoryName || 'Sản phẩm tôn';
+  const productName = product.productName || 'Chi tiết sản phẩm';
+  const categoryLink = product.categoryId ? `./catalog.html?category=${product.categoryId}` : './catalog.html';
+
+  // Cắt ngắn đoạn trước nếu màn hình hẹp dưới 640px hoặc text quá dài (> 40 ký tự)
+  const isNarrow = window.innerWidth < 640 || (categoryName.length + productName.length > 40);
+
+  const fragment = document.createDocumentFragment();
+
+  if (isNarrow) {
+    // Rút gọn phần đầu thành "..."
+    const ellipsisLink = document.createElement('a');
+    ellipsisLink.href = './catalog.html';
+    ellipsisLink.className = 'breadcrumb__link breadcrumb__link--ellipsis';
+    ellipsisLink.textContent = '...';
+    ellipsisLink.title = 'Sản phẩm';
+    fragment.appendChild(ellipsisLink);
+  } else {
+    // Phần đầu chuẩn: "Sản phẩm"
+    const rootLink = document.createElement('a');
+    rootLink.href = './catalog.html';
+    rootLink.className = 'breadcrumb__link';
+    rootLink.textContent = 'Sản phẩm';
+    fragment.appendChild(rootLink);
+  }
+
+  // Dấu phân cách 1
+  const sep1 = document.createElement('span');
+  sep1.className = 'breadcrumb__separator';
+  sep1.textContent = '/';
+  fragment.appendChild(sep1);
+
+  // Danh mục
+  const catLink = document.createElement('a');
+  catLink.href = categoryLink;
+  catLink.className = 'breadcrumb__link';
+  catLink.textContent = categoryName;
+  fragment.appendChild(catLink);
+
+  // Dấu phân cách 2
+  const sep2 = document.createElement('span');
+  sep2.className = 'breadcrumb__separator';
+  sep2.textContent = '/';
+  fragment.appendChild(sep2);
+
+  // Tên sản phẩm hiện tại
+  const currentSpan = document.createElement('span');
+  currentSpan.className = 'breadcrumb__current';
+  currentSpan.textContent = productName;
+  fragment.appendChild(currentSpan);
+
+  breadcrumbEl.appendChild(fragment);
 }
 
 /**
@@ -354,11 +482,16 @@ function renderColors(colors) {
 
     nameEl.textContent = colorName;
 
-    // Hiển thị ảnh mẫu màu hoặc chấm tròn màu
+    // Hiển thị ảnh mẫu màu hoặc chấm tròn màu (tự động fallback nếu ảnh lỗi)
     if (imageUrl) {
       thumbEl.src = imageUrl;
+      thumbEl.alt = colorName;
       thumbEl.classList.remove('hidden');
       dotEl.classList.add('hidden');
+      thumbEl.onerror = () => {
+        thumbEl.classList.add('hidden');
+        dotEl.classList.remove('hidden');
+      };
     } else {
       dotEl.classList.remove('hidden');
       thumbEl.classList.add('hidden');
@@ -598,26 +731,381 @@ function renderColorPalette(variants) {
 }
 
 /**
- * Khởi tạo nút hành động "Mua ngay".
- * Chuyển sang trang đặt hàng kèm sản phẩm, biến thể và màu sắc đã chọn.
+ * Khởi tạo các nút tương tác: Stepper số lượng, nút chọn nhanh chiều dài, Thêm vào giỏ và Mua ngay.
  */
 function initActions() {
+  const btnQtyMinus = document.getElementById('btn-qty-minus');
+  const btnQtyPlus = document.getElementById('btn-qty-plus');
+  const inputQty = document.getElementById('input-product-quantity');
+  const inputSize = document.getElementById('input-product-size');
+  const inputDimensions = document.getElementById('input-product-dimensions');
+  const btnAddToCart = document.getElementById('btn-add-to-cart');
   const btnOrderNow = document.getElementById('btn-order-now');
-  if (!btnOrderNow) return;
 
-  btnOrderNow.addEventListener('click', () => {
-    if (!productData) return;
+  const errorSizeEl = document.getElementById('error-product-size');
+  const errorDimensionsEl = document.getElementById('error-product-dimensions');
+  const errorQtyEl = document.getElementById('error-product-quantity');
+  const stepperEl = inputQty ? inputQty.closest('.stepper') : null;
 
-    const params = new URLSearchParams({
+  // Xóa toàn bộ trạng thái lỗi
+  function clearAllValidationErrors() {
+    if (inputSize) inputSize.classList.remove('form-input--error');
+    if (errorSizeEl) {
+      errorSizeEl.textContent = '';
+      errorSizeEl.classList.add('hidden');
+    }
+
+    if (inputDimensions) inputDimensions.classList.remove('form-input--error');
+    if (errorDimensionsEl) {
+      errorDimensionsEl.textContent = '';
+      errorDimensionsEl.classList.add('hidden');
+    }
+
+    if (stepperEl) stepperEl.classList.remove('stepper--error');
+    if (errorQtyEl) {
+      errorQtyEl.textContent = '';
+      errorQtyEl.classList.add('hidden');
+    }
+  }
+
+  // Hiển thị lỗi cho từng trường
+  function setFieldError(inputEl, errorEl, message) {
+    if (inputEl) inputEl.classList.add('form-input--error');
+    if (errorEl) {
+      errorEl.textContent = message;
+      errorEl.classList.remove('hidden');
+    }
+  }
+
+  // Lắng nghe sự kiện gõ phím để xóa lỗi tức thì (Real-time Input Validation)
+  if (inputSize) {
+    inputSize.addEventListener('input', () => {
+      inputSize.classList.remove('form-input--error');
+      if (errorSizeEl) {
+        errorSizeEl.textContent = '';
+        errorSizeEl.classList.add('hidden');
+      }
+    });
+  }
+
+  if (inputDimensions) {
+    inputDimensions.addEventListener('input', () => {
+      inputDimensions.classList.remove('form-input--error');
+      if (errorDimensionsEl) {
+        errorDimensionsEl.textContent = '';
+        errorDimensionsEl.classList.add('hidden');
+      }
+    });
+  }
+
+  if (inputQty) {
+    inputQty.addEventListener('input', () => {
+      if (stepperEl) stepperEl.classList.remove('stepper--error');
+      if (errorQtyEl) {
+        errorQtyEl.textContent = '';
+        errorQtyEl.classList.add('hidden');
+      }
+    });
+  }
+
+  // Stepper số lượng
+  if (btnQtyMinus && inputQty) {
+    btnQtyMinus.addEventListener('click', () => {
+      const current = parseInt(inputQty.value, 10) || 1;
+      if (current > 1) {
+        inputQty.value = current - 1;
+      }
+    });
+  }
+
+  if (btnQtyPlus && inputQty) {
+    btnQtyPlus.addEventListener('click', () => {
+      const current = parseInt(inputQty.value, 10) || 1;
+      if (current < 10000) {
+        inputQty.value = current + 1;
+      }
+    });
+  }
+
+  if (inputQty) {
+    inputQty.addEventListener('change', () => {
+      let val = parseInt(inputQty.value, 10);
+      if (isNaN(val) || val < 1) val = 1;
+      if (val > 10000) val = 10000;
+      inputQty.value = val;
+    });
+  }
+
+  /**
+   * Kiểm tra tính hợp lệ toàn bộ form thông số đặt mua (Validate Input).
+   * @returns {boolean} true nếu hợp lệ, false nếu có lỗi
+   */
+  function validateOrderInputs() {
+    clearAllValidationErrors();
+
+    if (!productData) {
+      toast.error('Chưa tải được thông tin sản phẩm. Vui lòng tải lại trang.');
+      return false;
+    }
+
+    // 1. Kiểm tra biến thể (Độ dày & Loại sóng)
+    if (productData.variants && productData.variants.length > 0 && !selectedVariant) {
+      toast.warning('Vui lòng chọn độ dày và loại sóng cho sản phẩm.');
+      const variantsListEl = document.getElementById('product-variants-list');
+      if (variantsListEl) variantsListEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+
+    // 2. Kiểm tra màu sắc tôn (nếu biến thể có danh sách màu)
+    if (selectedVariant && selectedVariant.colors && selectedVariant.colors.length > 0 && !selectedColor) {
+      toast.warning('Vui lòng chọn màu sắc tôn.');
+      const colorsListEl = document.getElementById('product-colors-list');
+      if (colorsListEl) colorsListEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return false;
+    }
+
+    const typeCode = (productData.productType && productData.productType.code)
+      ? productData.productType.code.toUpperCase()
+      : 'UNKNOWN';
+
+    const groupSize = document.getElementById('group-product-size');
+    const isSizeVisible = groupSize && !groupSize.classList.contains('hidden');
+
+    const groupDimensions = document.getElementById('group-product-dimensions');
+    const isDimensionsVisible = groupDimensions && !groupDimensions.classList.contains('hidden');
+
+    // 3. Kiểm tra Chiều dài (mét)
+    if (isSizeVisible && inputSize) {
+      const rawVal = inputSize.value.trim();
+      // Bắt buộc nhập chiều dài với tôn lợp mái, máng xối, sườn nóc, hoặc UNKNOWN
+      const isSizeRequired = ['ROOFING_SHEET', 'GUTTER', 'FLASHING', 'UNKNOWN'].includes(typeCode);
+
+      if (isSizeRequired && rawVal === '') {
+        const msg = 'Vui lòng nhập chiều dài (mét) theo yêu cầu công trình.';
+        setFieldError(inputSize, errorSizeEl, msg);
+        toast.warning(msg);
+        inputSize.focus();
+        return false;
+      }
+
+      if (rawVal !== '') {
+        const num = parseFloat(rawVal);
+        if (isNaN(num) || num <= 0) {
+          const msg = 'Chiều dài phải là số dương lớn hơn 0 (ví dụ: 5.5).';
+          setFieldError(inputSize, errorSizeEl, msg);
+          toast.warning(msg);
+          inputSize.focus();
+          return false;
+        }
+        if (num < 0.1) {
+          const msg = 'Chiều dài tối thiểu có thể cắt theo yêu cầu là 0.1 mét (10 cm).';
+          setFieldError(inputSize, errorSizeEl, msg);
+          toast.warning(msg);
+          inputSize.focus();
+          return false;
+        }
+        if (num > 50) {
+          const msg = 'Chiều dài tối đa một tấm tôn là 50 mét để đảm bảo điều kiện vận chuyển.';
+          setFieldError(inputSize, errorSizeEl, msg);
+          toast.warning(msg);
+          inputSize.focus();
+          return false;
+        }
+      }
+    }
+
+    // 4. Kiểm tra Quy cách kích thước / Chi tiết bẻ chấn
+    if (isDimensionsVisible && inputDimensions) {
+      const dimVal = inputDimensions.value.trim();
+      // Bắt buộc nhập quy cách với máng xối (GUTTER) và diềm/sườn/nóc (FLASHING)
+      const isDimRequired = ['GUTTER', 'FLASHING'].includes(typeCode);
+
+      if (isDimRequired && dimVal === '') {
+        const hint = (productData.productType && productData.productType.note) ? productData.productType.note : 'quy cách bẻ chấn';
+        const msg = `Vui lòng nhập quy cách chi tiết (Gợi ý: ${hint}).`;
+        setFieldError(inputDimensions, errorDimensionsEl, msg);
+        toast.warning(msg);
+        inputDimensions.focus();
+        return false;
+      }
+
+      if (dimVal.length > 255) {
+        const msg = 'Quy cách kích thước không được vượt quá 255 ký tự.';
+        setFieldError(inputDimensions, errorDimensionsEl, msg);
+        toast.warning(msg);
+        inputDimensions.focus();
+        return false;
+      }
+    }
+
+    // 5. Kiểm tra Số lượng
+    if (inputQty) {
+      const rawQty = inputQty.value.trim();
+      const qtyVal = parseInt(rawQty, 10);
+      if (rawQty === '' || isNaN(qtyVal) || qtyVal < 1) {
+        const msg = 'Số lượng đặt mua phải là số nguyên từ 1 trở lên.';
+        if (stepperEl) stepperEl.classList.add('stepper--error');
+        if (errorQtyEl) {
+          errorQtyEl.textContent = msg;
+          errorQtyEl.classList.remove('hidden');
+        }
+        toast.warning(msg);
+        inputQty.focus();
+        return false;
+      }
+      if (qtyVal > 10000) {
+        const msg = 'Số lượng đặt mua tối đa trong một lần là 10.000 sản phẩm.';
+        if (stepperEl) stepperEl.classList.add('stepper--error');
+        if (errorQtyEl) {
+          errorQtyEl.textContent = msg;
+          errorQtyEl.classList.remove('hidden');
+        }
+        toast.warning(msg);
+        inputQty.focus();
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  // Thu thập thông số đặt hàng
+  function getSelectedOrderPayload() {
+    if (!productData) return null;
+
+    const quantity = parseInt(inputQty ? inputQty.value : '1', 10) || 1;
+    const groupSize = document.getElementById('group-product-size');
+    const isSizeVisible = groupSize && !groupSize.classList.contains('hidden');
+    let size = null;
+    if (isSizeVisible && inputSize && inputSize.value.trim() !== '') {
+      const parsedSize = parseFloat(inputSize.value.trim());
+      if (!isNaN(parsedSize) && parsedSize > 0) {
+        size = parsedSize;
+      }
+    }
+
+    const groupDimensions = document.getElementById('group-product-dimensions');
+    const isDimensionsVisible = groupDimensions && !groupDimensions.classList.contains('hidden');
+    let dimensions = null;
+    if (isDimensionsVisible && inputDimensions && inputDimensions.value.trim() !== '') {
+      dimensions = inputDimensions.value.trim();
+    }
+
+    // Kiểm tra quyền xem giá (PRODUCT_PRICE_VIEW) và tính đơn giá, thành tiền
+    let unitPrice = null;
+    let unitName = '';
+    let totalPrice = null;
+    const priceVisible = Boolean(productData.priceVisible);
+
+    if (priceVisible && selectedVariant && selectedVariant.prices) {
+      const entries = Object.entries(selectedVariant.prices).filter(([, p]) => p !== null && p !== undefined);
+      if (entries.length > 0) {
+        let preferred = null;
+        if (size && size > 0) {
+          // Nếu có kích thước (chiều dài), ưu tiên đơn giá tính theo mét "m"
+          preferred = entries.find(([u]) => /^m(é|e)t$|^m$/i.test(u.trim())) || entries[0];
+        } else {
+          // Không có kích thước, ưu tiên đơn vị theo tấm, cái...
+          preferred = entries.find(([u]) => !/^m(é|e)t$|^m$/i.test(u.trim())) || entries[0];
+        }
+
+        if (preferred) {
+          unitName = preferred[0];
+          unitPrice = preferred[1];
+
+          // Công thức tính giá:
+          // Nếu tính theo mét và có chiều dài: Thành tiền = Đơn giá/m * Chiều dài * Số lượng
+          // Nếu tính theo đơn vị rời: Thành tiền = Đơn giá * Số lượng
+          const multiplier = (size && size > 0 && /^m(é|e)t$|^m$/i.test(unitName.trim())) ? size : 1;
+          totalPrice = Math.round(unitPrice * multiplier * quantity);
+        }
+      }
+    }
+
+    let colorId = null;
+    if (selectedColor && Array.isArray(activeColorsList)) {
+      const matched = activeColorsList.find(c => normalizeColorKey(c.colorName) === normalizeColorKey(selectedColor));
+      if (matched) colorId = matched.id;
+    }
+
+    const firstImage = (productData.images && productData.images.length > 0) ? productData.images[0].imageUrl : '';
+
+    return {
       productId: productData.id,
       productName: productData.productName,
-      variantId: selectedVariant ? selectedVariant.id : '',
+      productCode: productData.productCode,
+      productImageUrl: firstImage,
+      imageUrl: firstImage,
+      variantId: selectedVariant ? selectedVariant.id : null,
       variantName: selectedVariant ? (selectedVariant.variantName || `${selectedVariant.thickness}mm`) : '',
-      color: selectedColor || ''
-    });
+      colorId,
+      color: selectedColor || null,
+      size,
+      dimensions,
+      quantity,
+      unitName,
+      unitPrice,
+      totalPrice,
+      priceVisible
+    };
+  }
 
-    window.location.href = `../customer/order.html?${params.toString()}`;
-  });
+  // Thêm vào giỏ hàng
+  if (btnAddToCart) {
+    btnAddToCart.addEventListener('click', async () => {
+      if (!validateOrderInputs()) return;
+
+      if (!authState.isAuthenticated()) {
+        toast.warning('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng.');
+        setTimeout(() => {
+          window.location.href = `../auth/login.html?returnUrl=${encodeURIComponent(window.location.href)}`;
+        }, 1200);
+        return;
+      }
+
+      const payload = getSelectedOrderPayload();
+      if (!payload) return;
+
+      try {
+        btnAddToCart.disabled = true;
+        await cartApi.addToCart({
+          productId: payload.productId,
+          variantId: payload.variantId,
+          colorId: payload.colorId,
+          size: payload.size,
+          dimensions: payload.dimensions,
+          quantity: payload.quantity
+        });
+
+        toast.success('Đã thêm sản phẩm vào giỏ hàng!');
+        // Bắn sự kiện cập nhật số lượng trên header badge
+        window.dispatchEvent(new CustomEvent('hmp:cart-updated'));
+      } catch (err) {
+        console.error('Lỗi khi thêm vào giỏ hàng:', err);
+        toast.error(err.message || 'Không thể thêm sản phẩm vào giỏ hàng.');
+      } finally {
+        btnAddToCart.disabled = false;
+      }
+    });
+  }
+
+  // Mua ngay (Shopee-style: chuyển thẳng sang trang đặt hàng với mode=buy-now)
+  if (btnOrderNow) {
+    btnOrderNow.addEventListener('click', () => {
+      if (!validateOrderInputs()) return;
+
+      const payload = getSelectedOrderPayload();
+      if (!payload) return;
+
+      try {
+        sessionStorage.setItem('hmp_buy_now_item', JSON.stringify(payload));
+      } catch (e) {
+        console.warn('Không thể lưu session item:', e);
+      }
+
+      window.location.href = '../customer/order.html?mode=buy-now';
+    });
+  }
 }
 
 /**

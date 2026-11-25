@@ -267,11 +267,13 @@
   display: block;
 }
 
-/* Chuông thông báo */
+/* Nút giỏ hàng & chuông thông báo */
+.header__cart-btn,
 .header__notification-btn {
   position: relative;
 }
 
+.header__cart-badge,
 .header__notification-badge {
   position: absolute;
   top: -2px;

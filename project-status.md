@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-21 | By: @antigravity | Session: #5
+> Last updated: 2026-11-25 | By: @antigravity | Session: #6
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,37 @@
 ---
 
 ## Completed
+- ✅ **Phân Hệ Giỏ Hàng & Đặt Hàng Chuẩn Shopee (Cart & Checkout Flow - Session #6)**:
+  - **Trang Chi Tiết Sản Phẩm Động Theo Loại Mặt Hàng (`pages/product/detail.html`, `js/pages/product-detail.js`, `assets/css/pages/product-detail.css`)**:
+    - Tích hợp trường nhập liệu theo `ProductType`:
+      - `ROOFING_SHEET`: Nhập chiều dài (mét), nút chọn nhanh (3m, 4m, 5m, 6m), số lượng (tấm); ẩn quy cách bẻ chấn.
+      - `GUTTER` / `GABLE_FLASHING` / `RIDGE_CAP`: Nhập chiều dài, quy cách bẻ chấn chi tiết (`dimensions`) với gợi ý từ `productType.note`, số lượng (cây / mét).
+      - `RETAIL`: Ẩn chiều dài và quy cách bẻ chấn, chỉ nhập số lượng (cái / hộp).
+      - `UNKNOWN`: Hiển thị toàn bộ các trường thông số để khách hàng tự do nhập quy cách.
+    - Tích hợp 2 nút hành động: "Thêm vào giỏ" (`#btn-add-to-cart`) gọi API `POST /api/v1/cart/items` và "Mua ngay" (`#btn-order-now`) lưu session `hmp_buy_now_item` và chuyển thẳng sang `order.html?mode=buy-now`.
+  - **Trang Giỏ Hàng Chuẩn Kiểu Dáng Shopee (`pages/customer/cart.html`, `assets/css/pages/cart.css`, `js/pages/cart.js`)**:
+    - Tích hợp đầy đủ API Backend: `GET /cart`, `PATCH /cart/items/{id}`, `DELETE /cart/items/{id}`, `DELETE /cart/clear`.
+    - Danh sách sản phẩm sắp xếp giảm dần theo thời gian cập nhật (`updatedAt DESC`), bổ sung mốc thời gian cập nhật (`formatDateTime`) trên từng món hàng để khách hàng dễ theo dõi.
+    - Checkbox chọn tất cả (Top & Bottom) và chọn từng món hàng độc lập.
+    - Stepper điều chỉnh số lượng `[-] / [+]` cập nhật trực tiếp qua API, tự động tính toán lại thành tiền dòng và tổng tiền giỏ hàng.
+    - Modal xác nhận khi xóa sản phẩm hoặc dọn sạch giỏ hàng.
+    - Thanh Sticky Bottom Bar chuẩn Shopee: cố định chân trang hiển thị tổng số món được chọn, tổng tiền thanh toán và nút "Mua Hàng" (chỉ kích hoạt khi chọn ít nhất 1 món).
+    - Lưu danh sách món đã chọn vào `sessionStorage` (`hmp_cart_checkout_items`) và điều hướng tới `order.html?mode=cart`.
+  - **Trang Đặt Hàng Linh Hoạt 2 Luồng (`pages/customer/order.html`, `assets/css/pages/order.css`, `js/pages/order.js`)**:
+    - Nhận diện 2 nguồn đặt hàng: Mua ngay (`?mode=buy-now`) hoặc Giỏ hàng (`?mode=cart`).
+    - Form thông tin nhận hàng: Tự động điền họ tên, số điện thoại từ hồ sơ người dùng.
+    - Sổ địa chỉ nhận hàng: Tải danh sách từ `GET /api/v1/me/addresses`, hỗ trợ thêm nhanh địa chỉ mới qua `POST /api/v1/me/addresses`.
+    - Tóm tắt đơn hàng: Hiển thị đầy đủ thông số kỹ thuật (chiều dài, quy cách bẻ chấn hình học, số lượng, đơn giá, thành tiền).
+    - Gửi đơn hàng tới `POST /api/v1/orders`.
+    - **QUY TẮC CỐT LÕI**: Sau khi đặt hàng thành công, **TUYỆT ĐỐI KHÔNG XÓA GIỎ HÀNG**, bảo lưu dữ liệu để khách hàng có thể mua lại bất cứ lúc nào.
+    - Màn hình xác nhận thành công hiển thị mã đơn hàng `#orderId` và các liên kết điều hướng tiện lợi.
+  - **Header & API Client**:
+    - Header: Icon giỏ hàng trên desktop và mobile drawer hiển thị badge số lượng món hàng, tự động lắng nghe sự kiện `hmp:cart-updated`.
+    - API modules: `cart.api.js` và `order.api.js` đóng gói hoàn chỉnh.
+  - **Tuân thủ Clean Code & Bảo Mật**:
+    - 0% inline style `style="..."`, 0% `innerHTML` chuỗi thô (chống XSS).
+    - Sử dụng thẻ `<template>` và DOM API (`createElement`, `replaceChildren`).
+    - CSS BEM, CSS variables, mobile-first responsive.
 - ✅ **Phân Hệ Đăng Nhập & Xác Thực Khách Hàng Chuẩn Thực Tế (Authentication & Authorization - Session #5)**:
   - **Trang Đăng Nhập Chuẩn Thiết Kế Tôn Việt (`pages/auth/login.html`, `assets/css/pages/login.css`, `js/pages/login.js`)**:
     - Thiết kế giao diện trung thực theo mẫu đồ họa thực tế: nền nhà xưởng công nghiệp `assets/images/auth/background.png` bao phủ toàn màn hình, thẻ đăng nhập `.auth-card` hiệu ứng kính mờ (`backdrop-filter: blur(12px)`), viền bo tròn 28px, đổ bóng sâu nổi khối sang trọng.

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Giỏ hàng mua sắm vật tư tôn thép, máng xối, phụ kiện HMP chính hãng">
+  <title>Giỏ Hàng Mua Sắm — HMP Tôn Thép</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+
+  <!-- CSS Riêng cho Trang Giỏ Hàng (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/cart.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH (Nhúng đồng bộ từ Component) ==================== -->
+  <div id="site-header" data-component="header"></div>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Breadcrumb điều hướng -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html" class="breadcrumb__link">Trang chủ</a>
+        <span class="breadcrumb__separator">/</span>
+        <span class="breadcrumb__current">Giỏ hàng</span>
+      </nav>
+
+      <!-- Khung Loading State -->
+      <div id="cart-loading-state" class="cart-state-box">
+        <div class="cart-spinner"></div>
+        <h4 class="cart-state-box__title">Đang tải giỏ hàng của bạn...</h4>
+        <p class="cart-state-box__desc">Hệ thống đang đồng bộ danh sách sản phẩm từ máy chủ HMP</p>
+      </div>
+
+      <!-- Khung Empty State -->
+      <div id="cart-empty-state" class="cart-state-box hidden">
+        <div class="cart-empty-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+        </div>
+        <h3 class="cart-state-box__title">Giỏ hàng của bạn đang trống</h3>
+        <p class="cart-state-box__desc">Hãy khám phá các sản phẩm tôn lợp mái, máng xối và phụ kiện chất lượng cao của HMP để đưa vào giỏ hàng.</p>
+        <a href="../product/catalog.html" class="btn btn--primary cart-state-box__btn">Mua sắm ngay</a>
+      </div>
+
+      <!-- Khung Danh Sách Giỏ Hàng -->
+      <section id="cart-content-section" class="cart-section hidden">
+        <div class="cart-header-panel">
+          <div class="cart-header-panel__left">
+            <label class="cart-checkbox-label">
+              <input type="checkbox" id="checkbox-select-all-top" class="cart-custom-checkbox">
+              <span class="cart-checkbox-text">Chọn tất cả (<span id="cart-total-items-badge">0</span> sản phẩm)</span>
+            </label>
+          </div>
+          <div class="cart-header-panel__cols">
+            <span class="cart-col-title cart-col-title--price">Đơn giá</span>
+            <span class="cart-col-title cart-col-title--qty">Số lượng</span>
+            <span class="cart-col-title cart-col-title--subtotal">Thành tiền</span>
+            <span class="cart-col-title cart-col-title--action">Thao tác</span>
+          </div>
+        </div>
+
+        <!-- Danh sách thẻ món hàng trong giỏ -->
+        <div id="cart-items-list" class="cart-items-list">
+          <!-- Render động qua thẻ <template id="cart-item-template"> -->
+        </div>
+
+        <!-- Sticky Bottom Checkout Bar (Kiểu dáng chuẩn Shopee) -->
+        <div class="cart-checkout-bar">
+          <div class="cart-checkout-bar__left">
+            <label class="cart-checkbox-label">
+              <input type="checkbox" id="checkbox-select-all-bottom" class="cart-custom-checkbox">
+              <span class="cart-checkbox-text">Chọn tất cả</span>
+            </label>
+            <button type="button" id="btn-clear-cart" class="cart-btn-clear">Xóa toàn bộ giỏ hàng</button>
+          </div>
+
+          <div class="cart-checkout-bar__right">
+            <div class="cart-checkout-bar__summary">
+              <div class="cart-checkout-bar__label-row">
+                <span>Tổng thanh toán (<span id="selected-count">0</span> sản phẩm):</span>
+                <span id="selected-total-amount" class="cart-checkout-bar__total">0 ₫</span>
+              </div>
+              <span class="cart-checkout-bar__hint">Giá đã bao gồm quy cách theo yêu cầu (chưa gồm cước vận chuyển)</span>
+            </div>
+
+            <button type="button" id="btn-checkout" class="btn btn--primary cart-checkout-bar__btn" disabled>
+              Mua Hàng
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER CHUẨN MẪU (Nhúng đồng bộ từ Component) ==================== -->
+  <div id="site-footer" data-component="footer"></div>
+
+  <!-- ==================== MODAL XÁC NHẬN DÙNG CHUNG ==================== -->
+  <div id="cart-confirm-modal" class="confirm-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="cart-modal-title">
+    <div class="confirm-modal-box">
+      <div class="confirm-modal__icon-wrap">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"></polyline>
+          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          <line x1="10" y1="11" x2="10" y2="17"></line>
+          <line x1="14" y1="11" x2="14" y2="17"></line>
+        </svg>
+      </div>
+      <h3 id="cart-modal-title" class="confirm-modal__title">Xác nhận thao tác</h3>
+      <p id="cart-modal-message" class="confirm-modal__message">Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?</p>
+      <div class="confirm-modal__actions">
+        <button type="button" id="btn-modal-cancel" class="confirm-modal__btn confirm-modal__btn--cancel">Hủy</button>
+        <button type="button" id="btn-modal-confirm" class="confirm-modal__btn confirm-modal__btn--confirm">Xác nhận xóa</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TEMPLATE MÓN HÀNG GIỎ HÀNG ==================== -->
+  <template id="cart-item-template">
+    <article class="cart-item-card" data-item-id="">
+      <div class="cart-item-card__main">
+        <div class="cart-item-card__select">
+          <input type="checkbox" class="cart-custom-checkbox cart-item__checkbox" aria-label="Chọn sản phẩm này">
+        </div>
+
+        <div class="cart-item-card__thumb-wrap">
+          <img src="" alt="" class="cart-item-card__thumb">
+        </div>
+
+        <div class="cart-item-card__info">
+          <h3 class="cart-item-card__name">
+            <a href="#" class="cart-item-card__name-link"></a>
+          </h3>
+          <div class="cart-item-card__meta">
+            <span class="cart-item-card__variant hidden"></span>
+            <span class="cart-item-card__color hidden"></span>
+          </div>
+          <div class="cart-item-card__specs">
+            <div class="cart-item-card__spec-row cart-item-card__spec-size hidden">
+              <span class="spec-label">Chiều dài/Kích thước:</span>
+              <span class="spec-value"></span>
+            </div>
+            <div class="cart-item-card__spec-row cart-item-card__spec-dimensions hidden">
+              <span class="spec-label">Quy cách hình học:</span>
+              <span class="spec-value"></span>
+            </div>
+          </div>
+          <!-- Cột mốc thời gian cập nhật để người dùng dễ theo dõi -->
+          <div class="cart-item-card__time">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <span class="cart-item-card__time-text"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cart-item-card__side">
+        <div class="cart-item-card__price-col">
+          <span class="cart-item-card__unit-price"></span>
+        </div>
+
+        <div class="cart-item-card__qty-col">
+          <div class="cart-stepper">
+            <button type="button" class="cart-stepper__btn cart-stepper__btn--minus" aria-label="Giảm">-</button>
+            <input type="number" class="cart-stepper__input" value="1" min="1" step="1">
+            <button type="button" class="cart-stepper__btn cart-stepper__btn--plus" aria-label="Tăng">+</button>
+          </div>
+        </div>
+
+        <div class="cart-item-card__subtotal-col">
+          <span class="cart-item-card__line-total"></span>
+        </div>
+
+        <div class="cart-item-card__action-col">
+          <button type="button" class="cart-item-card__btn-delete" title="Xóa món này khỏi giỏ hàng">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span class="btn-delete-text">Xóa</span>
+          </button>
+        </div>
+      </div>
+    </article>
+  </template>
+
+  <!-- Script điều khiển Giỏ Hàng -->
+  <script type="module" src="../../js/pages/cart.js"></script>
+</body>
+</html>

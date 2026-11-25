@@ -45,6 +45,16 @@
 
     <!-- Khu vực Tiện ích Bên Phải -->
     <div class="header__actions">
+      <!-- Nút Giỏ Hàng (Dành cho khách hàng) -->
+      <a id="header-cart-btn" href="./pages/customer/cart.html" class="header__icon-btn header__cart-btn" title="Giỏ hàng" aria-label="Giỏ hàng" data-link="cart">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+        </svg>
+        <span id="header-cart-badge" class="header__cart-badge hidden">0</span>
+      </a>
+
       <!-- Nút Chuông Thông Báo (Hiển thị khi đã đăng nhập) -->
       <a id="header-notification-btn" href="./pages/customer/notifications.html" class="header__icon-btn header__notification-btn hidden" title="Thông báo" aria-label="Thông báo" data-link="notifications">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -126,6 +136,7 @@
       <!-- Menu riêng tư trên mobile -->
       <div id="mobile-auth-links" class="mobile-nav__auth-links hidden">
         <div class="mobile-nav__divider"></div>
+        <a href="./pages/customer/cart.html" class="mobile-nav__link" data-link="cart">Giỏ hàng của tôi</a>
         <a href="./pages/customer/my-orders.html" class="mobile-nav__link" data-link="my-orders">Đơn hàng của tôi</a>
         <a href="./pages/customer/profile.html" class="mobile-nav__link" data-link="profile">Thông tin tài khoản</a>
         <button id="mobile-logout-btn" class="mobile-nav__logout-btn" type="button">Đăng xuất</button>

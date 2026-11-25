@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Xác nhận đặt hàng tôn thép HMP — Gia công theo yêu cầu, giao hàng tận chân công trình">
+  <title>Đặt Hàng — HMP Tôn Thép</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+
+  <!-- CSS Riêng cho Trang Đặt Hàng (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/order.css">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH ==================== -->
+  <div id="site-header" data-component="header"></div>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="main-content">
+    <div class="container">
+
+      <!-- Breadcrumb điều hướng -->
+      <nav id="order-breadcrumb" class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../product/catalog.html" class="breadcrumb__link">Sản phẩm</a>
+        <span class="breadcrumb__separator">/</span>
+        <a href="../product/catalog.html" class="breadcrumb__link">Chi tiết sản phẩm</a>
+        <span class="breadcrumb__separator">/</span>
+        <span class="breadcrumb__current">Đặt hàng</span>
+      </nav>
+
+      <!-- Khung Không có dữ liệu đặt hàng (Empty State) -->
+      <div id="order-empty-state" class="order-state-box hidden">
+        <div class="order-empty-icon">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+        </div>
+        <h3 class="order-state-box__title">Không có sản phẩm nào để đặt hàng</h3>
+        <p class="order-state-box__desc">Vui lòng chọn sản phẩm từ giỏ hàng hoặc chọn "Mua ngay" tại trang chi tiết sản phẩm.</p>
+        <div class="order-state-box__actions">
+          <a href="./cart.html" class="btn btn--outline">Về giỏ hàng</a>
+          <a href="../product/catalog.html" class="btn btn--primary">Xem danh mục tôn</a>
+        </div>
+      </div>
+
+      <!-- Khung Đặt Hàng Chính -->
+      <div id="order-form-layout" class="order-layout">
+        
+        <!-- Cột Trái: Thông tin giao nhận hàng -->
+        <section class="order-shipping-section">
+          <div class="order-card">
+            <div class="order-card__header">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <h2 class="order-card__title">Thông tin nhận hàng</h2>
+            </div>
+
+            <form id="order-form" class="order-form" novalidate>
+              <div class="form-group">
+                <label for="input-receiver-name" class="form-label">Họ và tên người nhận <span class="required">*</span></label>
+                <input type="text" id="input-receiver-name" class="form-control" maxlength="100" placeholder="Ví dụ: Nguyễn Văn A" required>
+                <span id="error-receiver-name" class="form-error-text hidden" role="alert"></span>
+              </div>
+
+              <div class="form-group">
+                <label for="input-receiver-phone" class="form-label">Số điện thoại nhận hàng <span class="required">*</span></label>
+                <input type="tel" id="input-receiver-phone" class="form-control" maxlength="15" placeholder="Ví dụ: 0912345678" required>
+                <span id="error-receiver-phone" class="form-error-text hidden" role="alert"></span>
+              </div>
+
+              <!-- Sổ địa chỉ nhận hàng -->
+              <div class="form-group">
+                <div class="form-label-row">
+                  <label class="form-label">Địa chỉ nhận hàng (Công trình/Kho) <span class="required">*</span></label>
+                  <button type="button" id="btn-toggle-add-address" class="btn-text-action">+ Thêm địa chỉ mới</button>
+                </div>
+
+                <!-- Danh sách địa chỉ đã lưu -->
+                <div id="address-list-container" class="address-selection-list">
+                  <p class="address-loading-text">Đang tải danh sách địa chỉ...</p>
+                </div>
+                <span id="error-receiver-address" class="form-error-text hidden" role="alert"></span>
+
+                <!-- Khung thêm nhanh địa chỉ mới (ẩn mặc định) -->
+                <div id="new-address-box" class="new-address-box hidden">
+                  <div class="new-address-box__row">
+                    <input type="text" id="input-new-address" class="form-control" maxlength="255" placeholder="Số nhà, đường, thôn/ấp, xã/phường, quận/huyện, tỉnh/thành">
+                  </div>
+                  <span id="error-new-address" class="form-error-text hidden" role="alert"></span>
+                  <div class="new-address-box__actions">
+                    <label class="address-checkbox-label">
+                      <input type="checkbox" id="chk-address-default">
+                      <span>Đặt làm mặc định</span>
+                    </label>
+                    <div class="new-address-box__btns">
+                      <button type="button" id="btn-cancel-new-address" class="btn btn--sm btn--outline">Hủy</button>
+                      <button type="button" id="btn-save-new-address" class="btn btn--sm btn--primary">Lưu địa chỉ</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="input-order-note" class="form-label">Ghi chú cho đơn hàng</label>
+                <textarea id="input-order-note" class="form-control form-textarea" rows="3" maxlength="500" placeholder="Ví dụ: Giao xe cẩu vào công trình giờ hành chính, bẻ mép phụ kiện chính xác..."></textarea>
+                <span id="error-order-note" class="form-error-text hidden" role="alert"></span>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Cột Phải: Danh sách sản phẩm & Tổng kết đặt hàng -->
+        <aside class="order-summary-section">
+          <div class="order-card order-card--sticky">
+            <div class="order-card__header">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+              </svg>
+              <h2 class="order-card__title">Sản phẩm đặt mua (<span id="summary-items-count">0</span>)</h2>
+            </div>
+
+            <!-- Danh sách sản phẩm tóm tắt -->
+            <div id="order-summary-items-list" class="order-summary-items">
+              <!-- Render động qua thẻ <template id="order-summary-item-template"> -->
+            </div>
+
+            <!-- Tổng kết tiền -->
+            <div class="order-summary-totals">
+              <div class="order-summary-row">
+                <span class="order-summary-row__label">Tạm tính hàng hóa:</span>
+                <span id="summary-subtotal" class="order-summary-row__value">0 ₫</span>
+              </div>
+              <div class="order-summary-row">
+                <span class="order-summary-row__label">Cước vận chuyển:</span>
+                <span class="order-summary-row__value order-summary-row__value--muted">Bộ phận kinh doanh báo sau</span>
+              </div>
+              <div class="order-summary-divider"></div>
+              <div class="order-summary-row order-summary-row--total">
+                <span class="order-summary-row__label">Tổng thanh toán:</span>
+                <span id="summary-total-amount" class="order-summary-row__value order-summary-row__value--price">0 ₫</span>
+              </div>
+            </div>
+
+            <div class="order-policy-notice">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="16" x2="12" y2="12"></line>
+                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+              </svg>
+              <span>Hệ thống ghi nhận đơn và quản lý sẽ liên hệ xác nhận quy cách chi tiết trước khi sản xuất tôn theo yêu cầu.</span>
+            </div>
+
+            <button type="button" id="btn-submit-order" class="btn btn--primary btn--block order-submit-btn">
+              Xác Nhận Đặt Hàng
+            </button>
+          </div>
+        </aside>
+
+      </div>
+
+      <!-- Màn hình Đặt Hàng Thành Công -->
+      <section id="order-success-section" class="order-success-card hidden">
+        <div class="order-success-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+          </svg>
+        </div>
+        <h2 class="order-success-title">Đặt Hàng Thành Công!</h2>
+        <p class="order-success-desc">
+          Mã đơn hàng của bạn: <strong id="success-order-code" class="order-code-badge">#---</strong>
+        </p>
+        <p class="order-success-subdesc">
+          Đơn hàng của bạn đã được chuyển tới Bộ phận Kinh doanh & Sản xuất HMP. Chúng tôi sẽ liên hệ trong ít phút để xác nhận kích thước và lịch giao tôn.
+        </p>
+        <div class="order-success-actions">
+          <a href="./cart.html" class="btn btn--outline">Về giỏ hàng</a>
+          <a href="../product/catalog.html" class="btn btn--primary">Tiếp tục mua hàng</a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER CHUẨN MẪU ==================== -->
+  <div id="site-footer" data-component="footer"></div>
+
+  <!-- ==================== TEMPLATES ==================== -->
+  <template id="order-summary-item-template">
+    <div class="order-summary-item">
+      <img src="" alt="" class="order-summary-item__thumb">
+      <div class="order-summary-item__info">
+        <h4 class="order-summary-item__name"></h4>
+        <div class="order-summary-item__meta">
+          <span class="order-summary-item__variant hidden"></span>
+          <span class="order-summary-item__color hidden"></span>
+        </div>
+        <div class="order-summary-item__specs">
+          <span class="order-summary-item__size hidden"></span>
+          <span class="order-summary-item__dimensions hidden"></span>
+        </div>
+        <div class="order-summary-item__price-qty">
+          <span class="order-summary-item__qty">SL: 1</span>
+          <span class="order-summary-item__price"></span>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <template id="address-radio-template">
+    <label class="address-radio-card">
+      <input type="radio" name="selected_address_id" class="address-radio-input" value="">
+      <div class="address-radio-content">
+        <span class="address-text"></span>
+        <span class="address-badge-default hidden">Mặc định</span>
+      </div>
+    </label>
+  </template>
+
+  <!-- Script điều khiển Đặt Hàng -->
+  <script type="module" src="../../js/pages/order.js"></script>
+</body>
+</html>
