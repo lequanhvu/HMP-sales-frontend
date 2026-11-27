@@ -121,6 +121,10 @@
   font-weight: 700;
 }
 
+.nav__link--active:hover {
+  color: var(--color-primary-hover);
+}
+
 .nav__link--active::after {
   content: '';
   position: absolute;
@@ -130,6 +134,11 @@
   height: 3px;
   background-color: var(--color-primary);
   border-radius: var(--radius-full);
+  transition: background-color var(--transition-fast);
+}
+
+.nav__link--active:hover::after {
+  background-color: var(--color-primary-hover);
 }
 
 /* Menu Dropdown Danh mục Sản phẩm */
@@ -200,6 +209,20 @@
 .header__icon-btn:hover {
   background-color: var(--color-primary-light);
   color: var(--color-primary);
+}
+
+/* Nút Giỏ Hàng khi đang ở trang Giỏ Hàng (Active State) */
+.header__cart-btn--active,
+.header__icon-btn--active,
+.header__notification-btn--active {
+  background-color: var(--color-primary-light, #eaf1fc) !important;
+  color: var(--color-primary, #1351b4) !important;
+}
+
+.header__cart-btn--active svg,
+.header__icon-btn--active svg,
+.header__notification-btn--active svg {
+  stroke: var(--color-primary, #1351b4) !important;
 }
 
 /* Nút Đăng nhập bo tròn chuẩn mẫu */

@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-27 | By: @antigravity | Session: #27
+> Last updated: 2026-11-28 | By: @antigravity | Session: #35
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,113 @@
 ---
 
 ## Completed
+- ✅ **Phát Triển Giao Diện Danh Sách Thông Báo Phân Trang & Mốc Thời Gian (Session #35 - Completed)**:
+  - **Trang Danh Sách Thông Báo Khách Hàng (`pages/customer/notifications.html`, `notifications.css`, `notifications.js`)**:
+    - **Bố cục chuẩn HMP**: Sử dụng layout 2 cột với Customer Sidebar sticky bên trái và phần nội dung bên phải, đồng bộ thanh điều hướng Breadcrumb chuẩn Ảnh mẫu 3.
+    - **Phân Cụm Theo Mốc Thời Gian (Milestone Grouping)**: Nhóm thông báo trực quan theo các mốc: *"Hôm nay"*, *"Hôm qua"*, *"Tuần này"*, *"Tháng này"*, *"Trước đó"*.
+    - **Thẻ Thông Báo (Notification Card)**: Phân biệt rõ thông báo chưa đọc với viền chỉ thị xanh lam và huy hiệu *"Mới"*; hiển thị icon đại diện chuyên biệt theo từng `NotificationType` (`ORDER_CREATED`, `ORDER_CONFIRMED`, `ORDER_PROCESSING`, `ORDER_SHIPPING`, `ORDER_COMPLETED`, `ORDER_CANCELLED`, `ORDER_RESTORED`).
+    - **Điều Hướng & Đánh Dấu Đã Đọc Tức Thì**: Hỗ trợ nút *"Xem chi tiết đơn hàng #..."* dẫn thẳng đến trang `order-detail.html?id=...` (tự động âm thầm đánh dấu đã đọc trước khi chuyển), nút *"Đánh dấu đã đọc"* tại từng thẻ, và nút *"Đã đọc tất cả"* trên thanh tiêu đề.
+    - **Phân Trang Đầy Đủ (Pagination)**: Hỗ trợ phân trang 0-indexed sang 1-indexed, nút Previous/Next và số trang tương tự như `my-orders.html`.
+    - **Bộ Lọc Tabs**: Hỗ trợ 3 tabs lọc nhanh: *"Tất cả"*, *"Chưa đọc"*, *"Đơn hàng"*.
+  - **Khắc Phục Lỗi Bóc Tách Dữ Liệu Phân Trang & Đảm Bảo Số Lượng Động Từ DB**:
+    - **Sửa Lỗi Khóa `result` trong PageResponse**: Backend Spring Boot trả về record `PageResponse` với trường danh sách là `result` (thay vì `items`). Đã hiệu chỉnh lại logic bóc tách `pageRes?.result || pageRes?.items` để danh sách thông báo hiển thị đầy đủ 100% dữ liệu thực từ DB.
+    - **Lấy Số Lượng Động 100%**: Loại bỏ giá trị khởi tạo tĩnh trong toàn bộ template HTML (`header.html`, `sidebar.html`), kết nối gọi `GET /api/v1/notifications/unread-count` để huy hiệu chuông Header và huy hiệu Sidebar luôn hiển thị chính xác số lượng thông báo chưa đọc từ DB.
+    - Tạo `js/api/notification.api.js` kết nối đầy đủ các API Spring Boot: `GET /api/v1/notifications`, `GET /api/v1/notifications/unread-count`, `POST /api/v1/notifications/{id}/read`, `POST /api/v1/notifications/read-all`.
+    - Bổ sung hàm tiện ích `formatRelativeTime` và `getMilestoneGroup` trong `js/utils/format.js`.
+    - Cập nhật Header: kích hoạt active cho icon Chuông `#header-notification-btn` khi ở trang thông báo; tự động cập nhật số lượng unread badge qua CustomEvent `hmp:notifications-updated`.
+    - Bổ sung liên kết *"Thông báo"* vào thanh Sidebar của khách hàng trên toàn bộ các trang (`notifications.html`, `my-orders.html`, `profile.html`).
+- ✅ **Đồng Bộ Giao Diện Breadcrumb, Active Cart Icon, Xóa Địa Chỉ & Hoàn Tác Hủy Đơn (Session #34 - Completed)**:
+  - **Đồng Bộ Breadcrumb Chuẩn Ảnh Mẫu Mọi Đường Dẫn**:
+    - Tạo `assets/css/components/breadcrumb.css` làm chuẩn chung duy nhất cho toàn bộ hệ thống (`pages/customer/order-detail.html`, `pages/customer/cart.html`, `pages/customer/order.html`, `pages/product/detail.html`).
+    - Dấu phân cách `/` tinh tế, màu slate `#64748b`, liên kết hover xanh thương hiệu có gạch chân, chữ trang hiện tại đậm màu slate đen `#1e293b`.
+    - Loại bỏ hoàn toàn các khai báo CSS breadcrumb phân mảnh, không đồng nhất trước đó trong `order.css`, `order-detail.css`, `product-detail.css`.
+  - **Kích Hoạt Nổi Bật Icon Giỏ Hàng Trên Header (Active Cart Icon)**:
+    - Sửa `highlightActiveNav()` trong `component-loader.js` để khi truy cập `cart.html`, mục "Trang chủ" không còn bị gạch chân active nhầm, mà thay vào đó icon Giỏ hàng `#header-cart-btn` được kích hoạt trạng thái `.header__cart-btn--active` (nền xanh lam nhạt `var(--color-primary-light)`, viền và icon xanh đậm).
+  - **Thực Hiện Tính Năng Xóa Địa Chỉ Bên Thông Tin Cá Nhân**:
+    - Thay thế hộp thoại trình duyệt nguyên thủy bằng `showConfirmModal` chuẩn phong cách HMP, icon thùng rác cảnh báo màu đỏ trực quan.
+    - Kết nối gọi API backend `userApi.deleteAddress(addressId)` và tự động tải lại danh sách sổ địa chỉ nhận hàng sau khi xóa.
+  - **Tính Năng Hoàn Tác Hủy Đơn Hàng Hoàn Chỉnh**:
+    - Hỗ trợ đầy đủ chức năng hoàn tác hủy cả trên trang danh sách `my-orders.html` và trang chi tiết `order-detail.html`.
+    - Tính toán cửa sổ 60 phút: hiển thị số phút còn lại có thể hoàn tác hoặc thông báo khi đã hết hạn.
+    - Cải tiến giao diện modal chọn lý do hủy đơn với `.select-custom` bo góc 12px, mũi tên SVG hiện đại và viền focus xanh thương hiệu.
+- ✅ **Chuẩn Hóa Hiệu Ứng Hover Nút Đã Chọn Theo Phong Cách Nút "Lọc Đơn Hàng" (Session #33 - Completed)**:
+  - **Sửa Lỗi Màu Hover Nút Bị Quá Sáng / Trắng Chữ Khó Nhìn**:
+    - Khi nút tab trạng thái hoặc nút sidebar đang ở trạng thái đã chọn (`--active`), di chuột vào trước đây bị áp dụng màu nền xanh nhạt của nút chưa chọn làm nền trắng chữ trắng khó đọc.
+    - Chuẩn hóa lại toàn bộ các nút đã chọn khi hover: chuyển màu nền sang xanh đậm sâu `var(--color-primary-hover, #0c3e8e)` và giữ nguyên chữ trắng `#ffffff` nổi bật, y hệt như hiệu ứng hover của nút **"Lọc Đơn Hàng"** (`.btn--primary:hover`).
+    - Quy định chung này được áp dụng nhất quán trên toàn bộ hệ thống: Tab trạng thái đơn hàng (`.orders-tab-btn--active:hover`), nút mục menu Sidebar (`.customer-sidebar__link--active:hover`), nút số phân trang (`.pagination-btn--active:hover`), và nút điều hướng Header (`.nav__link--active:hover`).
+- ✅ **Chuẩn Hóa Tab Trạng Thái Đơn Hàng & Cố Định Sticky Sidebar Top-Left (Session #32 - Completed)**:
+  - **Chuẩn Hóa 7 Tabs Trạng Thái Đơn Hàng**:
+    - Cập nhật chính xác 7 tabs trạng thái theo yêu cầu: `Tất cả` (`ALL`), `Chờ xác nhận` (`PENDING`), `Đã xác nhận` (`CONFIRMED`), `Đang xử lý` (`PROCESSING`), `Đang giao` (`SHIPPING`), `Hoàn thành` (`COMPLETED`), `Đã hủy` (`CANCELLED`).
+    - Cập nhật bảng ánh xạ `ORDER_STATUS_MAP` trong `js/utils/i18n.js` tương ứng để nhãn badge trạng thái trên các thẻ đơn hàng hiển thị đồng nhất ("Chờ xác nhận", "Đã xác nhận", "Đang xử lý", "Đang giao", "Hoàn thành", "Đã hủy").
+  - **Cố Định Sidebar Bên Trái Ở Vị Trí Top-Left Khi Cuộn Trang (Sticky Sidebar)**:
+    - Bổ sung `position: sticky; top: calc(76px + 1.25rem); align-self: start; z-index: 10;` tại breakpoint `@media (min-width: 992px)` trong `my-orders.css`, `sidebar.css` và `profile.css`.
+    - Khi người dùng cuộn xem danh sách đơn hàng dài, thanh sidebar bên trái luôn bám dính mượt mà ở vị trí top-left ngay dưới thanh Header, không bị trôi mất khỏi tầm nhìn.
+- ✅ **Khắc Phục Lỗi Giao Diện Tràn Modal Chi Tiết & Chuẩn Hóa Clean Code 100% (Session #31 - Completed)**:
+  - **Khắc Phục Lỗi Tràn Khối Chi Tiết Dưới Phân Trang (Fix Modal Spill)**:
+    - Loại bỏ hoàn toàn khối HTML `#order-detail-modal-overlay` dư thừa ở cuối trang `my-orders.html` (do toàn bộ chi tiết đơn hàng đã được chuyển sang trang chuyên biệt `order-detail.html`).
+    - Bổ sung định kiểu đầy đủ cho `.modal-overlay`, `.modal-overlay--open`, `.modal-dialog`, `.modal-dialog--sm`, `.modal-header`, `.modal-body`, `.modal-footer` trong `my-orders.css` để bảo đảm modal xác nhận hủy đơn (`#cancel-order-modal-overlay`) luôn ẩn mặc định (`opacity: 0; visibility: hidden; pointer-events: none;`) và chỉ hiển thị khi có class `--open`.
+  - **Chuẩn Hóa 100% Không Inline Style (Zero Inline Styles)**:
+    - Rà soát và loại bỏ sạch sẽ 100% thuộc tính `style="..."` trên cả 2 trang `pages/customer/my-orders.html` và `pages/customer/order-detail.html`.
+    - Chuyển toàn bộ định kiểu sang các class CSS BEM trong `my-orders.css` và `order-detail.css`.
+  - **Tối Ưu Hóa Cache & Điều Hướng**:
+    - Thêm tiền tố query string `?v=20261127_05` vào các file CSS và JS để trình duyệt luôn cập nhật giao diện mới nhất.
+    - Bảo đảm nút "Xem chi tiết" dẫn thẳng sang `order-detail.html?id=...` với giao diện stepper 4 bước, thẻ thông tin giao hàng, và dòng quy cách/yêu cầu khách hàng bằng chữ màu xám `#64748b` chuẩn 100% theo mẫu thiết kế.
+- ✅ **Trang Chi Tiết Đơn Hàng Chuẩn Thiết Kế & Hoàn Thiện Giao Diện Khách Hàng (Session #30 - Completed)**:
+  - **Khắc Phục Lỗi Giao Diện & Điều Hướng (Fix UI & Navigation)**:
+    - Bổ sung liên kết `sidebar.css` và đóng gói toàn diện kiểu dáng `.customer-sidebar` trực tiếp trong `my-orders.css`, bảo đảm thanh menu bên trái nhận đầy đủ nền thẻ trắng, viền bo góc, avatar tròn và hiệu ứng hover/active.
+    - Cập nhật hàm `highlightActiveNav()` trong `component-loader.js` nhận diện URL `my-orders.html` và `order-detail.html` để đánh dấu active chuẩn xác vào mục **"Đơn hàng"** trên Header.
+    - Sửa lỗi hiển thị tổng tiền cho đơn hàng mới tạo ở trạng thái `PENDING`: Thay vì hiển thị `0 đ`, hệ thống hiển thị rõ ràng nhãn *"Đang chờ Quản lý tính giá"*.
+  - **Trang Chi Tiết Đơn Hàng Mới (`pages/customer/order-detail.html`, `order-detail.css`, `order-detail.js`) Chuẩn Mẫu Thiết Kế 100%**:
+    - Breadcrumb điều hướng: `Trang chủ > Đơn hàng của tôi > Chi tiết đơn hàng`.
+    - Thẻ tóm tắt 3 cột: Mã đơn hàng `#...`, ngày đặt hàng và huy hiệu trạng thái.
+    - Thanh tiến trình ngang (Horizontal Stepper Bar): 4 mốc tiến độ trực quan (`Đặt hàng` -> `Đang xử lý` -> `Đang giao` -> `Đã giao`) với vạch kẻ xanh động và mốc thời gian lấy từ `statusHistory`.
+    - 2 Thẻ thông tin độc lập: Thông tin giao hàng (họ tên, SĐT, địa chỉ nhận hàng) & Phương thức thanh toán/vận chuyển (COD, giao tận nơi/tự bốc xưởng).
+    - Bảng danh sách sản phẩm: STT, ảnh đại diện sản phẩm, tên sản phẩm, đơn giá, số lượng, thành tiền.
+    - **Hiển thị yêu cầu khách hàng chữ xám**: Phần mô tả yêu cầu khách hàng (chiều dài, màu sắc, biến thể và quy cách gia công bẻ chấn chi tiết `dimensions` cho các mặt hàng máng xối, diềm, úp nóc...) hiển thị bằng chữ màu xám thanh lịch `#64748b` ngay bên dưới tên sản phẩm.
+    - Thanh tổng kết chân trang: Tổng cộng số tiền, nút *"In hóa đơn"* (tích hợp `@media print` ẩn header/footer) và nút *"Quay lại"* danh sách đơn hàng.
+- ✅ **Phân Hệ Theo Dõi Đơn Hàng & Quản Lý Trạng Thái Khách Hàng (Phase 5 - Session #29 Completed)**:
+  - **Trang Danh Sách Đơn Hàng Của Tôi (`pages/customer/my-orders.html`, `my-orders.css`, `my-orders.js`)**:
+    - Thanh Tabs 7 trạng thái mượt mà: Tất cả (`ALL`), Chờ tính giá (`PENDING`), Đã chốt giá (`CONFIRMED`), Đang gia công tôn (`PROCESSING`), Đang giao hàng (`SHIPPING`), Hoàn thành (`COMPLETED`), Đã hủy (`CANCELLED`).
+    - Lọc linh hoạt theo khoảng ngày (`dateFrom`, `dateTo`).
+    - Thẻ đơn hàng e-commerce: Mã đơn `#orderId`, ngày đặt, huy hiệu màu trạng thái BEM, thông tin người nhận, phương thức nhận hàng (`SHIPPING` kèm khoảng cách km / `PICKUP` tự bốc tại xưởng).
+    - Hiển thị tổng thanh toán (định dạng `formatVnd`) hoặc nhãn *"Đang chờ Quản lý tính giá"*.
+    - Thao tác nghiệp vụ theo trạng thái:
+      - Khi đơn ở trạng thái `PENDING` hoặc `CONFIRMED`: nút **"Hủy đơn"** mở popup xác nhận và nhập lý do hủy.
+      - Khi đơn ở trạng thái `CANCELLED`: nút **"Hoàn tác hủy"** cho phép khôi phục đơn hàng trong vòng 60 phút sau khi hủy.
+  - **Modal Chi Tiết Đơn Hàng Toàn Diện**:
+    - Thông tin người nhận, địa chỉ nhận hàng, phương thức vận chuyển và ghi chú đặt hàng.
+    - Bảng thông số chi tiết các dòng tôn: quy cách chiều dài (m), kích thước bẻ chấn chi tiết (`dimensions`), màu sắc, số lượng, đơn giá, thành tiền.
+    - Khối tóm tắt tài chính: Tổng tiền hàng, chiết khấu của Quản lý (`discountAmount`), tổng thanh toán, ghi chú chiết khấu.
+    - Dòng thời gian lịch sử trạng thái (Status Timeline): Hiển thị từng mốc chuyển đổi trạng thái với thời gian và lý do.
+  - **Modal Hủy Đơn Hàng & Hoàn Tác Hủy**:
+    - Popup xác nhận lý do hủy, gọi `POST /api/v1/orders/{orderId}/cancel`.
+    - Nút hoàn tác hủy gọi `POST /api/v1/orders/{orderId}/undo-cancel`.
+    - Mở rộng API client `orderApi.undoCancelOrder(orderId)` trong `js/api/order.api.js`.
+  - **Liên Kết Mua Hàng**:
+    - Nút "Xem đơn hàng của tôi" ngay trên màn hình đặt hàng thành công (`order.html`).
+    - Phân trang chuẩn 0-indexed backend và 1-indexed UI.
+- ✅ **Trang Thông Tin Cá Nhân & Quản Lý Sổ Địa Chỉ Khách Hàng (Session #28 - Completed)**:
+  - **Lối tắt Trực tiếp từ Dropdown Avatar**:
+    - Bổ sung liên kết *"Thông tin cá nhân"* (`pages/customer/profile.html`, `data-link="profile"`) và *"Đơn hàng của tôi"* (`pages/customer/my-orders.html`, `data-link="my-orders"`) vào dropdown menu của Avatar trên Header (cả desktop navbar và mobile drawer).
+    - Tự động đồng bộ đường dẫn tương đối qua `component-loader.js` (`adjustComponentUrls`).
+  - **Hồ Sơ Cá Nhân & Cập Nhật Thông Tin**:
+    - Tích hợp API `GET /api/v1/me` và `PATCH /api/v1/me`.
+    - Cho phép xem thông tin cá nhân, vai trò tài khoản (`Khách hàng` / `Quản lý` / `Quản trị viên`), email Google liên kết.
+    - Cập nhật họ tên người dùng, đồng bộ tức thì vào storage và hiển thị trên Sidebar người dùng.
+  - **Quy Trình Liên Kết & Đổi Số Điện Thoại Xác Thực OTP**:
+    - Tích hợp `POST /api/v1/me/otp/request` và `POST /api/v1/me/otp/verify`.
+    - Modal popup 2 bước: Bước 1 nhập SĐT di động hợp lệ -> Bước 2 nhập mã OTP 6 chữ số kèm đồng hồ đếm ngược 60 giây và nút gửi lại mã.
+    - Huy hiệu trạng thái *"✓ Đã xác thực OTP"* trực quan.
+  - **Phân Hệ Sổ Địa Chỉ Nhận Hàng (Address Book CRUD)**:
+    - Danh sách địa chỉ đã lưu (`GET /api/v1/me/addresses`) hiển thị đầy đủ chi tiết, phân cấp địa giới, tọa độ GPS và huy hiệu "Mặc định".
+    - Thêm địa chỉ mới (`POST /api/v1/me/addresses`) và Chỉnh sửa địa chỉ (`PATCH /api/v1/me/addresses/{id}`).
+    - Hộp chọn Địa giới hành chính 3 cấp (Tỉnh/Thành phố, Quận/Huyện, Phường/Xã) kết nối API mở `provincesApi`.
+    - Tự động tìm kiếm tọa độ (Forward Geocoding qua ArcGIS) kết hợp Bản đồ ghim vị trí `MapPicker` (Esri World Street Map, Esri World Imagery vệ tinh, nút GPS định vị).
+    - Thiết lập địa chỉ mặc định và Xóa địa chỉ (`DELETE /api/v1/me/addresses/{id}`).
+  - **Kiến trúc & Clean Code**:
+    - Tạo mới module API `js/api/user.api.js`, trang giao diện `pages/customer/profile.html`, kiểu dáng `assets/css/pages/profile.css`, điều khiển `js/pages/profile.js`.
+    - 0% inline style, 0% inline script, chống XSS bằng `textContent` và `<template>`.
+    - Bảo vệ trang bằng `requireCustomerAuth()`.
 - ✅ **Tính năng Chọn Địa Giới Hành Chính 3 Cấp & Ghim Bản Đồ Không Watermark (Session #27 - Completed)**:
   - **3 Hộp Chọn Địa Giới Hành Chính (Tỉnh/TP, Quận/Huyện, Phường/Xã)**:
     - Nạp danh mục 63 tỉnh thành Việt Nam tự động qua Open-API (`provinces.open-api.vn`) với cơ chế in-memory caching cực nhanh.
@@ -211,10 +318,8 @@ _Nothing._
 ---
 
 ## Next Tasks
-1. **[P1]** Xây dựng `js/api/client.js` và `js/utils/format.js`, `storage.js` chuẩn hóa gọi API backend.
-2. **[P1]** Xây dựng bộ CSS cơ sở: `variables.css` (bảng màu thương hiệu tôn), `reset.css`, `global.css`, `button.css`.
-3. **[P1]** Triển khai Component Header/Navbar responsive (menu danh mục cấp 1-2 từ `GET /api/v1/categories/tree` và ô tìm kiếm nhanh).
-4. **[P2]** Xây dựng trang chủ `index.html` với danh sách sản phẩm nổi bật và phân trang.
+1. **[P1]** Phase 6: Xây dựng trang "Quản lý đơn hàng" cho Quản lý / Admin (`pages/admin/orders.html`): xem danh sách đơn PENDING, form tính giá / chiết khấu (`/calculate`), duyệt đơn (`/confirm`), cập nhật trạng thái đơn (`/status`).
+2. **[P2]** Phase 6: Xây dựng trang "Quản lý danh mục & sản phẩm" (`pages/admin/products.html`) và "Master data" (`pages/admin/master-data.html`).
 
 ---
 
@@ -231,7 +336,7 @@ _Nothing._
 ### Phase 1 — Điều hướng, Danh mục & Tìm kiếm nhanh
 - [x] Xây dựng Component Header responsive (Logo, Menu danh mục động, Ô tìm kiếm, Nút đăng nhập/tài khoản)
 - [x] Tích hợp API `GET /api/v1/categories/tree` render menu danh mục đa cấp
-- [ ] Xây dựng Component ô tìm kiếm nhanh với Debounce gọi API `GET /api/v1/search/suggestions` (Type-ahead)
+- [x] Xây dựng Component ô tìm kiếm nhanh với Debounce gọi API `GET /api/v1/search/suggestions` (Type-ahead)
 - [x] Xây dựng Component Footer thông tin liên hệ và chính sách
 
 ### Phase 2 — Danh sách & Chi tiết Sản phẩm Tôn sóng
@@ -258,24 +363,24 @@ _Nothing._
   - [x] Frontend Vanilla JS: Chống XSS triệt để, không lưu token vào `localStorage`/`sessionStorage`, trình duyệt tự động gửi cookie qua `credentials: 'include'` khi chuyển trang
 - [x] Lưu trạng thái đăng nhập, cập nhật Header hiển thị tên, avatar, role và menu Dropdown (Đơn hàng, Thông tin, Đăng xuất)
 - [x] Tối ưu hóa UI Header cho Khách hàng: Thêm mục "Đơn hàng" trên menu điều hướng, thay icon kính lúp thành chuông thông báo (kèm badge), thay nút Đăng nhập bằng Avatar (`avatar-empty.jpg`) và dropdown menu
-- [ ] Trang thông tin tài khoản (`pages/customer/profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
-- [ ] Quản lý sổ địa chỉ giao hàng (`GET/POST/PATCH/DELETE /api/v1/me/addresses`)
+- [x] Trang thông tin tài khoản (`pages/customer/profile.html`): xem thông tin `GET /api/v1/me`, đổi tên, đổi SĐT qua xác thực OTP
+- [x] Quản lý sổ địa chỉ giao hàng (`GET/POST/PATCH/DELETE /api/v1/me/addresses`)
 
 ### Phase 4 — Quy trình Đặt hàng Tôn sóng & Xác thực OTP
-- [ ] Trang đặt hàng (`pages/customer/order.html`):
-  - [ ] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền `UnitPrice × Size × Quantity`
-  - [ ] Tóm tắt sản phẩm tôn đã chọn (chiều dài, số lượng, màu sắc, đơn giá snapshot)
-  - [ ] Chọn địa chỉ giao hàng từ sổ địa chỉ hoặc nhập thông tin người nhận mới
-  - [ ] Modal xác thực OTP số điện thoại: đếm ngược 60s, nhập 6 số gửi `POST /api/v1/orders/otp/verify`
-  - [ ] Gửi đơn hàng `POST /api/v1/orders` (trạng thái khởi tạo `PENDING`)
-  - [ ] Trang thông báo đặt hàng thành công
+- [x] Trang đặt hàng (`pages/customer/order.html`):
+  - [x] Form nhập chiều dài (mét) và số lượng (tấm) kèm tự động tính nhẩm thành tiền `UnitPrice × Size × Quantity`
+  - [x] Tóm tắt sản phẩm tôn đã chọn (chiều dài, số lượng, màu sắc, đơn giá snapshot)
+  - [x] Chọn địa chỉ giao hàng từ sổ địa chỉ hoặc nhập thông tin người nhận mới
+  - [x] Modal xác thực OTP số điện thoại: đếm ngược 60s, nhập 6 số gửi `POST /api/v1/orders/otp/verify`
+  - [x] Gửi đơn hàng `POST /api/v1/orders` (trạng thái khởi tạo `PENDING`)
+  - [x] Trang thông báo đặt hàng thành công
 
 ### Phase 5 — Theo dõi Đơn hàng & Quản lý Trạng thái Khách hàng
-- [ ] Trang danh sách đơn hàng của tôi (`pages/customer/my-orders.html`):
-  - [ ] Lọc theo trạng thái (`PENDING`, `CONFIRMED`, `PROCESSING`, `SHIPPING`, `COMPLETED`, `CANCELLED`)
-  - [ ] Xem chi tiết đơn hàng: trạng thái, tổng tiền khi Quản lý đã tính giá
-  - [ ] Hủy đơn hàng trong cửa sổ cho phép (`POST /api/v1/orders/{orderId}/cancel`)
-  - [ ] Hoàn tác hủy đơn hàng (`POST /api/v1/orders/{orderId}/undo-cancel`) trong vòng 60 phút
+- [x] Trang danh sách đơn hàng của tôi (`pages/customer/my-orders.html`):
+  - [x] Lọc theo trạng thái (`PENDING`, `CONFIRMED`, `PROCESSING`, `SHIPPING`, `COMPLETED`, `CANCELLED`)
+  - [x] Xem chi tiết đơn hàng: trạng thái, tổng tiền khi Quản lý đã tính giá
+  - [x] Hủy đơn hàng trong cửa sổ cho phép (`POST /api/v1/orders/{orderId}/cancel`)
+  - [x] Hoàn tác hủy đơn hàng (`POST /api/v1/orders/{orderId}/undo-cancel`) trong vòng 60 phút
 - [x] Component chuông thông báo đơn hàng (`GET /api/v1/notifications/unread-count`, badge trên Header và Dashboard)
 
 ### Phase 6 — Cổng Quản lý / Quản trị viên (Manager & Admin Portal)

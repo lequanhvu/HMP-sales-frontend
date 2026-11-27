@@ -3,43 +3,12 @@
  * Tuân thủ chuẩn BEM, CSS Variables, Mobile-First
  */
 
-/* 1. Breadcrumb điều hướng */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  padding: 1rem 0;
-  font-size: 0.875rem;
-  color: var(--color-text-muted);
-}
-
-.breadcrumb__link {
-  color: var(--color-text-muted);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-}
-
-.breadcrumb__link:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
+/* 1. Breadcrumb điều hướng (Xem cấu hình dùng chung tại assets/css/components/breadcrumb.css) */
 .breadcrumb__link--ellipsis {
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--color-text-muted);
   padding: 0 4px;
-}
-
-.breadcrumb__separator {
-  color: #94a3b8;
-  font-size: 0.75rem;
-}
-
-.breadcrumb__current {
-  color: var(--color-text-main);
-  font-weight: 500;
 }
 
 /* 2. Khung Bố Cục Chi Tiết Sản Phẩm */

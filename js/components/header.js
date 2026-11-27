@@ -104,6 +104,11 @@ export function initHeader() {
       // Nạp số lượng thông báo chưa đọc từ backend
       fetchUnreadNotifications(notificationBadge);
 
+      // Lắng nghe sự kiện đồng bộ thông báo từ trang notifications
+      window.addEventListener('hmp:notifications-updated', () => {
+        fetchUnreadNotifications(notificationBadge);
+      });
+
       // Nạp số lượng món trong giỏ hàng
       fetchCartCount(cartBadge);
 
@@ -270,7 +275,12 @@ async function fetchUnreadNotifications(badgeEl) {
   if (!badgeEl) return;
   try {
     const res = await client.get('/notifications/unread-count');
-    const count = (res && typeof res.unreadCount === 'number') ? res.unreadCount : (res && res.data && res.data.unreadCount) || 1;
+    const count = (res && typeof res.unreadCount === 'number')
+      ? res.unreadCount
+      : (res && res.data && typeof res.data.unreadCount === 'number')
+        ? res.data.unreadCount
+        : 0;
+
     if (count > 0) {
       badgeEl.textContent = count > 99 ? '99+' : String(count);
       badgeEl.classList.remove('hidden');
@@ -278,9 +288,7 @@ async function fetchUnreadNotifications(badgeEl) {
       badgeEl.classList.add('hidden');
     }
   } catch {
-    // Nếu chưa có thông báo hoặc offline, hiển thị chấm đỏ 1 thông báo chào mừng
-    badgeEl.textContent = '1';
-    badgeEl.classList.remove('hidden');
+    badgeEl.classList.add('hidden');
   }
 }
 

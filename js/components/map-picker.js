@@ -190,6 +190,9 @@ export class MapPicker {
       });
     } else {
       this.deliveryMarker.setLatLng([lat, lng]);
+      if (!this.map.hasLayer(this.deliveryMarker)) {
+        this.deliveryMarker.addTo(this.map);
+      }
     }
   }
 
@@ -217,7 +220,12 @@ export class MapPicker {
     this.selectedLng = lng;
 
     if (this.map) {
-      this.map.setView([lat, lng], zoom, { animate: true });
+      try {
+        this.map.invalidateSize();
+        this.map.setView([lat, lng], zoom, { animate: false });
+      } catch (e) {
+        console.warn('[MapPicker] Lỗi khi setView:', e);
+      }
     }
 
     this.createOrUpdateDeliveryMarker(lat, lng);

@@ -91,14 +91,46 @@ function highlightActiveNav(headerEl) {
     link.classList.remove('nav__link--active', 'mobile-nav__link--active');
   });
 
+  const cartBtn = headerEl.querySelector('#header-cart-btn');
+  if (cartBtn) {
+    cartBtn.classList.remove('header__cart-btn--active');
+  }
+
+  const notifBtn = headerEl.querySelector('#header-notification-btn');
+  if (notifBtn) {
+    notifBtn.classList.remove('header__notification-btn--active');
+  }
+
   let activeNavKey = 'home';
 
-  if (path.includes('catalog.html') || path.includes('detail.html') || path.includes('/product/')) {
+  if (path.includes('cart.html') || path.includes('/customer/cart')) {
+    activeNavKey = 'cart';
+    if (cartBtn) {
+      cartBtn.classList.add('header__cart-btn--active');
+    }
+    const targetMobileCart = headerEl.querySelector('.mobile-nav__link[data-link="cart"]');
+    if (targetMobileCart) {
+      targetMobileCart.classList.add('mobile-nav__link--active');
+    }
+    return;
+  } else if (path.includes('notifications.html') || path.includes('/customer/notifications')) {
+    activeNavKey = 'notifications';
+    if (notifBtn) {
+      notifBtn.classList.add('header__notification-btn--active');
+    }
+    const targetMobileNotif = headerEl.querySelector('.mobile-nav__link[data-link="notifications"]');
+    if (targetMobileNotif) {
+      targetMobileNotif.classList.add('mobile-nav__link--active');
+    }
+    return;
+  } else if (path.includes('catalog.html') || path.includes('detail.html') || path.includes('/product/')) {
     activeNavKey = 'product';
   } else if (path.includes('/introduction/') || path.includes('introduction.html') || hash === '#about-section') {
     activeNavKey = 'about';
   } else if (path.includes('/contact/') || path.includes('contact.html') || hash === '#contact-section') {
     activeNavKey = 'contact';
+  } else if (path.includes('my-orders') || path.includes('order-detail')) {
+    activeNavKey = 'orders';
   } else if (path.endsWith('index.html') || path.endsWith('/') || path.endsWith('/sales-frontend')) {
     activeNavKey = 'home';
   }

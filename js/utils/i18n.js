@@ -239,11 +239,10 @@ export function translateField(fieldName, domain = 'common', fallback = null) {
  * Trạng thái đơn hàng (OrderStatus)
  */
 export const ORDER_STATUS_MAP = {
-  PENDING: 'Chờ xử lý',
-  WAITING_FOR_CUSTOMER_CONFIRMATION: 'Chờ khách xác nhận',
+  PENDING: 'Chờ xác nhận',
   CONFIRMED: 'Đã xác nhận',
-  PROCESSING: 'Đang gia công sản xuất',
-  SHIPPING: 'Đang vận chuyển',
+  PROCESSING: 'Đang xử lý',
+  SHIPPING: 'Đang giao',
   COMPLETED: 'Hoàn thành',
   CANCELLED: 'Đã hủy'
 };

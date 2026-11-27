@@ -2,48 +2,12 @@
    order.css — Giao diện Trang Đặt Hàng Chuẩn Mẫu (Checkout Order Page)
    ========================================================================== */
 
-/* 0. Breadcrumb điều hướng */
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  flex-wrap: nowrap;
-  gap: var(--spacing-2);
-  padding: var(--spacing-4) 0;
-  font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  overflow: hidden;
-  white-space: nowrap;
-}
-
-.breadcrumb__link {
-  color: var(--color-text-muted);
-  text-decoration: none;
-  transition: color var(--transition-fast);
-  white-space: nowrap;
-}
-
-.breadcrumb__link:hover {
-  color: var(--color-primary);
-  text-decoration: underline;
-}
-
+/* 0. Breadcrumb điều hướng (Xem cấu hình dùng chung tại assets/css/components/breadcrumb.css) */
 .breadcrumb__link--ellipsis {
   font-weight: 700;
   letter-spacing: 2px;
   color: var(--color-text-muted);
   padding: 0 4px;
-}
-
-.breadcrumb__separator {
-  color: var(--color-text-light);
-  font-size: var(--font-size-xs);
-  user-select: none;
-}
-
-.breadcrumb__current {
-  color: var(--color-text);
-  font-weight: 600;
-  white-space: nowrap;
 }
 
 /* 1. Khung Trạng thái Empty */

@@ -35,33 +35,49 @@ export const deliveryApi = {
   },
 
   /**
-   * Gọi API ArcGIS World Geocoder công khai
+   * Gọi API ArcGIS World Geocoder công khai với AbortController chống treo mạng
    * @private
    */
   async _fetchArcGisCandidates(searchQuery) {
-    const url = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&singleLine=${encodeURIComponent(searchQuery)}&countryCode=VNM&maxLocations=5`;
-    const res = await fetch(url);
-    if (!res.ok) return [];
-    const data = await res.json();
-    if (!data || !Array.isArray(data.candidates)) return [];
-    return data.candidates.map(c => ({
-      address: c.address,
-      lat: c.location.y,
-      lng: c.location.x,
-      score: c.score
-    }));
+    if (!searchQuery || searchQuery.trim().length < 2) return [];
+    const clean = searchQuery.trim();
+    const url = `https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates?f=json&singleLine=${encodeURIComponent(clean)}&countryCode=VNM&maxLocations=5`;
+    
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 6000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!res.ok) return [];
+      const data = await res.json();
+      if (!data || !Array.isArray(data.candidates)) return [];
+      return data.candidates
+        .filter(c => c && c.location && typeof c.location.y === 'number' && typeof c.location.x === 'number')
+        .sort((a, b) => (b.score || 0) - (a.score || 0))
+        .map(c => ({
+          address: c.address,
+          lat: c.location.y,
+          lng: c.location.x,
+          score: c.score
+        }));
+    } catch (err) {
+      console.warn('[DeliveryAPI] _fetchArcGisCandidates failed:', err.message);
+      return [];
+    }
   },
 
   /**
    * Tìm kiếm tọa độ từ địa chỉ người dùng nhập với cơ chế Dự phòng Đa tầng Thông minh (Smart Multi-tier Fallback)
    * 1. Hỗ trợ nhận diện trực tiếp cặp tọa độ GPS (Copy từ Google Maps: "20.53916, 106.51688").
    * 2. Tìm kiếm nguyên văn chuỗi người dùng nhập qua ArcGIS Geocoder.
-   * 3. Tự động bóc tách các mốc nhỏ (cầu, thôn, xóm, số nhà) để định vị chính xác về Phường/Xã hoặc Quận/Huyện kèm chỉ dẫn kéo ghim.
+   * 3. Tự động bóc tách từ khóa hành chính hoặc dấu phẩy khi người dùng gõ không có dấu phân cách.
+   * 4. Bóc tách bỏ mốc nhỏ (thôn, xóm, số nhà, ngõ) để định vị chính xác về Phường/Xã hoặc Quận/Huyện.
    * @param {string} query - Chuỗi địa chỉ người dùng nhập
    * @returns {Promise<Array<{address: string, lat: number, lng: number, score: number, isFallback?: boolean, landmarkHint?: string}>>}
    */
   async geocodeAddress(query) {
-    if (!query || query.trim().length < 3) return [];
+    if (!query || query.trim().length < 2) return [];
     const cleanQuery = query.trim();
 
     // 1. Kiểm tra nếu người dùng dán trực tiếp Tọa độ GPS (ví dụ lấy từ Google Maps: 20.53916, 106.51688 hoặc URL @20.53916,106.51688)
@@ -81,13 +97,23 @@ export const deliveryApi = {
     }
 
     try {
-      const parts = cleanQuery.split(/[,;-]/).map(p => p.trim()).filter(Boolean);
+      let parts = cleanQuery.split(/[,;-]/).map(p => p.trim()).filter(Boolean);
+      // Tách tự động theo từ khóa hành chính nếu người dùng gõ không có dấu phẩy
+      if (parts.length <= 1) {
+        const autoSplit = cleanQuery
+          .split(/(?=\b(?:xã|phường|thị trấn|quận|huyện|thị xã|tp\.|thành phố|tỉnh)\s+)/i)
+          .map(p => p.trim())
+          .filter(Boolean);
+        if (autoSplit.length > 1) {
+          parts = autoSplit;
+        }
+      }
+
       const detailPart = parts.length > 1 ? parts[0] : '';
 
       // Tầng 1: Tìm kiếm nguyên văn đầy đủ
       const directCandidates = await this._fetchArcGisCandidates(cleanQuery);
-      if (directCandidates.length > 0 && directCandidates[0].score >= 70) {
-        // Kiểm tra xem kết quả có phải là cấp xã/huyện thay vì mốc cụ thể hay không
+      if (directCandidates.length > 0 && directCandidates[0].score >= 65) {
         const best = directCandidates[0];
         const isBroaderArea = detailPart && !best.address.toLowerCase().includes(detailPart.toLowerCase());
         return directCandidates.map(c => ({
@@ -97,14 +123,14 @@ export const deliveryApi = {
         }));
       }
 
-      // Tầng 2: Nếu có dấu phẩy ngăn cách (ví dụ: "cầu hoàng nguyên, Xã Sơn Hà, Huyện Thái Thụy, Tỉnh Thái Bình")
+      // Tầng 2: Nếu có >= 2 vế (dấu phẩy hoặc tách từ khóa hành chính)
       // Tự động bóc tách bỏ mốc nhỏ đầu tiên (cầu/ngõ/thôn/số nhà) để tìm theo cấp xã/huyện/tỉnh
       if (parts.length >= 2) {
         const landmarkPart = parts[0];
         const broaderQuery = parts.slice(1).join(', ');
 
         const broaderCandidates = await this._fetchArcGisCandidates(broaderQuery);
-        if (broaderCandidates.length > 0) {
+        if (broaderCandidates.length > 0 && broaderCandidates[0].score >= 50) {
           return broaderCandidates.map(c => ({
             ...c,
             isFallback: true,
@@ -116,7 +142,7 @@ export const deliveryApi = {
         if (parts.length >= 3) {
           const districtProvinceQuery = parts.slice(2).join(', ');
           const districtCandidates = await this._fetchArcGisCandidates(districtProvinceQuery);
-          if (districtCandidates.length > 0) {
+          if (districtCandidates.length > 0 && districtCandidates[0].score >= 50) {
             return districtCandidates.map(c => ({
               ...c,
               isFallback: true,
@@ -126,7 +152,7 @@ export const deliveryApi = {
         }
       }
 
-      // Trả về kết quả trực tiếp nếu có (dù điểm thấp) hoặc rỗng
+      // Trả về kết quả trực tiếp nếu có hoặc rỗng
       return directCandidates;
     } catch (err) {
       console.warn('[DeliveryAPI] Lỗi khi định vị địa chỉ:', err);

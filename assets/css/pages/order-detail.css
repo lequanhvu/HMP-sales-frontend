@@ -1,0 +1,754 @@
+/* ==========================================================================
+   order-detail.css — Giao diện Chi tiết Đơn hàng Chuẩn Mẫu Thiết Kế
+   Thiết kế trung thực theo mẫu: Stepper tiến trình, 2 thẻ thông tin, bảng sản phẩm
+   ========================================================================== */
+
+.order-detail-page {
+  background-color: #f4f7fb;
+  min-height: calc(100vh - 80px);
+  padding: 1.5rem 0 3.5rem;
+}
+
+.order-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* 1. Tiêu Đề Trang */
+.page-header-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0b3b8c;
+  margin: 0;
+}
+
+.page-header-title svg {
+  color: #0066cc;
+}
+
+/* 2. Thẻ Khung Trắng Dùng Chung (Card) */
+.detail-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+@media (min-width: 768px) {
+  .detail-card {
+    padding: 1.75rem 2rem;
+  }
+}
+
+/* 3. Thẻ Tóm Tắt 3 Cột (Top Summary) */
+.top-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .top-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.top-summary-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.top-summary-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background-color: #f0f7ff;
+  color: #0066cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.top-summary-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.top-summary-label {
+  font-size: 0.825rem;
+  color: #64748b;
+}
+
+.top-summary-val {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.top-summary-val--status {
+  color: #0066cc;
+}
+
+/* 4. Thanh Tiến Trình Đơn Hàng (Horizontal Stepper) */
+.stepper-card {
+  padding: 2rem 1.5rem;
+}
+
+.stepper-bar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+  max-width: 860px;
+  margin: 0 auto;
+}
+
+/* Đường line ngang */
+.stepper-bar::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  right: 40px;
+  height: 3px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.stepper-bar-fill {
+  position: absolute;
+  top: 20px;
+  left: 40px;
+  height: 3px;
+  background-color: #0066cc;
+  z-index: 2;
+  transition: width 0.4s ease;
+  width: 0%;
+}
+
+.step-node {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 110px;
+}
+
+.step-circle {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: 3px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 1rem;
+  font-weight: 700;
+  transition: all 0.3s ease;
+  margin-bottom: 0.65rem;
+}
+
+/* Trạng thái bước Đã hoàn thành (Done) */
+.step-node--completed .step-circle {
+  background-color: #0066cc;
+  border-color: #0066cc;
+  color: #ffffff;
+}
+
+/* Trạng thái bước Hiện tại (Active) */
+.step-node--active .step-circle {
+  border-color: #0066cc;
+  background-color: #ffffff;
+  color: #0066cc;
+  box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.2);
+}
+
+.step-node--active .step-circle::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: #0066cc;
+}
+
+.step-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+}
+
+.step-node--active .step-title,
+.step-node--completed .step-title {
+  color: #0f172a;
+}
+
+.step-time {
+  font-size: 0.775rem;
+  color: #94a3b8;
+}
+
+/* 5. Hai Cột Thông Tin Giao Nhận & Thanh Toán */
+.info-columns-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .info-columns-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.card-section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0066cc;
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.card-section-title svg {
+  color: #0066cc;
+}
+
+.info-content-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-person-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.info-phone-number {
+  font-size: 0.925rem;
+  color: #64748b;
+}
+
+.info-address-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  font-size: 0.925rem;
+  color: #334155;
+  line-height: 1.45;
+  margin-top: 0.35rem;
+}
+
+.info-address-row svg {
+  color: #0066cc;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.payment-method-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.shipping-method-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.35rem;
+}
+
+.info-address-row--note {
+  margin-top: 0.5rem;
+}
+
+.order-note-text {
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.order-note-val {
+  color: #0f172a;
+}
+
+.col-qty {
+  width: 100px;
+}
+
+.top-summary-label--discount {
+  color: #15803d;
+  font-weight: 600;
+}
+
+/* 6. Bảng Danh Sách Sản Phẩm */
+.products-table-wrap {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.925rem;
+  text-align: left;
+}
+
+.products-table th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.products-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.product-thumb-img {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  object-fit: cover;
+  background-color: #f8fafc;
+  display: block;
+}
+
+.product-name-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+/* DÒNG CHỮ XÁM MÔ TẢ YÊU CẦU / QUY CÁCH (ĐẶC BIỆT THEO YÊU CẦU USER) */
+.product-specs-gray {
+  color: #64748b;
+  font-size: 0.825rem;
+  margin-top: 0.35rem;
+  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.product-specs-gray__req {
+  color: #475569;
+  font-style: normal;
+  background-color: #f8fafc;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border-left: 3px solid #cbd5e1;
+  width: fit-content;
+  margin-top: 0.25rem;
+}
+
+.col-stt {
+  width: 50px;
+  text-align: center;
+  color: #64748b;
+}
+
+.col-thumb {
+  width: 72px;
+}
+
+.col-price,
+.col-total {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.col-total {
+  color: #0066cc;
+}
+
+/* 7. Khung Tổng Tiền & Nút Thao Tác Chân Trang */
+.bottom-summary-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  padding: 1.5rem 2rem;
+}
+
+.total-amount-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.total-amount-label {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.total-amount-value {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #0066cc;
+  letter-spacing: -0.02em;
+}
+
+.total-amount-pending {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #b45309;
+  font-style: italic;
+}
+
+.bottom-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  background-color: #ffffff;
+  color: #334155;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-print:hover {
+  background-color: #f8fafc;
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+.btn-back-orders {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.45rem;
+  border-radius: 10px;
+  background-color: var(--color-primary, #1351b4);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.925rem;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  transition: all 0.18s ease;
+}
+
+.btn-back-orders:hover {
+  background-color: var(--color-primary-hover, #0c3e8e);
+  color: #ffffff;
+}
+
+/* Nút Hủy Đơn & Hoàn Tác Hủy trên Chi Tiết Đơn Hàng */
+.btn-cancel-order {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  background-color: #ffffff;
+  color: #dc2626;
+  border: 1.5px solid #fca5a5;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-cancel-order:hover {
+  background-color: #fef2f2;
+  border-color: #dc2626;
+  color: #b91c1c;
+}
+
+.btn-undo-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 10px;
+  background-color: #ecfdf5;
+  color: #059669;
+  border: 1.5px solid #a7f3d0;
+  font-weight: 600;
+  font-size: 0.925rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-undo-cancel:hover {
+  background-color: #10b981;
+  border-color: #10b981;
+  color: #ffffff;
+}
+
+.detail-undo-hint {
+  font-size: 0.85rem;
+  color: #b91c1c;
+  font-weight: 500;
+  align-self: center;
+  margin-right: 0.5rem;
+}
+
+/* Modal Hủy Đơn trên trang Chi tiết */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.25s ease;
+}
+
+.modal-overlay--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal-dialog {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 480px;
+  overflow: hidden;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay--open .modal-dialog {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  color: #0f172a;
+  background-color: #f1f5f9;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.otp-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.75rem;
+}
+
+.otp-icon-wrap--danger {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #fee2e2;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.otp-desc {
+  font-size: 0.95rem;
+  color: #334155;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.otp-desc__warning {
+  color: #b91c1c;
+  display: inline-block;
+  margin-top: 0.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  text-align: left;
+}
+
+.form-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #334155;
+  margin: 0;
+}
+
+.select-custom {
+  width: 100%;
+  padding: 0.8rem 2.5rem 0.8rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  line-height: 1.45;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.select-custom:hover {
+  border-color: #94a3b8;
+}
+
+.select-custom:focus {
+  outline: none;
+  border-color: #1351b4;
+  box-shadow: 0 0 0 3.5px rgba(19, 81, 180, 0.14);
+}
+
+.form-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 12px;
+  background-color: #ffffff;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: #1e293b;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #1351b4;
+  box-shadow: 0 0 0 3.5px rgba(19, 81, 180, 0.14);
+}
+
+.modal-footer--clean {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.btn--danger {
+  background-color: #dc2626;
+  border: 1px solid #dc2626;
+  color: #ffffff;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn--danger:hover {
+  background-color: #b91c1c;
+  border-color: #b91c1c;
+}
+
+.btn--outline {
+  background-color: transparent;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.65rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn--outline:hover {
+  background-color: #f1f5f9;
+}
+
+/* 8. Phong cách In Ấn Chuẩn Hóa (@media print) */
+@media print {
+  body {
+    background-color: #ffffff !important;
+  }
+  #site-header,
+  #site-footer,
+  .breadcrumb,
+  .bottom-actions-group {
+    display: none !important;
+  }
+  .order-detail-page {
+    padding: 0 !important;
+    background: transparent !important;
+  }
+  .detail-card {
+    box-shadow: none !important;
+    border: 1px solid #000000 !important;
+    break-inside: avoid;
+    margin-bottom: 1rem;
+  }
+}

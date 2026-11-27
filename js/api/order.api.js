@@ -50,6 +50,15 @@ export const orderApi = {
   },
 
   /**
+   * Hoàn tác hủy đơn hàng trong vòng 60 phút
+   * @param {number|string} orderId
+   * @returns {Promise<Object>}
+   */
+  undoCancelOrder(orderId) {
+    return client.post(`/orders/${orderId}/undo-cancel`);
+  },
+
+  /**
    * Lấy danh sách sổ địa chỉ nhận hàng của khách hàng
    * @returns {Promise<Array>}
    */

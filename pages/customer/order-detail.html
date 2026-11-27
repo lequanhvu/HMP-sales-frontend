@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chi tiết đơn hàng tôn thép HMP, tiến độ gia công sản xuất và giao nhận hàng">
+  <title>Chi Tiết Đơn Hàng — HMP Tôn Thép</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+  <link rel="stylesheet" href="../../assets/css/components/breadcrumb.css">
+
+  <!-- CSS Riêng cho Trang Chi Tiết Đơn Hàng (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/order-detail.css?v=20261128_01">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH ==================== -->
+  <div id="site-header" data-component="header"></div>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="order-detail-page">
+    <div class="container order-detail-container">
+
+      <!-- Breadcrumb Điều hướng Chuẩn ảnh mẫu -->
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a href="../../index.html" class="breadcrumb__link">Trang chủ</a>
+        <span class="breadcrumb__separator">/</span>
+        <a href="./my-orders.html" class="breadcrumb__link">Đơn hàng của tôi</a>
+        <span class="breadcrumb__separator">/</span>
+        <span class="breadcrumb__current">Chi tiết đơn hàng</span>
+      </nav>
+
+      <!-- Tiêu đề trang -->
+      <h1 class="page-header-title">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
+        </svg>
+        <span>Chi tiết đơn hàng</span>
+      </h1>
+
+      <!-- 1. THẺ TỔNG QUAN 3 CỘT (MÃ ĐƠN, NGÀY ĐẶT, TRẠNG THÁI) -->
+      <section class="detail-card">
+        <div class="top-summary-grid">
+          <!-- Cột 1: Mã đơn -->
+          <div class="top-summary-item">
+            <div class="top-summary-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                <polyline points="21 15 16 10 5 21"></polyline>
+              </svg>
+            </div>
+            <div class="top-summary-text">
+              <span class="top-summary-label">Mã đơn hàng</span>
+              <span id="detail-order-code" class="top-summary-val">#---</span>
+            </div>
+          </div>
+
+          <!-- Cột 2: Ngày đặt hàng -->
+          <div class="top-summary-item">
+            <div class="top-summary-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+            </div>
+            <div class="top-summary-text">
+              <span class="top-summary-label">Ngày đặt hàng</span>
+              <span id="detail-order-date" class="top-summary-val">--/--/---- --:--</span>
+            </div>
+          </div>
+
+          <!-- Cột 3: Trạng thái -->
+          <div class="top-summary-item">
+            <div class="top-summary-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <div class="top-summary-text">
+              <span class="top-summary-label">Trạng thái</span>
+              <span id="detail-status-pill" class="top-summary-val top-summary-val--status">Đang tải...</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. THẺ TIẾN TRÌNH ĐƠN HÀNG (STEPPER PROGRESS BAR) -->
+      <section class="detail-card stepper-card">
+        <div class="stepper-bar">
+          <div id="stepper-fill" class="stepper-bar-fill"></div>
+
+          <!-- Bước 1: Đặt hàng -->
+          <div id="step-node-1" class="step-node step-node--completed">
+            <div class="step-circle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+            </div>
+            <span class="step-title">Đặt hàng</span>
+            <span id="step-time-1" class="step-time">--:--</span>
+          </div>
+
+          <!-- Bước 2: Đang xử lý / Đã chốt giá / Gia công -->
+          <div id="step-node-2" class="step-node">
+            <div class="step-circle"></div>
+            <span class="step-title">Đang xử lý</span>
+            <span id="step-time-2" class="step-time"></span>
+          </div>
+
+          <!-- Bước 3: Đang giao hàng -->
+          <div id="step-node-3" class="step-node">
+            <div class="step-circle"></div>
+            <span class="step-title">Đang giao</span>
+            <span id="step-time-3" class="step-time"></span>
+          </div>
+
+          <!-- Bước 4: Đã giao thành công -->
+          <div id="step-node-4" class="step-node">
+            <div class="step-circle"></div>
+            <span class="step-title">Đã giao</span>
+            <span id="step-time-4" class="step-time"></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. HAI THẺ THÔNG TIN: GIAO HÀNG & PHƯƠNG THỨC -->
+      <div class="info-columns-grid">
+        <!-- Cột Trái: Thông tin giao hàng -->
+        <article class="detail-card">
+          <h2 class="card-section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Thông tin giao hàng</span>
+          </h2>
+          <div class="info-content-box">
+            <span id="detail-receiver-name" class="info-person-name">Đang tải...</span>
+            <span id="detail-receiver-phone" class="info-phone-number">---</span>
+            <div class="info-address-row">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+              <span id="detail-receiver-address">Đang tải địa chỉ...</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Cột Phải: Phương thức thanh toán & vận chuyển -->
+        <article class="detail-card">
+          <h2 class="card-section-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+            <span>Phương thức thanh toán</span>
+          </h2>
+          <div class="info-content-box">
+            <span class="payment-method-text">Thanh toán khi nhận hàng (COD)</span>
+            <div class="shipping-method-row">
+              <span id="detail-delivery-pill" class="delivery-method-pill">Giao hàng tận nơi</span>
+              <span id="detail-delivery-dist" class="top-summary-label"></span>
+            </div>
+            <div id="detail-note-wrap" class="info-address-row info-address-row--note hidden">
+              <span class="order-note-text">Ghi chú của bạn: <strong id="detail-order-note" class="order-note-val"></strong></span>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <!-- 4. THẺ BẢNG DANH SÁCH SẢN PHẨM -->
+      <section class="detail-card">
+        <h2 class="card-section-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+          <span>Danh sách sản phẩm</span>
+        </h2>
+
+        <div class="products-table-wrap">
+          <table class="products-table">
+            <thead>
+              <tr>
+                <th class="col-stt">STT</th>
+                <th class="col-thumb">Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th class="col-price">Đơn giá</th>
+                <th class="col-qty">Số lượng</th>
+                <th class="col-total">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody id="detail-products-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 5. KHUNG TỔNG CỘNG & NÚT THAO TÁC -->
+      <section class="detail-card bottom-summary-card">
+        <div class="total-amount-box">
+          <span class="total-amount-label">Tổng cộng</span>
+          <span id="detail-total-amount" class="total-amount-value">---</span>
+          <span id="detail-discount-info" class="top-summary-label top-summary-label--discount hidden"></span>
+        </div>
+        <div class="bottom-actions-group">
+          <!-- Gợi ý thời hạn hoàn tác hủy -->
+          <span id="detail-undo-hint" class="detail-undo-hint hidden"></span>
+
+          <!-- Nút In Hóa Đơn -->
+          <button type="button" id="btn-print-invoice" class="btn-print">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"></polyline>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+              <rect x="6" y="14" width="12" height="8"></rect>
+            </svg>
+            <span>In hóa đơn</span>
+          </button>
+
+          <!-- Nút Hoàn tác hủy đơn (nếu đã hủy trong 60 phút) -->
+          <button type="button" id="btn-undo-cancel-detail" class="btn-undo-cancel hidden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polyline points="1 4 1 10 7 10"></polyline>
+              <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+            <span>Hoàn tác hủy</span>
+          </button>
+
+          <!-- Nút Hủy Đơn Hàng (nếu PENDING / CONFIRMED) -->
+          <button type="button" id="btn-cancel-detail-order" class="btn-cancel-order hidden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <span>Hủy đơn</span>
+          </button>
+
+          <!-- Nút Quay Lại -->
+          <a href="./my-orders.html" id="btn-back-orders" class="btn-back-orders">
+            Quay lại
+          </a>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER CHÍNH ==================== -->
+  <div id="site-footer" data-component="footer"></div>
+
+  <!-- ==================== MODAL HỦY ĐƠN HÀNG ==================== -->
+  <div id="cancel-detail-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-cancel-title">
+    <div class="modal-dialog modal-dialog--sm">
+      <div class="modal-header">
+        <h3 id="modal-cancel-title" class="modal-title">Hủy Đơn Hàng #---</h3>
+        <button type="button" id="btn-close-cancel-modal" class="modal-close-btn" aria-label="Đóng">&times;</button>
+      </div>
+
+      <form id="cancel-detail-order-form" class="modal-body" autocomplete="off">
+        <div class="otp-box">
+          <div class="otp-icon-wrap otp-icon-wrap--danger">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <p class="otp-desc">
+            Bạn có chắc chắn muốn hủy đơn hàng này không?
+            <br>
+            <strong class="otp-desc__warning">
+              * Lưu ý: Bạn có thể hoàn tác hủy trong vòng 60 phút sau khi hủy.
+            </strong>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="cancel-reason-select" class="form-label">Lý do hủy đơn</label>
+          <select id="cancel-reason-select" class="select-custom">
+            <option value="Tôi muốn thay đổi quy cách / kích thước tôn">Tôi muốn thay đổi quy cách / kích thước tôn</option>
+            <option value="Tôi muốn thay đổi địa chỉ giao hàng">Tôi muốn thay đổi địa chỉ giao hàng</option>
+            <option value="Tôi đặt nhầm sản phẩm / số lượng">Tôi đặt nhầm sản phẩm / số lượng</option>
+            <option value="Giá hoặc chi phí chưa phù hợp">Giá hoặc chi phí chưa phù hợp</option>
+            <option value="Khác">Lý do khác...</option>
+          </select>
+        </div>
+
+        <div id="cancel-custom-reason-wrap" class="form-group hidden">
+          <label for="cancel-custom-reason-input" class="form-label">Chi tiết lý do khác</label>
+          <input type="text" id="cancel-custom-reason-input" class="form-input" placeholder="Nhập lý do cụ thể..." maxlength="255">
+        </div>
+
+        <div class="modal-footer modal-footer--clean">
+          <button type="button" id="btn-cancel-modal-dismiss" class="btn btn--outline">Bỏ qua</button>
+          <button type="submit" id="btn-confirm-cancel-order" class="btn btn--danger">
+            Xác Nhận Hủy Đơn
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Template Dòng Sản Phẩm -->
+  <template id="order-product-row-template">
+    <tr>
+      <td class="col-stt row-stt">1</td>
+      <td class="col-thumb">
+        <img src="../../assets/images/empty-picture.png" alt="Sản phẩm" class="product-thumb-img row-thumb">
+      </td>
+      <td>
+        <div class="product-name-title row-name">Tên sản phẩm</div>
+        <!-- DÒNG CHỮ MÀU XÁM MÔ TẢ YÊU CẦU / QUY CÁCH (ĐẶC BIỆT THEO YÊU CẦU CỦA USER) -->
+        <div class="product-specs-gray row-specs"></div>
+      </td>
+      <td class="col-price row-unit-price">---</td>
+      <td class="row-quantity">---</td>
+      <td class="col-total row-total-price">---</td>
+    </tr>
+  </template>
+
+  <!-- Script Điều khiển Trang Chi Tiết Đơn Hàng -->
+  <script type="module" src="../../js/pages/order-detail.js?v=20261127_05"></script>
+</body>
+</html>

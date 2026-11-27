@@ -55,6 +55,12 @@
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
 }
 
+.confirm-modal__icon-wrap--primary {
+  background-color: #eaf1fc;
+  color: var(--color-primary, #1351b4);
+  box-shadow: 0 4px 12px rgba(19, 81, 180, 0.15);
+}
+
 .confirm-modal__title {
   font-size: 1.15rem;
   font-weight: 700;
@@ -111,4 +117,14 @@
 .confirm-modal__btn--confirm:hover {
   background-color: #b91c1c;
   box-shadow: 0 4px 12px rgba(220, 38, 38, 0.28);
+}
+
+.confirm-modal__btn--primary {
+  background-color: var(--color-primary, #1351b4);
+  color: #ffffff;
+}
+
+.confirm-modal__btn--primary:hover {
+  background-color: var(--color-primary-hover, #0c3e8e);
+  box-shadow: 0 4px 12px rgba(12, 62, 142, 0.35);
 }

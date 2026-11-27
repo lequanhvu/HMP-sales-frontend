@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Quản lý hồ sơ cá nhân và sổ địa chỉ giao nhận hàng tôn thép HMP">
+  <title>Thông Tin Cá Nhân &amp; Sổ Địa Chỉ — HMP Tôn Thép</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+  <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+
+  <!-- CSS Riêng cho Trang Hồ Sơ (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/profile.css?v=20261127_07">
+
+  <!-- Thư viện bản đồ Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH ==================== -->
+  <div id="site-header" data-component="header"></div>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="profile-page">
+    <div class="container profile-container">
+
+      <!-- Cột Trái: Sidebar Khách Hàng -->
+      <aside class="customer-sidebar">
+        <div class="customer-sidebar__user">
+          <div id="profile-sidebar-avatar" class="customer-sidebar__avatar">K</div>
+          <div class="customer-sidebar__info">
+            <h4 id="profile-sidebar-name" class="customer-sidebar__name">Đang tải...</h4>
+            <span id="profile-sidebar-phone" class="customer-sidebar__phone">Đang tải...</span>
+          </div>
+        </div>
+        <nav class="customer-sidebar__nav">
+          <a href="./profile.html" class="customer-sidebar__link customer-sidebar__link--active" data-customer-nav="profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Thông tin cá nhân</span>
+          </a>
+          <a href="./my-orders.html" class="customer-sidebar__link" data-customer-nav="orders">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Đơn hàng của tôi</span>
+          </a>
+          <a href="./notifications.html" class="customer-sidebar__link" data-customer-nav="notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Thông báo</span>
+          </a>
+          <button type="button" id="sidebar-logout-btn" class="customer-sidebar__logout-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Đăng xuất</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Cột Phải: Nội dung chi tiết hồ sơ & Sổ địa chỉ -->
+      <section class="profile-content">
+
+        <!-- THẺ 1: HỒ SƠ TÀI KHOẢN -->
+        <article class="profile-card">
+          <div class="profile-card__header">
+            <div class="profile-card__title-wrap">
+              <div class="profile-card__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </div>
+              <div>
+                <h2 class="profile-card__title">Hồ Sơ Của Tôi</h2>
+                <p class="profile-card__subtitle">Quản lý thông tin hồ sơ để bảo mật tài khoản và đặt hàng thuận tiện</p>
+              </div>
+            </div>
+          </div>
+
+          <form id="profile-form" class="profile-form" autocomplete="off">
+            <!-- Họ và tên -->
+            <div class="form-group">
+              <label for="profile-fullname" class="form-label">
+                Họ và tên <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="profile-fullname" class="form-input" placeholder="Nhập họ và tên đầy đủ" maxlength="100" required>
+            </div>
+
+            <!-- Email Google (Readonly) -->
+            <div class="form-group">
+              <label for="profile-email" class="form-label">Địa chỉ Email</label>
+              <div class="form-input-wrap">
+                <input type="email" id="profile-email" class="form-input form-input--readonly" readonly>
+              </div>
+              <span class="form-hint">
+                <span class="google-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                    <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.33 24 12 24z"/>
+                    <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                    <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.33 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                  </svg>
+                  Tài khoản đăng nhập liên kết Google
+                </span>
+              </span>
+            </div>
+
+            <!-- Số điện thoại & Trạng thái xác thực OTP -->
+            <div class="form-group">
+              <label class="form-label">Số điện thoại liên hệ</label>
+              <div class="phone-status-box">
+                <div class="phone-status-info">
+                  <span id="profile-phone-display" class="phone-number-text">Chưa liên kết số điện thoại</span>
+                  <span id="profile-phone-badge" class="badge-unverified">Chưa liên kết</span>
+                </div>
+                <button type="button" id="btn-open-phone-modal" class="btn-change-phone">
+                  Đổi số điện thoại
+                </button>
+              </div>
+              <span class="form-hint">Số điện thoại dùng để nhận mã xác thực đơn hàng tôn và điều phối xe giao hàng.</span>
+            </div>
+
+            <!-- Nút Lưu Hồ Sơ -->
+            <div>
+              <button type="submit" id="btn-save-profile" class="btn btn--primary">
+                Lưu Thay Đổi
+              </button>
+            </div>
+          </form>
+        </article>
+
+        <!-- THẺ 2: SỔ ĐỊA CHỈ NHẬN HÀNG -->
+        <article class="profile-card">
+          <div class="profile-card__header">
+            <div class="profile-card__title-wrap">
+              <div class="profile-card__icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+              </div>
+              <div>
+                <h2 class="profile-card__title">Sổ Địa Chỉ Giao Hàng</h2>
+                <p class="profile-card__subtitle">Quản lý các địa chỉ nhận tôn lợp mái, công trình hoặc xưởng thi công</p>
+              </div>
+            </div>
+            <button type="button" id="btn-open-add-address" class="btn btn--primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <span>Thêm Địa Chỉ Mới</span>
+            </button>
+          </div>
+
+          <!-- Danh sách địa chỉ đã lưu -->
+          <div id="address-list" class="address-list"></div>
+
+          <!-- Khung trống khi chưa có địa chỉ -->
+          <div id="address-empty" class="empty-box hidden">
+            <div class="empty-box__icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+              </svg>
+            </div>
+            <h3 class="empty-box__title">Bạn chưa có địa chỉ nhận hàng nào</h3>
+            <p class="empty-box__desc">Thêm địa chỉ giao hàng để đặt tôn nhanh chóng và tự động kiểm tra bán kính giao tận công trình.</p>
+            <button type="button" id="btn-empty-add-address" class="btn btn--primary">
+              Thêm Địa Chỉ Đầu Tiên
+            </button>
+          </div>
+        </article>
+
+      </section>
+    </div>
+  </main>
+
+  <!-- ==================== MODAL XÁC THỰC SỐ ĐIỆN THOẠI (OTP) ==================== -->
+  <div id="otp-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="otp-modal-title">
+    <div class="modal-dialog modal-dialog--sm">
+      <div class="modal-header">
+        <h3 id="otp-modal-title" class="modal-title">Liên Kết Số Điện Thoại</h3>
+        <button type="button" id="btn-close-otp-modal" class="modal-close-btn" aria-label="Đóng">&times;</button>
+      </div>
+
+      <!-- BƯỚC 1: NHẬP SỐ ĐIỆN THOẠI -->
+      <form id="otp-step-phone-form" class="modal-body" autocomplete="off">
+        <div class="otp-box">
+          <div class="otp-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+            </svg>
+          </div>
+          <p class="otp-desc">Nhập số điện thoại của bạn để nhận mã xác thực OTP qua tin nhắn viễn thông.</p>
+        </div>
+        <div class="form-group">
+          <label for="otp-input-phone" class="form-label">Số điện thoại di động</label>
+          <input type="tel" id="otp-input-phone" class="form-input" placeholder="Ví dụ: 0987654321" maxlength="11" required>
+        </div>
+        <button type="submit" id="btn-send-otp" class="btn btn--primary">
+          Gửi Mã Xác Thực OTP
+        </button>
+      </form>
+
+      <!-- BƯỚC 2: NHẬP MÃ OTP 6 CHỮ SỐ -->
+      <form id="otp-step-verify-form" class="modal-body hidden" autocomplete="off">
+        <div class="otp-box">
+          <div class="otp-icon-wrap">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <p class="otp-desc">Mã OTP đã được gửi đến <span id="otp-target-phone" class="otp-phone-highlight">098***</span></p>
+        </div>
+        <div class="form-group">
+          <label for="otp-code-input" class="form-label">Nhập mã OTP 6 chữ số</label>
+          <input type="text" id="otp-code-input" class="form-input" placeholder="Nhập 6 số" maxlength="6" pattern="[0-9]{6}" required style="text-align: center; font-size: 1.4rem; letter-spacing: 0.35rem; font-weight: 700;">
+        </div>
+        <div class="map-tools-row">
+          <span class="otp-timer-text">Gửi lại mã sau: <span id="otp-countdown" class="otp-timer-count">60s</span></span>
+          <button type="button" id="btn-resend-otp" class="otp-resend-btn" disabled>Gửi lại mã</button>
+        </div>
+        <button type="submit" id="btn-verify-otp" class="btn btn--primary">
+          Xác Nhận &amp; Liên Kết
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== MODAL THÊM / CHỈNH SỬA ĐỊA CHỈ ==================== -->
+  <div id="address-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="address-modal-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="address-modal-title" class="modal-title">Thêm Địa Chỉ Nhận Hàng Mới</h3>
+        <button type="button" id="btn-close-address-modal" class="modal-close-btn" aria-label="Đóng">&times;</button>
+      </div>
+
+      <form id="address-modal-form" class="modal-body" autocomplete="off">
+        <input type="hidden" id="modal-address-id" value="">
+
+        <!-- Lưới 3 Hộp Chọn Địa Giới Hành Chính -->
+        <div class="form-group">
+          <label class="form-label">Khu vực địa giới hành chính <span class="text-danger">*</span></label>
+          <div class="address-division-grid">
+            <select id="modal-select-province" class="select-custom" required>
+              <option value="">-- Chọn Tỉnh / TP --</option>
+            </select>
+            <select id="modal-select-district" class="select-custom" required disabled>
+              <option value="">-- Chọn Quận / Huyện --</option>
+            </select>
+            <select id="modal-select-ward" class="select-custom" required disabled>
+              <option value="">-- Chọn Phường / Xã --</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Ô nhập địa chỉ cụ thể -->
+        <div class="form-group">
+          <label for="modal-input-address" class="form-label">
+            Địa chỉ nhận hàng cụ thể <span class="text-danger">*</span>
+          </label>
+          <input type="text" id="modal-input-address" class="form-input" placeholder="Ví dụ: Số 123 đường Giải Phóng, Thôn Thượng..." maxlength="500" required>
+          <span class="form-hint">Nhập số nhà, tên đường, thôn/xóm để hệ thống tự động tìm và ghim tọa độ.</span>
+        </div>
+
+        <!-- Ghim Vị Trí Bản Đồ Không Watermark (Esri / CartoDB) -->
+        <div class="form-group">
+          <div class="map-tools-row">
+            <label class="form-label">Ghim vị trí công trình / nhận tôn</label>
+            <button type="button" id="modal-btn-gps" class="btn-gps-locate">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 2v3m0 14v3M2 12h3m14 0h3"></path>
+              </svg>
+              <span>Vị trí của tôi</span>
+            </button>
+          </div>
+          <div class="modal-map-wrap">
+            <div id="modal-map-container" class="modal-map-container"></div>
+          </div>
+          <div class="map-tools-row">
+            <span id="modal-geocode-status" class="address-item__coords">Kéo thả ghim đỏ để định vị chính xác</span>
+            <span id="modal-coords-display" class="form-hint">Chưa có tọa độ GPS</span>
+          </div>
+        </div>
+
+        <!-- Checkbox Đặt làm mặc định -->
+        <div class="form-group">
+          <label class="form-label" style="cursor: pointer; display: flex; align-items: center; gap: 0.5rem; font-weight: normal;">
+            <input type="checkbox" id="modal-checkbox-default">
+            <span>Đặt làm địa chỉ nhận hàng mặc định</span>
+          </label>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" id="btn-cancel-address-modal" class="btn btn--outline">Hủy Bỏ</button>
+          <button type="submit" id="btn-save-address-modal" class="btn btn--primary">Lưu Địa Chỉ</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TEMPLATES HIỂN THỊ ĐỘNG ==================== -->
+  <template id="address-card-template">
+    <div class="address-item-card">
+      <div class="address-item__header">
+        <div class="address-item__main">
+          <div class="address-item__title-row">
+            <h4 class="address-item__name">Địa chỉ nhận hàng</h4>
+            <span class="address-item__badge-default hidden">Mặc định</span>
+          </div>
+          <p class="address-item__text"></p>
+          <span class="address-item__division"></span>
+          <span class="address-item__coords hidden">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span class="coords-text"></span>
+          </span>
+        </div>
+      </div>
+      <div class="address-item__actions">
+        <button type="button" class="address-action-btn address-action-btn--edit">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+          </svg>
+          Sửa
+        </button>
+        <button type="button" class="address-action-btn address-action-btn--delete">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+          Xóa
+        </button>
+        <button type="button" class="address-action-btn address-action-btn--default">
+          Thiết lập mặc định
+        </button>
+      </div>
+    </div>
+  </template>
+
+  <!-- ==================== FOOTER CHÍNH ==================== -->
+  <div id="site-footer" data-component="footer"></div>
+
+  <!-- Thư viện bản đồ Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Script Điều khiển Trang Hồ Sơ -->
+  <script type="module" src="../../js/pages/profile.js"></script>
+</body>
+</html>

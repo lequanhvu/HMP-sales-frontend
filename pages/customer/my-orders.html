@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Theo dõi và quản lý lịch sử đơn hàng tôn thép HMP, cập nhật tiến độ gia công và giao hàng">
+  <title>Đơn Hàng Của Tôi — HMP Tôn Thép</title>
+
+  <!-- CSS Lớp Nền tảng (Base) -->
+  <link rel="stylesheet" href="../../assets/css/base/variables.css">
+  <link rel="stylesheet" href="../../assets/css/base/reset.css">
+  <link rel="stylesheet" href="../../assets/css/base/global.css">
+
+  <!-- CSS Thành phần Dùng chung (Components) -->
+  <link rel="stylesheet" href="../../assets/css/components/button.css">
+  <link rel="stylesheet" href="../../assets/css/components/header.css">
+  <link rel="stylesheet" href="../../assets/css/components/footer.css">
+  <link rel="stylesheet" href="../../assets/css/components/sidebar.css">
+  <link rel="stylesheet" href="../../assets/css/components/toast.css">
+  <link rel="stylesheet" href="../../assets/css/components/confirm-modal.css">
+
+  <!-- CSS Riêng cho Trang Quản Lý Đơn Hàng (Pages) -->
+  <link rel="stylesheet" href="../../assets/css/pages/my-orders.css?v=20261127_07">
+</head>
+<body>
+
+  <!-- ==================== HEADER CHÍNH ==================== -->
+  <div id="site-header" data-component="header"></div>
+
+  <!-- ==================== NỘI DUNG CHÍNH ==================== -->
+  <main class="my-orders-page">
+    <div class="container my-orders-container">
+
+      <!-- Cột Trái: Sidebar Khách Hàng -->
+      <aside class="customer-sidebar">
+        <div class="customer-sidebar__user">
+          <div id="orders-sidebar-avatar" class="customer-sidebar__avatar">K</div>
+          <div class="customer-sidebar__info">
+            <h4 id="orders-sidebar-name" class="customer-sidebar__name">Đang tải...</h4>
+            <span id="orders-sidebar-phone" class="customer-sidebar__phone">Đang tải...</span>
+          </div>
+        </div>
+        <nav class="customer-sidebar__nav">
+          <a href="./profile.html" class="customer-sidebar__link" data-customer-nav="profile">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+            <span>Thông tin cá nhân</span>
+          </a>
+          <a href="./my-orders.html" class="customer-sidebar__link customer-sidebar__link--active" data-customer-nav="orders">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Đơn hàng của tôi</span>
+          </a>
+          <a href="./notifications.html" class="customer-sidebar__link" data-customer-nav="notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <span>Thông báo</span>
+          </a>
+          <button type="button" id="sidebar-logout-btn" class="customer-sidebar__logout-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+              <polyline points="16 17 21 12 16 7"></polyline>
+              <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Đăng xuất</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- Cột Phải: Danh sách Đơn hàng & Bộ lọc -->
+      <section class="orders-content">
+
+        <!-- 1. Thanh Tabs Trạng Thái Đơn Hàng -->
+        <div class="orders-tabs-wrapper">
+          <div class="orders-tabs" role="tablist">
+            <button type="button" class="orders-tab-btn orders-tab-btn--active" data-status="ALL">
+              Tất cả
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="PENDING">
+              Chờ xác nhận
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="CONFIRMED">
+              Đã xác nhận
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="PROCESSING">
+              Đang xử lý
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="SHIPPING">
+              Đang giao
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="COMPLETED">
+              Hoàn thành
+            </button>
+            <button type="button" class="orders-tab-btn" data-status="CANCELLED">
+              Đã hủy
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Thanh Lọc Theo Khoảng Ngày -->
+        <div class="orders-filter-bar">
+          <div class="filter-date-group">
+            <div class="filter-date-item">
+              <span>Từ ngày:</span>
+              <input type="date" id="filter-date-from" class="input-date">
+            </div>
+            <div class="filter-date-item">
+              <span>Đến ngày:</span>
+              <input type="date" id="filter-date-to" class="input-date">
+            </div>
+          </div>
+          <div class="filter-actions">
+            <button type="button" id="btn-apply-filter" class="btn btn--primary btn-filter">
+              Lọc Đơn Hàng
+            </button>
+            <button type="button" id="btn-reset-filter" class="btn btn--outline btn-filter">
+              Đặt Lại
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Danh Sách Đơn Hàng Động -->
+        <div id="orders-list" class="orders-list"></div>
+
+        <!-- 4. Khung Trống (Khi không có đơn hàng) -->
+        <div id="orders-empty" class="orders-empty-box hidden">
+          <div class="orders-empty-icon">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+          </div>
+          <h3 class="orders-empty-title">Không tìm thấy đơn hàng nào</h3>
+          <p class="orders-empty-desc">Bạn chưa có đơn hàng nào ở trạng thái này hoặc trong khoảng thời gian đã chọn.</p>
+          <a href="../product/catalog.html" class="btn btn--primary">
+            Khám Phá Sản Phẩm Tôn Ngay
+          </a>
+        </div>
+
+        <!-- 5. Phân Trang Số Trang -->
+        <div id="orders-pagination" class="orders-pagination hidden"></div>
+
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ==================== MODAL HỦY ĐƠN HÀNG ==================== -->
+  <div id="cancel-order-modal-overlay" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-cancel-title">
+    <div class="modal-dialog modal-dialog--sm">
+      <div class="modal-header">
+        <h3 id="modal-cancel-title" class="modal-title">Hủy Đơn Hàng #---</h3>
+        <button type="button" id="btn-close-cancel-modal" class="modal-close-btn" aria-label="Đóng">&times;</button>
+      </div>
+
+      <form id="cancel-order-form" class="modal-body" autocomplete="off">
+        <input type="hidden" id="cancel-target-order-id" value="">
+        <div class="otp-box">
+          <div class="otp-icon-wrap otp-icon-wrap--danger">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+          </div>
+          <p class="otp-desc">
+            Bạn có chắc chắn muốn hủy đơn hàng này không?
+            <br>
+            <strong class="otp-desc__warning">
+              * Lưu ý: Bạn có thể hoàn tác hủy trong vòng 60 phút sau khi hủy.
+            </strong>
+          </p>
+        </div>
+
+        <div class="form-group">
+          <label for="cancel-reason-select" class="form-label">Lý do hủy đơn</label>
+          <select id="cancel-reason-select" class="select-custom">
+            <option value="Tôi muốn thay đổi quy cách / kích thước tôn">Tôi muốn thay đổi quy cách / kích thước tôn</option>
+            <option value="Tôi muốn thay đổi địa chỉ giao hàng">Tôi muốn thay đổi địa chỉ giao hàng</option>
+            <option value="Tôi đặt nhầm sản phẩm / số lượng">Tôi đặt nhầm sản phẩm / số lượng</option>
+            <option value="Giá hoặc chi phí chưa phù hợp">Giá hoặc chi phí chưa phù hợp</option>
+            <option value="Khác">Lý do khác...</option>
+          </select>
+        </div>
+
+        <div id="cancel-custom-reason-wrap" class="form-group hidden">
+          <label for="cancel-custom-reason-input" class="form-label">Chi tiết lý do khác</label>
+          <input type="text" id="cancel-custom-reason-input" class="form-input" placeholder="Nhập lý do cụ thể..." maxlength="255">
+        </div>
+
+        <div class="modal-footer modal-footer--clean">
+          <button type="button" id="btn-cancel-modal-dismiss" class="btn btn--outline">Bỏ qua</button>
+          <button type="submit" id="btn-confirm-cancel-order" class="btn btn--danger">
+            Xác Nhận Hủy Đơn
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================== TEMPLATES HIỂN THỊ ĐỘNG ==================== -->
+
+  <!-- Template Thẻ Đơn Hàng trong danh sách -->
+  <template id="order-card-template">
+    <div class="order-card">
+      <div class="order-card__header">
+        <div class="order-card__id-group">
+          <span class="order-code">#---</span>
+          <span class="order-date">--/--/----</span>
+        </div>
+        <span class="order-status-badge">---</span>
+      </div>
+
+      <div class="order-card__body">
+        <div class="order-info-item">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <div>
+            Người nhận: <strong class="order-receiver-name">---</strong>
+            <div class="order-delivery-meta">
+              <span class="delivery-method-pill">---</span>
+              <span class="order-distance-text form-hint"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-price-group order-price-group--total">
+          <span class="order-price-label">Tổng thanh toán:</span>
+          <span class="order-price-val">---</span>
+          <span class="order-price-pending hidden">Đang chờ Quản lý tính giá</span>
+        </div>
+      </div>
+
+      <div class="order-card__footer">
+        <div class="order-card__hint-text form-hint"></div>
+        <div class="order-actions-group">
+          <button type="button" class="btn-order-action btn-order-action--detail">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <span>Xem chi tiết</span>
+          </button>
+          <button type="button" class="btn-order-action btn-order-action--cancel hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="15" y1="9" x2="9" y2="15"></line>
+              <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+            <span>Hủy đơn</span>
+          </button>
+          <button type="button" class="btn-order-action btn-order-action--undo hidden">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+              <path d="M3 3v5h5"></path>
+            </svg>
+            <span>Hoàn tác hủy</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <!-- ==================== FOOTER CHÍNH ==================== -->
+  <div id="site-footer" data-component="footer"></div>
+
+  <!-- Script Điều khiển Trang Đơn Hàng Của Tôi -->
+  <script type="module" src="../../js/pages/my-orders.js?v=20261127_06"></script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+/* ==========================================================================
+   breadcrumb.css — Thành phần điều hướng đường dẫn chuẩn HMP (Ảnh mẫu)
+   Quy chuẩn chung: dấu gạch chéo (/), màu slate thanh lịch, hover xanh chủ đạo
+   ========================================================================== */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 1rem 0;
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #64748b);
+  line-height: 1.4;
+}
+
+.breadcrumb__link {
+  color: var(--color-text-muted, #64748b);
+  text-decoration: none;
+  transition: color var(--transition-fast, 0.18s ease);
+}
+
+.breadcrumb__link:hover {
+  color: var(--color-primary, #1351b4);
+  text-decoration: underline;
+}
+
+.breadcrumb__separator {
+  color: #94a3b8;
+  font-size: 0.8rem;
+  user-select: none;
+  padding: 0 0.15rem;
+}
+
+.breadcrumb__current {
+  color: var(--color-text-main, #1e293b);
+  font-weight: 600;
+}

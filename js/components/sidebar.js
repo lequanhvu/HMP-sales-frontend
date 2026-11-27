@@ -3,6 +3,7 @@
  */
 
 import { storage } from '../utils/storage.js';
+import { client } from '../api/client.js';
 
 /**
  * Khởi tạo Sidebar Khách hàng
@@ -23,6 +24,34 @@ export function initCustomerSidebar() {
       const initial = (user.fullName || user.email || 'U').charAt(0).toUpperCase();
       avatarEl.textContent = initial;
     }
+  }
+
+  // Lấy số lượng thông báo chưa đọc động từ DB cho sidebar badge
+  const sidebarNotifBadge = document.getElementById('sidebar-notif-badge');
+  if (sidebarNotifBadge) {
+    const updateSidebarBadge = async () => {
+      try {
+        const res = await client.get('/notifications/unread-count');
+        const count = (res && typeof res.unreadCount === 'number')
+          ? res.unreadCount
+          : (res && res.data && typeof res.data.unreadCount === 'number')
+            ? res.data.unreadCount
+            : 0;
+
+        if (count > 0) {
+          sidebarNotifBadge.textContent = count > 99 ? '99+' : String(count);
+          sidebarNotifBadge.classList.remove('hidden');
+        } else {
+          sidebarNotifBadge.textContent = '0';
+          sidebarNotifBadge.classList.add('hidden');
+        }
+      } catch {
+        sidebarNotifBadge.classList.add('hidden');
+      }
+    };
+
+    updateSidebarBadge();
+    window.addEventListener('hmp:notifications-updated', updateSidebarBadge);
   }
 
   // Đánh dấu active theo URL

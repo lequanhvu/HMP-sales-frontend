@@ -143,7 +143,7 @@ function initDeliveryMethodEvents() {
 }
 
 /**
- * Render thanh điều hướng breadcrumb động
+ * Render thanh điều hướng breadcrumb động chuẩn ảnh mẫu
  */
 function renderBreadcrumb() {
   const breadcrumbEl = document.getElementById('order-breadcrumb');
@@ -151,7 +151,7 @@ function renderBreadcrumb() {
 
   breadcrumbEl.replaceChildren();
 
-  let prevText = 'Chi tiết sản phẩm';
+  let prevText = 'Sản phẩm';
   let prevLink = '../product/catalog.html';
 
   if (orderMode === 'buy-now') {
@@ -164,29 +164,21 @@ function renderBreadcrumb() {
     prevLink = './cart.html';
   }
 
-  const isNarrowScreen = window.innerWidth < 640;
   const fragment = document.createDocumentFragment();
 
-  if (isNarrowScreen) {
-    const ellipsisLink = document.createElement('a');
-    ellipsisLink.href = '../product/catalog.html';
-    ellipsisLink.className = 'breadcrumb__link breadcrumb__link--ellipsis';
-    ellipsisLink.textContent = '...';
-    ellipsisLink.title = 'Sản phẩm';
-    fragment.appendChild(ellipsisLink);
-  } else {
-    const rootLink = document.createElement('a');
-    rootLink.href = '../product/catalog.html';
-    rootLink.className = 'breadcrumb__link';
-    rootLink.textContent = 'Sản phẩm';
-    fragment.appendChild(rootLink);
-  }
+  // 1. Gốc: Trang chủ
+  const rootLink = document.createElement('a');
+  rootLink.href = '../../index.html';
+  rootLink.className = 'breadcrumb__link';
+  rootLink.textContent = 'Trang chủ';
+  fragment.appendChild(rootLink);
 
   const sep1 = document.createElement('span');
   sep1.className = 'breadcrumb__separator';
   sep1.textContent = '/';
   fragment.appendChild(sep1);
 
+  // 2. Trung gian: Giỏ hàng hoặc Chi tiết sản phẩm
   const midLink = document.createElement('a');
   midLink.href = prevLink;
   midLink.className = 'breadcrumb__link';
@@ -201,6 +193,7 @@ function renderBreadcrumb() {
   sep2.textContent = '/';
   fragment.appendChild(sep2);
 
+  // 3. Hiện tại: Đặt hàng
   const currentSpan = document.createElement('span');
   currentSpan.className = 'breadcrumb__current';
   currentSpan.textContent = 'Đặt hàng';
@@ -451,11 +444,13 @@ function initOrRefreshMap() {
         updateDistanceBadge(loc);
       }
     });
-  } else {
-    setTimeout(() => {
-      mapPickerInstance.invalidateSize();
-    }, 150);
   }
+
+  setTimeout(() => {
+    if (mapPickerInstance) {
+      mapPickerInstance.invalidateSize();
+    }
+  }, 250);
 }
 
 /**
