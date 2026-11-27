@@ -1,6 +1,6 @@
 # Project Status — Sales Website Frontend
 
-> Last updated: 2026-11-25 | By: @antigravity | Session: #6
+> Last updated: 2026-11-27 | By: @antigravity | Session: #27
 >
 > AI: update this file at the end of every session when asked.
 > Follow this exact format. Preserve full milestone checklists and project specifications.
@@ -8,6 +8,35 @@
 ---
 
 ## Completed
+- ✅ **Tính năng Chọn Địa Giới Hành Chính 3 Cấp & Ghim Bản Đồ Không Watermark (Session #27 - Completed)**:
+  - **3 Hộp Chọn Địa Giới Hành Chính (Tỉnh/TP, Quận/Huyện, Phường/Xã)**:
+    - Nạp danh mục 63 tỉnh thành Việt Nam tự động qua Open-API (`provinces.open-api.vn`) với cơ chế in-memory caching cực nhanh.
+    - Cascading dropdowns: Chọn Tỉnh/TP -> tự động nạp Quận/Huyện -> Chọn Quận/Huyện -> tự động nạp Phường/Xã.
+    - Tự động ghép chuỗi địa chỉ `${Địa chỉ chi tiết}, ${Phường/Xã}, ${Quận/Huyện}, ${Tỉnh/TP}` để forward-geocode vị trí.
+    - **Quy tắc chọn kết quả**: Khi có nhiều hơn 1 kết quả tọa độ trả về, hệ thống mặc định chọn output đầu tiên (`candidates[0]`) và ghim ngay lên bản đồ, đồng thời vẫn hiển thị danh sách gợi ý để khách hàng xem hoặc đổi nếu muốn.
+  - **Tích Hợp Bản Đồ Không Watermark (100% Miễn Phí & Ổn Định Tại Việt Nam)**:
+    - Bản đồ nền mặc định: **Esri World Street Map** sắc nét, sạch sẽ, hoàn toàn không watermark, không yêu cầu thẻ tín dụng hay API key.
+    - Lớp ảnh vệ tinh thực tế: **Esri World Imagery** sắc nét, rõ ràng đến từng mái tôn và công trình nhận hàng.
+    - Bản đồ bổ trợ: Google Maps Street Layer chuyển đổi mượt mà.
+  - **Quản Lý Sổ Địa Chỉ & Kiểm Soát Bán Kính Giao Tận Nơi**:
+    - Lưu đầy đủ thông tin: `province`, `district`, `ward`, `address`, `latitude`, `longitude`, `isDefault` vào Backend.
+    - Kiểm soát bán kính giao hàng 25km quanh xưởng HMP với cảnh báo trực quan.
+- ✅ **Tính năng Ghim Vị Trí Bản Đồ & Kiểm Soát Bán Kính Giao Hàng (Delivery Radius & Multi-Layer Map Integration - Session #27)**:
+  - **Tích Hợp Bản Đồ Tương Tác Chuẩn Sản Xuất (Lựa chọn 2 - 100% Hợp Pháp & 0 Đồng)**:
+    - Nhúng bản đồ đường phố sắc nét **CartoDB Voyager** (hiển thị rõ khối nhà, đường sá, ngõ ngách, tên thôn/xã Việt Nam qua CDN toàn cầu cực nhanh, không bị chặn mạng tại VN).
+    - Tích hợp thêm lớp **Ảnh vệ tinh thực tế Esri World Imagery** giúp khách hàng nhìn thấy rõ từng mái nhà, khu xưởng, công trình để đối chiếu.
+    - Bộ chuyển đổi lớp bản đồ ở góc trên bên phải (Bản đồ đường phố / Ảnh vệ tinh thực tế / Bản đồ giao thông).
+    - Vòng tròn bán kính màu xanh thương hiệu bao quanh tâm xưởng sản xuất HMP (mặc định 25km).
+    - Nút định vị GPS "Vị trí của tôi" qua HTML5 Geolocation.
+  - **Tự Động Tìm Kiếm & Ghim Vị Trí Theo Địa Chỉ (Forward Geocoding)**:
+    - Khách hàng gõ địa chỉ vào ô *"Địa chỉ nhận hàng cụ thể"*, hệ thống tự động tìm kiếm qua ArcGIS World Geocoder (hỗ trợ đầy đủ thôn/xã/huyện/tỉnh Việt Nam).
+    - Bản đồ tự động lướt đến vị trí tìm thấy và cắm ghim đỏ ngay tức thì.
+    - Khách hàng có thể kéo thả ghim đỏ để tinh chỉnh vị trí nếu có xê dịch.
+  - **Tùy Chọn Phương Thức Nhận Hàng (`SHIPPING` vs `PICKUP`)**:
+    - "Giao hàng tận nơi" (`SHIPPING`): Bắt buộc ghim vị trí, tự động đo khoảng cách và chặn nếu vượt bán kính.
+    - "Khách tự bốc hàng tại xưởng" (`PICKUP`): Không giới hạn khoảng cách, hiển thị địa chỉ xưởng và hotline điều xe.
+  - **API Client Mới (`js/api/delivery.api.js`) & Component (`js/components/map-picker.js`)**:
+    - Cung cấp `getStoreInfo()`, `checkDeliveryDistance(lat, lng)`, `geocodeAddress(query)`.
 - ✅ **Phân Hệ Giỏ Hàng & Đặt Hàng Chuẩn Shopee (Cart & Checkout Flow - Session #6)**:
   - **Trang Chi Tiết Sản Phẩm Động Theo Loại Mặt Hàng (`pages/product/detail.html`, `js/pages/product-detail.js`, `assets/css/pages/product-detail.css`)**:
     - Tích hợp trường nhập liệu theo `ProductType`:

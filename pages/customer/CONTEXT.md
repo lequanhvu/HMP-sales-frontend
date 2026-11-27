@@ -43,6 +43,15 @@ The Customer Module (`pages/customer/`) provides a complete, modern e-commerce s
   - `js/utils/format.js`
 
 ## Refactor Log
+### 2026-11-27 | @antigravity (Session #27)
+- Tích hợp tính năng Ghim vị trí bản đồ & Kiểm soát bán kính giao hàng (Delivery Radius Enforcement):
+  - Sử dụng giải pháp bản đồ mở sản xuất chuẩn (Option 2): CartoDB Voyager CDN (đầy đủ đường sá, khối nhà chi tiết cao), Esri World Imagery (ảnh vệ tinh độ nét cao) và Esri World Street Map. Hoàn toàn 0 đồng, không cần thẻ ngân hàng, không vi phạm bản quyền Google.
+  - Tích hợp định vị địa chỉ tự động (Forward Geocoding qua ArcGIS): Khách nhập địa chỉ (thôn/xã/huyện) hệ thống tự động tìm và ghim vị trí trên bản đồ, hỗ trợ kéo thả ghim đỏ để tinh chỉnh.
+  - Hỗ trợ 2 phương thức nhận hàng: "Giao hàng tận nơi" (`SHIPPING`) vs "Khách tự bốc hàng tại xưởng" (`PICKUP`).
+  - Tự động gọi API `GET /api/v1/delivery/check-distance` tính toán khoảng cách thực tế từ xưởng HMP đến vị trí ghim của khách hàng.
+  - Cảnh báo trực quan (huy hiệu xanh/đỏ) và chặn tạo đơn nếu vị trí giao hàng vượt quá bán kính quy định (mặc định 25km). Cho phép khách chuyển sang "Tự bốc hàng tại xưởng" hoặc gọi Hotline.
+  - Thêm module API `js/api/delivery.api.js` và component `js/components/map-picker.js`.
+
 ### 2026-11-25 | @antigravity (Session #6)
 - Implemented `ProductType` dynamic form field rendering in `product-detail.js`.
 - Added Cart button and live badge counter to Header component with `hmp:cart-updated` event.
